@@ -159,7 +159,8 @@
     transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
   .card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,0.2); }
-  .flag { font-size: 2.3rem; line-height: 1; }
+  .flag { line-height: 1; }
+  .flag img { width: 48px; height: auto; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.18); display: block; }
   .card .names { min-width: 0; }
   .card .country { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
   .card .capital { color: var(--accent, var(--ink-soft)); font-weight: 700; font-size: 0.95rem; margin-top: 1px; }
@@ -192,7 +193,9 @@
     box-shadow: 0 20px 50px rgba(0,0,0,0.22); text-align: center;
   }
   .q-prompt { font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bg2); font-weight: 800; }
-  .q-flag { font-size: 4.6rem; margin: 10px 0 2px; line-height: 1; animation: pop 0.4s ease; }
+  .q-flag { margin: 10px 0 2px; line-height: 1; animation: pop 0.4s ease; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+  .q-flag img { width: 90px; height: auto; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,0.22); }
+  .q-flag .pin { font-size: 4.6rem; }
   @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
   .q-country { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 2.1rem; line-height: 1.05; }
   .q-continent {
@@ -236,7 +239,8 @@
   .feedback { min-height: 26px; margin-top: 18px; font-weight: 800; font-size: 1.05rem; }
   .feedback.good { color: var(--good); }
   .feedback.bad { color: var(--bad); }
-  .feedback .reveal { display: block; font-size: 0.9rem; color: var(--ink-soft); margin-top: 2px; }
+  .feedback .reveal { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--ink-soft); margin-top: 4px; }
+  .feedback .reveal img { width: 24px; height: auto; border-radius: 3px; }
 
   .next-btn {
     font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem;
@@ -415,6 +419,15 @@
 </div>
 
 <script>
+// ---------- Flag images ----------
+function emojiToISO(flag){
+  return [...flag].map(c => String.fromCharCode(c.codePointAt(0) - 0x1F1E6 + 65)).join('').toLowerCase();
+}
+function flagImg(emoji, size=40){
+  const iso = emojiToISO(emoji);
+  return `<img src="https://flagcdn.com/w${size}/${iso}.png" alt="${iso.toUpperCase()}" loading="lazy">`;
+}
+
 const COLORS = {
   "Europe":"var(--eu)", "Asie":"var(--as)", "Afrique":"var(--af)",
   "Amérique du Nord":"var(--na)", "Amérique du Sud":"var(--sa)", "Océanie":"var(--oc)"
@@ -714,7 +727,7 @@ function renderStudy(){
     const card=document.createElement("div");
     card.className="card";
     card.style.setProperty("--accent", COLORS[d.k]);
-    card.innerHTML=`<span class="flag">${d.f}</span>
+    card.innerHTML=`<span class="flag">${flagImg(d.f)}</span>
       <div class="names"><div class="country">${d.c}</div>
       <div class="capital">${d.cap}</div></div>`;
     grid.appendChild(card);
@@ -754,11 +767,11 @@ function nextQuestion(){
 
   if(direction==="cap"){
     promptEl.textContent="Quelle est la capitale de…";
-    flagEl.textContent=q.f;
+    flagEl.innerHTML=flagImg(q.f, 80);
     mainEl.textContent=q.c;
   } else {
     promptEl.textContent="Quel pays a pour capitale…";
-    flagEl.textContent="📍";
+    flagEl.innerHTML=`<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
   // restart flag pop animation
@@ -864,8 +877,8 @@ function checkTyped(){
 }
 
 function revealLine(){
-  if(direction==="cap") return `<span class="reveal">${currentItem.f} ${currentItem.c}</span>`;
-  return `<span class="reveal">${currentItem.f} ${currentItem.cap}</span>`;
+  if(direction==="cap") return `<span class="reveal">${flagImg(currentItem.f, 24)} ${currentItem.c}</span>`;
+  return `<span class="reveal">${flagImg(currentItem.f, 24)} ${currentItem.cap}</span>`;
 }
 
 function afterAnswer(){

@@ -1125,7 +1125,7 @@ function renderFlagsAll(){
     const row = document.createElement("div");
     row.className = "flag-row";
     row.dataset.answer = d.c;
-    row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}<span class="flag-emoji">${d.f}</span></div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
+    row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}</div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
     grid.appendChild(row);
   });
 

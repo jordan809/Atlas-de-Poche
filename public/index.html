@@ -332,6 +332,25 @@
     transition: transform 0.15s ease;
   }
   .flags-check-btn:hover { transform: translateY(-2px); }
+  /* ---------- Countdown ---------- */
+  .countdown-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+  }
+  .countdown-num {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 7rem; color: #fff;
+    text-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    animation: countPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .countdown-num.go { color: #1fae6a; font-size: 5rem; }
+  @keyframes countPop {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   /* ---------- Score modal ---------- */
   .score-overlay {
     position: fixed; inset: 0; z-index: 200;
@@ -1154,6 +1173,24 @@ let flagsAllInProgress = false;
 let flagsAllPool = null; // continent actif au moment du lancement
 let stopwatchId = null, stopwatchSecs = 0;
 
+function startCountdown(callback){
+  const steps = ["3","2","1","GO !"];
+  const overlay = document.createElement("div");
+  overlay.className = "countdown-overlay";
+  document.body.appendChild(overlay);
+  let i = 0;
+  function showStep(){
+    overlay.innerHTML = `<div class="countdown-num${steps[i]==="GO !"?" go":""}">${steps[i]}</div>`;
+    i++;
+    if(i < steps.length){
+      setTimeout(showStep, 800);
+    } else {
+      setTimeout(() => { overlay.remove(); callback(); }, 600);
+    }
+  }
+  showStep();
+}
+
 function startStopwatch(){
   stopStopwatch();
   stopwatchSecs = 0;
@@ -1175,7 +1212,15 @@ function renderFlagsAll(force=false){
 
   flagsAllInProgress = true;
   flagsAllPool = activeFilter;
-  startStopwatch();
+
+  // Cache la grille pendant le countdown
+  document.getElementById("flagsGrid").style.visibility = "hidden";
+  document.getElementById("flagsCheckBtn").classList.add("hidden");
+  startCountdown(() => {
+    document.getElementById("flagsGrid").style.visibility = "visible";
+    document.getElementById("flagsCheckBtn").classList.remove("hidden");
+    startStopwatch();
+  });
 
   const list = pool();
   const grid = document.getElementById("flagsGrid");

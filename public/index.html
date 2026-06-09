@@ -1113,13 +1113,6 @@ function enterMode(mode){
   else if(isFlags){ enterFlagsSubMode(flagsSubMode); }
   else { startPlay(); }
 
-  // Scroll vers le contenu
-  setTimeout(() => {
-    const target = isStudy ? document.getElementById("study")
-                 : isFlags ? (flagsSubMode === "all" ? document.getElementById("flagsAll") : document.getElementById("play"))
-                 : document.getElementById("play");
-    if(target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 80);
 }
 
 document.querySelectorAll(".mode-btn").forEach(btn=>{
@@ -1242,12 +1235,10 @@ function enterFlagsSubMode(sub){
     document.getElementById("flagsAll").classList.remove("hidden");
     document.getElementById("play").classList.add("hidden");
     renderFlagsAll();
-    setTimeout(() => document.getElementById("flagsAll").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
   } else {
     document.getElementById("flagsAll").classList.add("hidden");
     document.getElementById("play").classList.remove("hidden");
     startPlay();
-    setTimeout(() => document.getElementById("play").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
   }
 }
 

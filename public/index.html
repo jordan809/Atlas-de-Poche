@@ -1173,6 +1173,17 @@ function renderFlagsAll(force=false){
     row.dataset.answer = d.c;
     row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}</div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
     const input = row.querySelector(".flag-input");
+    input.addEventListener("keydown", (e) => {
+      const inputs = [...document.querySelectorAll(".flag-input:not(:disabled)")];
+      const idx = inputs.indexOf(e.target);
+      if(e.key === "ArrowDown" || e.key === "ArrowRight"){
+        e.preventDefault();
+        if(idx < inputs.length - 1) inputs[idx + 1].focus({ preventScroll: false });
+      } else if(e.key === "ArrowUp" || e.key === "ArrowLeft"){
+        e.preventDefault();
+        if(idx > 0) inputs[idx - 1].focus({ preventScroll: false });
+      }
+    });
     input.addEventListener("input", () => {
       if(norm(input.value) === norm(d.c) && input.value.trim() !== ""){
         input.classList.add("correct");

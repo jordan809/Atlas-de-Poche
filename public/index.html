@@ -1220,7 +1220,6 @@ function renderFlagsAll(force=false){
     overlay.querySelector(".score-restart").onclick = () => {
       overlay.remove();
       renderFlagsAll(true);
-      setTimeout(() => document.getElementById("flagsAll").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
     };
     overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };

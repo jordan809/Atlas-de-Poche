@@ -1189,6 +1189,12 @@ function renderFlagsAll(force=false){
         input.classList.add("correct");
         input.disabled = true;
         soundCorrect();
+        // Déplace le focus sur la prochaine case non validée
+        const allInputs = [...document.querySelectorAll(".flag-input")];
+        const currentIdx = allInputs.indexOf(input);
+        const next = allInputs.slice(currentIdx + 1).find(i => !i.disabled)
+                  || allInputs.slice(0, currentIdx).find(i => !i.disabled);
+        if(next) next.focus({ preventScroll: false });
       }
     });
     grid.appendChild(row);

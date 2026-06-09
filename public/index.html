@@ -525,10 +525,7 @@
 
   <section id="flagsAll" class="hidden">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div id="stopwatchDisplay" style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; color:#fff; background:rgba(255,255,255,0.2); backdrop-filter:blur(6px); padding:8px 18px; border-radius:30px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">⏱️ 00:00</div>
-        <button class="toggle" id="flagsStartChronoBtn">🚀 Lancer le chrono</button>
-      </div>
+      <button class="toggle" id="flagsStartChronoBtn" style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1rem;">🚀 Lancer le chrono</button>
       <button class="toggle" id="flagsRestartBtn">🔄 Recommencer</button>
     </div>
     <div class="flags-grid" id="flagsGrid"></div>
@@ -1206,7 +1203,8 @@ function stopStopwatch(){
 function updateStopwatch(){
   const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
   const s = String(stopwatchSecs % 60).padStart(2, "0");
-  document.getElementById("stopwatchDisplay").textContent = `⏱️ ${m}:${s}`;
+  const btn = document.getElementById("flagsStartChronoBtn");
+  if(btn) btn.textContent = `⏱️ ${m}:${s}`;
 }
 
 function renderFlagsAll(force=false){
@@ -1216,7 +1214,9 @@ function renderFlagsAll(force=false){
   flagsAllInProgress = true;
   flagsAllPool = activeFilter;
   stopStopwatch();
-  updateStopwatch();
+  stopwatchSecs = 0;
+  const btn = document.getElementById("flagsStartChronoBtn");
+  if(btn){ btn.textContent = "🚀 Lancer le chrono"; btn.disabled = false; }
 
   const list = pool();
   const grid = document.getElementById("flagsGrid");
@@ -1329,6 +1329,7 @@ document.getElementById("subOne").onclick = () => enterFlagsSubMode("one");
 document.getElementById("subAll").onclick = () => enterFlagsSubMode("all");
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
 document.getElementById("flagsStartChronoBtn").onclick = () => {
+  document.getElementById("flagsStartChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());
 };
 const soundToggleFlags = document.getElementById("soundToggleFlags");

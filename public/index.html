@@ -525,7 +525,10 @@
 
   <section id="flagsAll" class="hidden">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <div id="stopwatchDisplay" style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; color:#fff; background:rgba(255,255,255,0.2); backdrop-filter:blur(6px); padding:8px 18px; border-radius:30px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">⏱️ 00:00</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div id="stopwatchDisplay" style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; color:#fff; background:rgba(255,255,255,0.2); backdrop-filter:blur(6px); padding:8px 18px; border-radius:30px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">⏱️ 00:00</div>
+        <button class="toggle" id="flagsStartChronoBtn">🚀 Lancer le chrono</button>
+      </div>
       <button class="toggle" id="flagsRestartBtn">🔄 Recommencer</button>
     </div>
     <div class="flags-grid" id="flagsGrid"></div>
@@ -1212,15 +1215,8 @@ function renderFlagsAll(force=false){
 
   flagsAllInProgress = true;
   flagsAllPool = activeFilter;
-
-  // Cache la grille pendant le countdown
-  document.getElementById("flagsGrid").style.visibility = "hidden";
-  document.getElementById("flagsCheckBtn").classList.add("hidden");
-  startCountdown(() => {
-    document.getElementById("flagsGrid").style.visibility = "visible";
-    document.getElementById("flagsCheckBtn").classList.remove("hidden");
-    startStopwatch();
-  });
+  stopStopwatch();
+  updateStopwatch();
 
   const list = pool();
   const grid = document.getElementById("flagsGrid");
@@ -1332,6 +1328,9 @@ function enterFlagsSubMode(sub){
 document.getElementById("subOne").onclick = () => enterFlagsSubMode("one");
 document.getElementById("subAll").onclick = () => enterFlagsSubMode("all");
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
+document.getElementById("flagsStartChronoBtn").onclick = () => {
+  startCountdown(() => startStopwatch());
+};
 const soundToggleFlags = document.getElementById("soundToggleFlags");
 soundToggleFlags.onclick = () => {
   soundOn = !soundOn;

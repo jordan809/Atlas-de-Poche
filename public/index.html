@@ -466,9 +466,13 @@
   <div class="submodes hidden" id="submodesBar">
     <button class="submode-btn active" id="subOne">🎯 Un par un</button>
     <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
+    <button class="toggle sound" id="soundToggleFlags">🔊</button>
   </div>
 
   <section id="flagsAll" class="hidden">
+    <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+      <button class="toggle" id="flagsRestartBtn">🔄 Recommencer</button>
+    </div>
     <div class="flags-grid" id="flagsGrid"></div>
     <button class="flags-check-btn hidden" id="flagsCheckBtn">Vérifier mes réponses ✅</button>
     <div class="flags-score-bar hidden" id="flagsScoreBar"></div>
@@ -1097,6 +1101,7 @@ const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
   soundOn=!soundOn;
   soundToggle.textContent = soundOn ? "🔊" : "🔇";
+  document.getElementById("soundToggleFlags").textContent = soundOn ? "🔊" : "🔇";
   if(soundOn) soundCorrect();
 };
 
@@ -1109,8 +1114,16 @@ document.getElementById("typeInput").addEventListener("keydown",e=>{
 
 // ---------- Flags All mode ----------
 let flagsSubMode = "one"; // "one" | "all"  (défaut : un par un)
+let flagsAllInProgress = false;
+let flagsAllPool = null; // continent actif au moment du lancement
 
-function renderFlagsAll(){
+function renderFlagsAll(force=false){
+  // Si une partie est en cours sur le même continent, on ne réinitialise pas
+  if(flagsAllInProgress && !force && flagsAllPool === activeFilter) return;
+
+  flagsAllInProgress = true;
+  flagsAllPool = activeFilter;
+
   const list = pool();
   const grid = document.getElementById("flagsGrid");
   const checkBtn = document.getElementById("flagsCheckBtn");
@@ -1179,6 +1192,14 @@ function enterFlagsSubMode(sub){
 
 document.getElementById("subOne").onclick = () => enterFlagsSubMode("one");
 document.getElementById("subAll").onclick = () => enterFlagsSubMode("all");
+document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
+const soundToggleFlags = document.getElementById("soundToggleFlags");
+soundToggleFlags.onclick = () => {
+  soundOn = !soundOn;
+  soundToggleFlags.textContent = soundOn ? "🔊" : "🔇";
+  document.getElementById("soundToggle").textContent = soundOn ? "🔊" : "🔇";
+  if(soundOn) soundCorrect();
+};
 
 // ---------- Dark mode ----------
 const darkToggle = document.getElementById("darkToggle");

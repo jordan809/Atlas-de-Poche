@@ -321,7 +321,7 @@
   .flag-row .flag-input:focus { border-color: var(--bg1); }
   .flag-row .flag-input.correct { border-color: var(--good); background: #e7faf0; }
   .flag-row .flag-input.wrong { border-color: var(--bad); background: #fdeaee; }
-  .flag-row .flag-input:disabled { cursor: default; }
+  .flag-row .flag-input:disabled { cursor: default; opacity: 1; }
 
   .flags-check-btn {
     display: block; margin: 22px auto 0;
@@ -1126,6 +1126,14 @@ function renderFlagsAll(){
     row.className = "flag-row";
     row.dataset.answer = d.c;
     row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}</div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
+    const input = row.querySelector(".flag-input");
+    input.addEventListener("input", () => {
+      if(norm(input.value) === norm(d.c) && input.value.trim() !== ""){
+        input.classList.add("correct");
+        input.disabled = true;
+        soundCorrect();
+      }
+    });
     grid.appendChild(row);
   });
 

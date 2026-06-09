@@ -505,7 +505,8 @@
   </div>
 
   <section id="flagsAll" class="hidden">
-    <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <div id="stopwatchDisplay" style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; color:#fff; background:rgba(255,255,255,0.2); backdrop-filter:blur(6px); padding:8px 18px; border-radius:30px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">⏱️ 00:00</div>
       <button class="toggle" id="flagsRestartBtn">🔄 Recommencer</button>
     </div>
     <div class="flags-grid" id="flagsGrid"></div>
@@ -1151,6 +1152,22 @@ document.getElementById("typeInput").addEventListener("keydown",e=>{
 let flagsSubMode = "one"; // "one" | "all"  (défaut : un par un)
 let flagsAllInProgress = false;
 let flagsAllPool = null; // continent actif au moment du lancement
+let stopwatchId = null, stopwatchSecs = 0;
+
+function startStopwatch(){
+  stopStopwatch();
+  stopwatchSecs = 0;
+  updateStopwatch();
+  stopwatchId = setInterval(() => { stopwatchSecs++; updateStopwatch(); }, 1000);
+}
+function stopStopwatch(){
+  if(stopwatchId){ clearInterval(stopwatchId); stopwatchId = null; }
+}
+function updateStopwatch(){
+  const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
+  const s = String(stopwatchSecs % 60).padStart(2, "0");
+  document.getElementById("stopwatchDisplay").textContent = `⏱️ ${m}:${s}`;
+}
 
 function renderFlagsAll(force=false){
   // Si une partie est en cours sur le même continent, on ne réinitialise pas
@@ -1158,6 +1175,7 @@ function renderFlagsAll(force=false){
 
   flagsAllInProgress = true;
   flagsAllPool = activeFilter;
+  startStopwatch();
 
   const list = pool();
   const grid = document.getElementById("flagsGrid");
@@ -1195,12 +1213,15 @@ function renderFlagsAll(force=false){
         const next = allInputs.slice(currentIdx + 1).find(i => !i.disabled)
                   || allInputs.slice(0, currentIdx).find(i => !i.disabled);
         if(next) next.focus({ preventScroll: false });
+        // Arrêt chrono si tout est juste
+        if(allInputs.every(i => i.disabled)){ stopStopwatch(); document.getElementById("flagsCheckBtn").click(); }
       }
     });
     grid.appendChild(row);
   });
 
   checkBtn.onclick = () => {
+    stopStopwatch();
     let correct = 0, total = 0;
     document.querySelectorAll(".flag-row").forEach(row => {
       const input = row.querySelector(".flag-input");
@@ -1217,6 +1238,9 @@ function renderFlagsAll(force=false){
     checkBtn.classList.add("hidden");
     const pct = Math.round((correct/total)*100);
     const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
+    const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
+    const s = String(stopwatchSecs % 60).padStart(2, "0");
+    const timeStr = `⏱️ ${m}:${s}`;
 
     if(pct === 100){ confetti(60); soundFanfare(); }
     else if(pct >= 50){ soundCorrect(); }
@@ -1231,6 +1255,7 @@ function renderFlagsAll(force=false){
         <div class="score-big">${correct} / ${total}</div>
         <div class="score-pct">${pct}%</div>
         <div class="score-lbl">de bonnes réponses</div>
+        <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
         <button class="score-restart">🔄 Recommencer</button>
       </div>`;
     document.body.appendChild(overlay);

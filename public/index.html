@@ -522,7 +522,9 @@ function emojiToISO(flag){
 }
 function flagImg(emoji, size=40){
   const iso = emojiToISO(emoji);
-  return `<img src="https://flagcdn.com/w${size}/${iso}.png" alt="${iso.toUpperCase()}" loading="lazy">`;
+  // flagcdn only supports: 20, 40, 80, 160, 320, 640 — on arrondit
+  const validSize = size <= 20 ? 20 : size <= 40 ? 40 : size <= 80 ? 80 : 160;
+  return `<img src="https://flagcdn.com/w${validSize}/${iso}.png" alt="" loading="lazy">`;
 }
 
 const COLORS = {

@@ -393,6 +393,7 @@
     <button class="mode-btn" data-mode="quiz">🎯 Quiz</button>
     <button class="mode-btn" data-mode="type">⌨️ Clavier</button>
     <button class="mode-btn" data-mode="timed">⏱️ Défi</button>
+    <button class="mode-btn" data-mode="flags">🚩 Drapeaux</button>
   </div>
 
   <div class="options-bar hidden" id="optionsBar">
@@ -694,6 +695,7 @@ function pool(){ return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===acti
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function questionLabel(d){ return direction==="cap" ? d.c : d.cap; }
 function answerLabel(d){ return direction==="cap" ? d.cap : d.c; }
+function currentAnswer(){ return activeMode==="flags" ? currentItem.c : answerLabel(currentItem); }
 function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[-'’\s]/g,"").trim(); }
 
 // ---------- Sound (Web Audio) ----------
@@ -791,7 +793,11 @@ function nextQuestion(){
   const mainEl=document.getElementById("qCountry");
   const promptEl=document.getElementById("qPrompt");
 
-  if(direction==="cap"){
+  if(activeMode==="flags"){
+    promptEl.textContent="Quel est ce pays ?";
+    flagEl.innerHTML=flagImg(q.f, 80);
+    mainEl.textContent="🌍";
+  } else if(direction==="cap"){
     promptEl.textContent="Quelle est la capitale de…";
     flagEl.innerHTML=flagImg(q.f, 80);
     mainEl.textContent=q.c;
@@ -807,7 +813,7 @@ function nextQuestion(){
   cont.textContent=q.k; cont.style.setProperty("--accent", COLORS[q.k]);
   cont.classList.toggle("hidden-hint", hard);
 
-  const isType = (activeMode==="type");
+  const isType = (activeMode==="type" || activeMode==="flags");
   document.getElementById("options").classList.toggle("hidden", isType);
   document.getElementById("typeRow").classList.toggle("hidden", !isType);
 
@@ -861,7 +867,7 @@ function registerResult(correct){
 
 function chooseOption(btn,label){
   if(answered) return; answered=true;
-  const correctText = answerLabel(currentItem);
+  const correctText = currentAnswer();
   const isCorrect = (label===correctText);
   const fb=document.getElementById("feedback");
 
@@ -885,7 +891,7 @@ function chooseOption(btn,label){
 function checkTyped(){
   if(answered) return; answered=true;
   const input=document.getElementById("typeInput");
-  const correctText = answerLabel(currentItem);
+  const correctText = currentAnswer();
   const isCorrect = norm(input.value)===norm(correctText) && input.value.trim()!=="";
   const fb=document.getElementById("feedback");
 
@@ -968,6 +974,7 @@ function enterMode(mode){
   document.getElementById("play").classList.toggle("hidden", isStudy);
   document.getElementById("optionsBar").classList.toggle("hidden", isStudy);
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
+  document.getElementById("dirToggle").classList.toggle("hidden", mode==="flags");
   if(isStudy) renderStudy(); else startPlay();
 }
 

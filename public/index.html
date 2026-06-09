@@ -303,17 +303,19 @@
   .submode-btn.active { background: #fff; color: var(--bg1); border-color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 
   /* ---------- Grille tous les drapeaux ---------- */
-  .flags-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .flags-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
   .flag-row {
-    background: #fff; border-radius: 14px; padding: 10px 14px;
-    display: flex; align-items: center; gap: 12px;
+    background: #fff; border-radius: 14px; padding: 14px 12px 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
     box-shadow: 0 6px 16px rgba(0,0,0,0.1);
   }
-  .flag-row img { width: 44px; height: auto; border-radius: 4px; flex-shrink: 0; }
+  .flag-row .flag-img-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .flag-row img { width: 64px; height: auto; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .flag-row .flag-emoji { font-size: 2.4rem; line-height: 1; }
   .flag-row .flag-input {
-    flex: 1; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem;
-    padding: 8px 12px; border: 2px solid #ece9ff; background: #f7f6ff;
-    color: var(--ink); border-radius: 10px; outline: none;
+    width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+    padding: 8px 10px; border: 2px solid #ece9ff; background: #f7f6ff;
+    color: var(--ink); border-radius: 10px; outline: none; text-align: center;
     transition: border-color 0.15s ease;
   }
   .flag-row .flag-input:focus { border-color: var(--bg1); }
@@ -1123,7 +1125,7 @@ function renderFlagsAll(){
     const row = document.createElement("div");
     row.className = "flag-row";
     row.dataset.answer = d.c;
-    row.innerHTML = `${flagImg(d.f, 44)}<input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
+    row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}<span class="flag-emoji">${d.f}</span></div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
     grid.appendChild(row);
   });
 

@@ -903,8 +903,8 @@ function checkTyped(){
 }
 
 function revealLine(){
-  if(direction==="cap") return `<span class="reveal">${flagImg(currentItem.f, 24)} ${currentItem.c}</span>`;
-  return `<span class="reveal">${flagImg(currentItem.f, 24)} ${currentItem.cap}</span>`;
+  if(direction==="cap") return `<span class="reveal">${currentItem.f} ${currentItem.c}</span>`;
+  return `<span class="reveal">${currentItem.f} ${currentItem.cap}</span>`;
 }
 
 function afterAnswer(){

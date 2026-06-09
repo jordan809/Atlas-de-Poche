@@ -438,6 +438,13 @@
 
     <div class="endgame hidden" id="endgame"></div>
 
+    <div id="timedReady" class="hidden" style="text-align:center; padding: 20px 0;">
+      <div style="font-size:3.5rem; margin-bottom:12px;">⏱️</div>
+      <div style="font-family:'Baloo 2',cursive; font-weight:800; font-size:1.6rem; color:#fff; margin-bottom:8px;">Prêt pour le défi ?</div>
+      <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:1rem; margin-bottom:24px;">Tu as <strong>60 secondes</strong> pour répondre à un maximum de questions !</div>
+      <button id="timedStartBtn" class="next-btn show" style="font-size:1.15rem; padding:16px 48px;">🚀 Lancer le chrono !</button>
+    </div>
+
     <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-text" id="progressText">Réussite : —</div>
   </section>
@@ -952,6 +959,7 @@ function endTimed(){
     <button class="next-btn show" id="replayBtn">Rejouer ⏱️</button>`;
   eg.classList.remove("hidden");
   document.getElementById("replayBtn").onclick=startPlay;
+  document.getElementById("timedReady").classList.add("hidden");
 }
 
 // ---------- Mode orchestration ----------
@@ -959,9 +967,24 @@ function startPlay(){
   stopTimer();
   resetQuiz();
   document.getElementById("endgame").classList.add("hidden");
+  document.getElementById("timedReady").classList.add("hidden");
+
+  if(activeMode==="timed"){
+    document.getElementById("questionCard").classList.add("hidden");
+    document.getElementById("timerWrap").classList.add("hidden");
+    document.getElementById("timedReady").classList.remove("hidden");
+  } else {
+    document.getElementById("questionCard").classList.remove("hidden");
+    document.getElementById("timerWrap").classList.add("hidden");
+    nextQuestion();
+  }
+}
+
+function launchTimed(){
+  document.getElementById("timedReady").classList.add("hidden");
   document.getElementById("questionCard").classList.remove("hidden");
-  document.getElementById("timerWrap").classList.toggle("hidden", activeMode!=="timed");
-  if(activeMode==="timed") startTimer();
+  document.getElementById("timerWrap").classList.remove("hidden");
+  startTimer();
   nextQuestion();
 }
 
@@ -1003,6 +1026,7 @@ soundToggle.onclick=()=>{
 };
 
 document.getElementById("nextBtn").onclick=nextQuestion;
+document.getElementById("timedStartBtn").onclick=launchTimed;
 document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }

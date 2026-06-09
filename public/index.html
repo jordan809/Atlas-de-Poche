@@ -283,11 +283,67 @@
   .hidden { display: none !important; }
   footer { text-align: center; margin-top: 42px; color: #fff; font-weight: 600; font-size: 0.85rem; opacity: 0.9; }
 
+  /* ---------- Dark mode ---------- */
+  .dark-toggle {
+    position: fixed; top: 14px; right: 16px; z-index: 100;
+    font-size: 1.3rem; width: 42px; height: 42px;
+    border: none; border-radius: 50%; cursor: pointer;
+    background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dark-toggle:hover { transform: scale(1.12); background: rgba(255,255,255,0.4); }
+
+  html.dark {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%) no-repeat;
+  }
+  html.dark .bg {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%);
+  }
+  html.dark .card {
+    background: #1e1b2e; color: #e8e2ff;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+  }
+  html.dark .card .country { color: #e8e2ff; }
+  html.dark .card .capital { color: #a89fd8; }
+  html.dark .question-card {
+    background: #1e1b2e;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  html.dark .q-country { color: #e8e2ff; }
+  html.dark .opt {
+    background: #2a2545; border-color: #3d3568; color: #e8e2ff;
+  }
+  html.dark .opt:hover:not(:disabled) { border-color: #8b7eff; background: #332e5a; }
+  html.dark .stat { background: rgba(30,27,46,0.95); }
+  html.dark .stat .num { color: #8b7eff; }
+  html.dark .stat .lbl { color: #a89fd8; }
+  html.dark .stat.streak .num { color: #ff7aab; }
+  html.dark .type-input {
+    background: #2a2545; border-color: #3d3568; color: #e8e2ff;
+  }
+  html.dark .type-input:focus { border-color: #8b7eff; }
+  html.dark .type-input.correct { background: #1a3028; border-color: var(--good); }
+  html.dark .type-input.wrong { background: #2e1820; border-color: var(--bad); }
+  html.dark .endgame {
+    background: #1e1b2e; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  html.dark .endgame .big { color: #8b7eff; }
+  html.dark .endgame .lbl { color: #a89fd8; }
+  html.dark .feedback.bad { color: #ff6b85; }
+  html.dark .feedback .reveal { color: #a89fd8; }
+  html.dark .modes { background: rgba(0,0,0,0.35); }
+  html.dark .mode-btn.active { background: #e8e2ff; color: #1a1530; }
+  html.dark .toggle { background: rgba(30,27,46,0.95); color: #e8e2ff; }
+  html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
+
   @media (max-width: 520px) { .options { grid-template-columns: 1fr; } .scoreboard { flex-wrap: wrap; } }
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
+<button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
 <div class="wrap">
   <header>
     <div class="eyebrow">Atlas de poche</div>
@@ -904,6 +960,20 @@ document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }
 });
+
+// ---------- Dark mode ----------
+const darkToggle = document.getElementById("darkToggle");
+let darkOn = localStorage.getItem("darkMode") === "1";
+function applyDark(){
+  document.documentElement.classList.toggle("dark", darkOn);
+  darkToggle.textContent = darkOn ? "☀️" : "🌙";
+}
+applyDark();
+darkToggle.onclick = () => {
+  darkOn = !darkOn;
+  localStorage.setItem("darkMode", darkOn ? "1" : "0");
+  applyDark();
+};
 
 // ---------- Init ----------
 document.querySelector("footer").innerHTML =

@@ -461,11 +461,12 @@
     <div class="grid" id="grid"></div>
   </section>
 
+  <div class="submodes hidden" id="submodesBar">
+    <button class="submode-btn active" id="subOne">🎯 Un par un</button>
+    <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
+  </div>
+
   <section id="flagsAll" class="hidden">
-    <div class="submodes" id="submodesBar">
-      <button class="submode-btn" id="subOne">🎯 Un par un</button>
-      <button class="submode-btn active" id="subAll">🗺️ Tous les drapeaux</button>
-    </div>
     <div class="flags-grid" id="flagsGrid"></div>
     <button class="flags-check-btn hidden" id="flagsCheckBtn">Vérifier mes réponses ✅</button>
     <div class="flags-score-bar hidden" id="flagsScoreBar"></div>
@@ -1062,6 +1063,7 @@ function enterMode(mode){
   document.getElementById("flagsAll").classList.toggle("hidden", !isFlags || flagsSubMode!=="all");
   document.getElementById("play").classList.toggle("hidden", isStudy || (isFlags && flagsSubMode==="all"));
   document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isFlags);
+  document.getElementById("submodesBar").classList.toggle("hidden", !isFlags);
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags);
 
@@ -1102,7 +1104,7 @@ document.getElementById("typeInput").addEventListener("keydown",e=>{
 });
 
 // ---------- Flags All mode ----------
-let flagsSubMode = "one"; // "one" | "all"
+let flagsSubMode = "one"; // "one" | "all"  (défaut : un par un)
 
 function renderFlagsAll(){
   const list = pool();

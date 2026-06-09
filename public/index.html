@@ -1169,12 +1169,10 @@ function renderFlagsAll(force=false){
   const list = pool();
   const grid = document.getElementById("flagsGrid");
   const checkBtn = document.getElementById("flagsCheckBtn");
-  const scoreBar = document.getElementById("flagsScoreBar");
   grid.innerHTML = "";
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
   checkBtn.textContent = "Vérifier mes réponses ✅";
-  scoreBar.classList.add("hidden");
 
   list.forEach(d => {
     const row = document.createElement("div");

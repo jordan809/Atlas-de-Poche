@@ -885,7 +885,10 @@ CONTINENTS.forEach(name=>{
 
 // ---------- Study ----------
 function renderStudy(){
-  const list = pool().slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  // La Révision affiche TOUJOURS tous les pays du continent choisi (les 195 au total),
+  // sans tenir compte du mode Facile/Difficile (qui ne sert qu'aux quiz).
+  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const list = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
   document.getElementById("countNote").textContent =
     list.length+" pays"+(activeFilter==="Tous"?" répertoriés":" — "+activeFilter);
   const grid=document.getElementById("grid"); grid.innerHTML="";

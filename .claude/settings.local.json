@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(convert -background none -density 300 logo.svg -resize 512x512 icon-512.png)",
+      "Bash(convert icon-512.png -format \"%wx%h\" info:)",
+      "Bash(python -c \"import cairosvg; print\\('cairosvg OK'\\)\")",
+      "Bash(python -c \"import PIL; print\\('Pillow OK', PIL.__version__\\)\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"const s=require\\('sharp'\\); s\\('public/logo.svg'\\).resize\\(64,64\\).png\\(\\).toBuffer\\(\\).then\\(b=>console.log\\('sharp OK', b.length,'bytes'\\)\\).catch\\(e=>console.log\\('ERR', e.message\\)\\)\")",
+      "WebFetch(domain:atlas-de-poche.web.app)",
+      "Bash(firebase --version)",
+      "Bash(firebase projects:list)",
+      "Bash(firebase deploy *)",
+      "PowerShell(Write-Output \"=== Lecteurs disponibles ===\"; Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{N='Racine';E={$_.Root}}, @{N='Libellé';E={\\(Get-Volume -DriveLetter $_.Name -ErrorAction SilentlyContinue\\).FileSystemLabel}} | Format-Table -AutoSize; Write-Output \"=== Recherche d'un dossier 'Mon Drive' / 'My Drive' ===\"; foreach\\($d in \\(Get-PSDrive -PSProvider FileSystem\\).Root\\){ foreach\\($n in @\\('Mon Drive','My Drive'\\)\\){ $p=Join-Path $d $n; if\\(Test-Path $p\\){ Write-Output \"TROUVÉ : $p\" } } })",
+      "PowerShell(Write-Output \"=== Contenu de G:\\\\Mon Drive ===\"; Get-ChildItem \"G:\\\\Mon Drive\" -Force | Select-Object Name, Mode, LastWriteTime | Format-Table -AutoSize; $p=\"G:\\\\Mon Drive\\\\Appli Capital\"; if\\(Test-Path $p\\){ Write-Output \"=== Contenu de la copie existante : $p ===\"; Get-ChildItem $p -Force -Recurse -ErrorAction SilentlyContinue | Select-Object FullName, Length, LastWriteTime | Format-Table -AutoSize } else { Write-Output \"Pas de dossier 'Appli Capital' déjà présent dans Mon Drive.\" })",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git -C \"/c/Users/Pc/Desktop/Appli Capital\" rev-parse --is-inside-work-tree)",
+      "Bash(git config *)"
+    ]
+  }
+}

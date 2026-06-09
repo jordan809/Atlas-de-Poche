@@ -935,7 +935,7 @@ function nextQuestion(){
     const input=document.getElementById("typeInput");
     input.value=""; input.disabled=false; input.className="type-input";
     document.getElementById("validateBtn").disabled=false;
-    setTimeout(()=>input.focus(),30);
+    setTimeout(()=>input.focus({ preventScroll: true }),30);
   } else {
     buildOptions(q);
   }

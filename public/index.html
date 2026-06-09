@@ -342,11 +342,29 @@
   html.dark .toggle { background: rgba(30,27,46,0.95); color: #e8e2ff; }
   html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
 
+  /* ---------- Contact button ---------- */
+  .contact-btn {
+    position: fixed; top: 14px; left: 16px; z-index: 100;
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem;
+    padding: 0 20px; height: 42px;
+    border: none; border-radius: 30px; cursor: pointer;
+    background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
+    color: #fff; letter-spacing: 0.03em;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+    display: flex; align-items: center; gap: 7px;
+    text-decoration: none;
+  }
+  .contact-btn:hover { transform: scale(1.07); background: rgba(255,255,255,0.4); }
+  html.dark .contact-btn { background: rgba(0,0,0,0.35); }
+  html.dark .contact-btn:hover { background: rgba(0,0,0,0.5); }
+
   @media (max-width: 520px) { .options { grid-template-columns: 1fr; } .scoreboard { flex-wrap: wrap; } }
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
+<a class="contact-btn" href="/contact.html">📬 Contact</a>
 <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
 <div class="wrap">
   <header>
@@ -415,7 +433,7 @@
     <div class="progress-text" id="progressText">Réussite : —</div>
   </section>
 
-  <footer>{nombre} pays · Bonne exploration 🧭 · <a href="/contact.html" style="color:#fff;font-weight:800;text-decoration:underline;">Contact</a></footer>
+  <footer>{nombre} pays · Bonne exploration 🧭</footer>
 </div>
 
 <script>

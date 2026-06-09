@@ -397,7 +397,7 @@
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
-    <button class="toggle" id="diffToggle">🟢 Facile</button>
+    <button class="toggle" id="diffToggle">Passer en mode difficile 🔴</button>
     <button class="toggle sound" id="soundToggle">🔊</button>
   </div>
 
@@ -985,7 +985,7 @@ dirToggle.onclick=()=>{
 const diffToggle=document.getElementById("diffToggle");
 diffToggle.onclick=()=>{
   hard=!hard;
-  diffToggle.textContent = hard ? "🔴 Difficile" : "🟢 Facile";
+  diffToggle.textContent = hard ? "Passer en mode facile 🟢" : "Passer en mode difficile 🔴";
   if(activeMode!=="study") startPlay();
 };
 const soundToggle=document.getElementById("soundToggle");

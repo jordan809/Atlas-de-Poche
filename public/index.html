@@ -332,10 +332,45 @@
     transition: transform 0.15s ease;
   }
   .flags-check-btn:hover { transform: translateY(-2px); }
-  .flags-score-bar {
-    text-align: center; color: #fff; font-weight: 800; font-size: 1.05rem;
-    margin-top: 16px;
+  /* ---------- Score modal ---------- */
+  .score-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.3s ease;
   }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .score-modal {
+    background: #fff; border-radius: 28px; padding: 40px 36px;
+    text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+    animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+    max-width: 340px; width: 90%;
+  }
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .score-modal .score-emoji { font-size: 3.5rem; margin-bottom: 10px; }
+  .score-modal .score-big {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 3.2rem; color: var(--bg1); line-height: 1;
+  }
+  .score-modal .score-pct {
+    font-family: 'Baloo 2', cursive; font-weight: 700;
+    font-size: 1.3rem; color: var(--ink-soft); margin-top: 4px;
+  }
+  .score-modal .score-lbl {
+    font-weight: 700; color: var(--ink-soft); font-size: 0.95rem; margin-top: 8px;
+  }
+  .score-modal .score-restart {
+    margin-top: 24px; font-family: 'Baloo 2', cursive; font-weight: 700;
+    font-size: 1.05rem; padding: 13px 38px;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: #fff; border: none; border-radius: 40px; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(106,92,255,0.4);
+    transition: transform 0.15s ease;
+  }
+  .score-modal .score-restart:hover { transform: translateY(-2px) scale(1.03); }
+  html.dark .score-modal { background: #1e1b2e; }
+  html.dark .score-modal .score-lbl { color: #a89fd8; }
+  html.dark .score-modal .score-pct { color: #a89fd8; }
 
   html.dark .flag-row { background: #1e1b2e; }
   html.dark .flag-row .flag-input { background: #2a2545; border-color: #3d3568; color: #e8e2ff; }
@@ -475,7 +510,6 @@
     </div>
     <div class="flags-grid" id="flagsGrid"></div>
     <button class="flags-check-btn hidden" id="flagsCheckBtn">Vérifier mes réponses ✅</button>
-    <div class="flags-score-bar hidden" id="flagsScoreBar"></div>
   </section>
 
   <section id="play" class="quiz hidden">
@@ -1173,12 +1207,30 @@ function renderFlagsAll(force=false){
       }
     });
     checkBtn.classList.add("hidden");
-    scoreBar.classList.remove("hidden");
     const pct = Math.round((correct/total)*100);
-    scoreBar.textContent = `🎯 ${correct} / ${total} — ${pct}% de bonnes réponses !`;
+    const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
+
     if(pct === 100){ confetti(60); soundFanfare(); }
     else if(pct >= 50){ soundCorrect(); }
     else { soundWrong(); }
+
+    // Modal centré
+    const overlay = document.createElement("div");
+    overlay.className = "score-overlay";
+    overlay.innerHTML = `
+      <div class="score-modal">
+        <div class="score-emoji">${emoji}</div>
+        <div class="score-big">${correct} / ${total}</div>
+        <div class="score-pct">${pct}%</div>
+        <div class="score-lbl">de bonnes réponses</div>
+        <button class="score-restart">🔄 Recommencer</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector(".score-restart").onclick = () => {
+      overlay.remove();
+      renderFlagsAll(true);
+    };
+    overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };
 }
 

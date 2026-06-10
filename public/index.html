@@ -811,6 +811,7 @@ let direction = "cap";             // "cap" = deviner la capitale ; "country" = 
 let hard = false;                  // difficulté
 let soundOn = true;
 let score = 0, asked = 0, streak = 0, currentItem = null, answered = false;
+let bag = [], bagKey = "";          // "sac mélangé" : tire chaque pays une fois avant de recommencer
 let timerId = null, timeLeft = TIMED_SECONDS;
 
 // ---------- Persisted records ----------
@@ -829,6 +830,24 @@ function pool(){
   return p;
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+// Tirage "sac mélangé" : on mélange tout le lot, on tire un par un.
+// Quand le sac est vide (ou que le lot a changé : filtre/difficulté), on remélange.
+// => tous les pays du lot passent avant qu'un seul ne revienne.
+function drawNext(){
+  const p = pool();
+  if(p.length === 0) return null;
+  const key = activeFilter + "|" + (hard ? "H" : "E");
+  if(bagKey !== key || bag.length === 0){
+    bagKey = key;
+    bag = shuffle(p);
+    // Évite que le 1er pays du nouveau sac soit le même que le tout dernier posé
+    if(bag.length > 1 && currentItem && bag[bag.length-1].c === currentItem.c){
+      [bag[bag.length-1], bag[0]] = [bag[0], bag[bag.length-1]];
+    }
+  }
+  return bag.pop();
+}
 function questionLabel(d){ return direction==="cap" ? d.c : d.cap; }
 function answerLabel(d){ return direction==="cap" ? d.cap : d.c; }
 function currentAnswer(){ return activeMode==="flags" ? currentItem.c : answerLabel(currentItem); }
@@ -904,7 +923,7 @@ function renderStudy(){
 }
 
 // ---------- Scoreboard / records ----------
-function resetQuiz(){ score=0; asked=0; streak=0; updateScore(); }
+function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; updateScore(); }
 function updateScore(){
   document.getElementById("sScore").textContent=score;
   document.getElementById("sAsked").textContent=asked;
@@ -926,8 +945,8 @@ function nextQuestion(){
   document.getElementById("endgame").classList.add("hidden");
   document.getElementById("questionCard").classList.remove("hidden");
 
-  const p=pool();
-  const q=p[Math.floor(Math.random()*p.length)];
+  const q=drawNext();
+  if(!q) return;
   currentItem=q;
 
   const flagEl=document.getElementById("qFlag");

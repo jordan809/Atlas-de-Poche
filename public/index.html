@@ -451,9 +451,9 @@
   html.dark .toggle { background: rgba(30,27,46,0.95); color: #e8e2ff; }
   html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
 
-  /* ---------- Contact button ---------- */
-  .contact-btn {
-    position: fixed; top: 14px; left: 16px; z-index: 100;
+  /* ---------- Menu déroulant ---------- */
+  .menu { position: fixed; top: 14px; left: 16px; z-index: 100; }
+  .menu-btn {
     font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem;
     padding: 0 20px; height: 42px;
     border: none; border-radius: 30px; cursor: pointer;
@@ -461,26 +461,65 @@
     color: #fff; letter-spacing: 0.03em;
     box-shadow: 0 4px 14px rgba(0,0,0,0.2);
     transition: transform 0.2s ease, background 0.2s ease;
-    display: flex; align-items: center; gap: 7px;
-    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
   }
-  .contact-btn:hover { transform: scale(1.07); background: rgba(255,255,255,0.4); }
-  html.dark .contact-btn { background: rgba(0,0,0,0.35); }
-  html.dark .contact-btn:hover { background: rgba(0,0,0,0.5); }
+  .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
+  .menu-panel {
+    position: absolute; top: 50px; left: 0; min-width: 215px; padding: 8px;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
+    border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3);
+    display: none; flex-direction: column; gap: 3px;
+  }
+  .menu.open .menu-panel { display: flex; }
+  .menu-panel a {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 14px; border-radius: 11px; text-decoration: none;
+    color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem;
+    transition: background 0.15s ease;
+  }
+  .menu-panel a:hover { background: #f0edff; }
+  .menu-divider { height: 1px; background: #e7e3f5; margin: 4px 6px; }
+  html.dark .menu-btn { background: rgba(0,0,0,0.35); }
+  html.dark .menu-btn:hover { background: rgba(0,0,0,0.5); }
+  html.dark .menu-panel { background: rgba(28,22,42,0.97); }
+  html.dark .menu-panel a { color: #f4eefb; }
+  html.dark .menu-panel a:hover { background: rgba(255,255,255,0.1); }
+  html.dark .menu-divider { background: rgba(255,255,255,0.12); }
 
   @media (max-width: 520px) {
     .options { grid-template-columns: 1fr; }
     .scoreboard { flex-wrap: wrap; }
     .wrap { padding-top: 70px; }
-    .contact-btn { font-size: 0.82rem; padding: 0 13px; height: 38px; }
+    .menu-btn { font-size: 0.82rem; padding: 0 14px; height: 38px; }
     .dark-toggle { width: 38px; height: 38px; font-size: 1.1rem; top: 10px; right: 12px; }
-    .contact-btn { top: 10px; left: 12px; }
+    .menu { top: 10px; left: 12px; }
   }
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
-<a class="contact-btn" href="/contact.html">📬 Contact</a>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
+  <div class="menu-panel">
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <div class="menu-divider"></div>
+    <a href="/contact.html">📬 Contact</a>
+  </div>
+</div>
+<script>
+  (function(){
+    var menu = document.getElementById('menu');
+    var btn = document.getElementById('menuBtn');
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    document.addEventListener('click', function(e){
+      if(!menu.contains(e.target)){ menu.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+    });
+  })();
+</script>
 <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
 <div class="wrap">
   <header>

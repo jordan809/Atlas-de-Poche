@@ -520,6 +520,7 @@
   <div class="submodes hidden" id="submodesBar">
     <button class="submode-btn active" id="subOne">🎯 Un par un</button>
     <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
+    <button class="toggle" id="flagsAnswerToggle">✍️ Réponse : écrire</button>
     <button class="toggle sound" id="soundToggleFlags">🔊</button>
   </div>
 
@@ -850,6 +851,8 @@ function drawNext(){
 }
 function questionLabel(d){ return direction==="cap" ? d.c : d.cap; }
 function answerLabel(d){ return direction==="cap" ? d.cap : d.c; }
+// Texte des propositions QCM : en mode Drapeau on devine le PAYS, sinon selon le sens choisi.
+function optLabel(d){ return activeMode==="flags" ? d.c : answerLabel(d); }
 function currentAnswer(){ return activeMode==="flags" ? currentItem.c : answerLabel(currentItem); }
 function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[-'’\s]/g,"").trim(); }
 
@@ -973,7 +976,7 @@ function nextQuestion(){
   cont.textContent=q.k; cont.style.setProperty("--accent", COLORS[q.k]);
   cont.classList.toggle("hidden-hint", hard);
 
-  const isType = (activeMode==="type" || activeMode==="flags");
+  const isType = (activeMode==="type" || (activeMode==="flags" && flagsAnswerMode==="type"));
   document.getElementById("options").classList.toggle("hidden", isType);
   document.getElementById("typeRow").classList.toggle("hidden", !isType);
 
@@ -991,17 +994,19 @@ function nextQuestion(){
 }
 
 function buildOptions(q){
-  const answer = answerLabel(q);
-  // Difficile : distracteurs du même continent (plus proches). Facile : tirés au hasard.
-  let candidates = hard
-    ? DATA.filter(d=>answerLabel(d)!==answer && d.k===q.k)
-    : DATA.filter(d=>answerLabel(d)!==answer);
+  const answer = optLabel(q);
+  // En mode Drapeau : propositions toujours DIFFICILES (même continent).
+  // Sinon : même continent en Difficile, au hasard en Facile.
+  const closeOnly = (activeMode==="flags") || hard;
+  let candidates = closeOnly
+    ? DATA.filter(d=>optLabel(d)!==answer && d.k===q.k)
+    : DATA.filter(d=>optLabel(d)!==answer);
   let distractors = shuffle(candidates).slice(0,3);
   if(distractors.length<3){
-    const extra=shuffle(DATA.filter(d=>answerLabel(d)!==answer && !distractors.includes(d)));
+    const extra=shuffle(DATA.filter(d=>optLabel(d)!==answer && !distractors.includes(d)));
     distractors=distractors.concat(extra).slice(0,3);
   }
-  const opts=shuffle([answer, ...distractors.map(d=>answerLabel(d))]);
+  const opts=shuffle([answer, ...distractors.map(d=>optLabel(d))]);
   const optionsEl=document.getElementById("options"); optionsEl.innerHTML="";
   opts.forEach(label=>{
     const btn=document.createElement("button");
@@ -1195,6 +1200,7 @@ document.getElementById("typeInput").addEventListener("keydown",e=>{
 
 // ---------- Flags All mode ----------
 let flagsSubMode = "one"; // "one" | "all"  (défaut : un par un)
+let flagsAnswerMode = "type"; // "type" = écrire | "qcm" = 4 propositions (drapeau "un par un")
 let flagsAllInProgress = false;
 let flagsAllPool = null; // continent actif au moment du lancement
 let stopwatchId = null, stopwatchSecs = 0;
@@ -1340,6 +1346,9 @@ function enterFlagsSubMode(sub){
   document.getElementById("subOne").classList.toggle("active", sub==="one");
   document.getElementById("subAll").classList.toggle("active", sub==="all");
 
+  // Le choix "écrire / 4 choix" n'a de sens qu'en mode "un par un"
+  document.getElementById("flagsAnswerToggle").classList.toggle("hidden", sub!=="one");
+
   if(sub === "all"){
     document.getElementById("flagsAll").classList.remove("hidden");
     document.getElementById("play").classList.add("hidden");
@@ -1353,6 +1362,14 @@ function enterFlagsSubMode(sub){
 
 document.getElementById("subOne").onclick = () => enterFlagsSubMode("one");
 document.getElementById("subAll").onclick = () => enterFlagsSubMode("all");
+
+// Bascule écrire / 4 propositions (en mode Drapeau "un par un")
+const flagsAnswerToggle = document.getElementById("flagsAnswerToggle");
+flagsAnswerToggle.onclick = () => {
+  flagsAnswerMode = (flagsAnswerMode==="type") ? "qcm" : "type";
+  flagsAnswerToggle.textContent = (flagsAnswerMode==="type") ? "✍️ Réponse : écrire" : "🔢 Réponse : 4 choix";
+  if(activeMode==="flags" && flagsSubMode==="one") startPlay();
+};
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
 document.getElementById("flagsStartChronoBtn").onclick = () => {
   document.getElementById("flagsStartChronoBtn").disabled = true;

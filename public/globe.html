@@ -132,7 +132,10 @@
 <script>
 (async function(){
   const COLORS = { "Europe":"#5b8def","Asie":"#ff8f3f","Afrique":"#2fc4a8","Amérique du Nord":"#e8554e","Amérique du Sud":"#9b5de5","Océanie":"#00b8d4" };
+  // Mêmes couleurs en RGB (Three.js ne lit pas l'hexadécimal à 8 chiffres avec transparence)
+  const RGB = { "Europe":"91,141,239","Asie":"255,143,63","Afrique":"47,196,168","Amérique du Nord":"232,85,78","Amérique du Sud":"155,93,229","Océanie":"0,184,212" };
   const GREEN = "#19d36b";
+  function capColor(d, a){ return 'rgba('+(d&&RGB[d.k]?RGB[d.k]:'120,120,140')+','+a+')'; }
 
   function flagToISO(flag){
     const cp = Array.from(flag).map(c=>c.codePointAt(0));
@@ -252,17 +255,13 @@
   function refresh(){
     const isTarget = p => (mode==='game' && current && p.d && p.d.c===current.c);
     world
-      .polygonAltitude(f => f===target ? 0.12 : 0.012)
-      .polygonCapColor(f => {
-        if(f===target) return GREEN+'ee';
-        const d = lookup(f.properties);
-        return (d ? (COLORS[d.k]||'#9d7bff') : '#888') + '55';
-      })
-      .polygonSideColor(f => f===target ? GREEN+'88' : 'rgba(157,123,255,0.12)')
-      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.35)')
+      .polygonAltitude(f => f===target ? 0.14 : 0.02)
+      .polygonCapColor(f => f===target ? 'rgba(25,211,107,0.95)' : capColor(lookup(f.properties), 0.85))
+      .polygonSideColor(f => f===target ? 'rgba(25,211,107,0.6)' : 'rgba(157,123,255,0.25)')
+      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.55)')
       .pointColor(p => isTarget(p) ? GREEN : '#ffcf4d')
       .pointRadius(p => isTarget(p) ? 1.1 : 0.5)
-      .pointAltitude(p => isTarget(p) ? 0.04 : 0.015);
+      .pointAltitude(p => isTarget(p) ? 0.04 : 0.02);
   }
   refresh();
 
@@ -378,6 +377,7 @@
   // Hooks de test
   window.__gameItems = gameItems.length;
   window.__dots = dotItems.length;
+  window.__scene = () => world.scene();
   window.__nbPolygons = countries.features.length;
   window.__byISO = Object.keys(byISO).length;
   window.__startRound = startRound;

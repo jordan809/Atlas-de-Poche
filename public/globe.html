@@ -259,9 +259,9 @@
       .polygonCapColor(f => f===target ? 'rgba(25,211,107,0.95)' : capColor(lookup(f.properties), 0.85))
       .polygonSideColor(f => f===target ? 'rgba(25,211,107,0.6)' : 'rgba(157,123,255,0.25)')
       .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.55)')
-      .pointColor(p => isTarget(p) ? GREEN : '#ffcf4d')
-      .pointRadius(p => isTarget(p) ? 1.1 : 0.5)
-      .pointAltitude(p => isTarget(p) ? 0.04 : 0.02);
+      .pointColor(p => isTarget(p) ? GREEN : 'rgba(0,0,0,0)')
+      .pointRadius(p => isTarget(p) ? 1.1 : 0)
+      .pointAltitude(p => isTarget(p) ? 0.04 : 0);
   }
   refresh();
 

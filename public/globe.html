@@ -197,10 +197,13 @@
       const lat = (p.LABEL_Y!=null && !isNaN(+p.LABEL_Y)) ? +p.LABEL_Y : (b.mnLa+b.mxLa)/2;
       const lng = (p.LABEL_X!=null && !isNaN(+p.LABEL_X)) ? +p.LABEL_X : (b.mnLo+b.mxLo)/2;
       const alt = Math.max(0.4, Math.min(1.6, b.latSpan/38 + 0.45));
-      bestByCountry[d.c] = { f, d, area, lat, lng, alt };
+      const size = Math.max(b.latSpan, Math.min(b.lngSpan, 180));
+      bestByCountry[d.c] = { f, d, area, lat, lng, alt, size };
     }
   });
   const gameItems = Object.values(bestByCountry);
+  // Petits pays (à peine visibles sur le globe) : on leur ajoute une pastille cliquable.
+  const dotItems = gameItems.filter(i => i.size < 2.5);
 
   // ---------- État ----------
   let mode = "discover";     // "discover" | "game"
@@ -229,11 +232,25 @@
       if(mode!=='discover') return;
       showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
       if(f.properties.LABEL_X!=null) world.pointOfView({lat:+f.properties.LABEL_Y, lng:+f.properties.LABEL_X, altitude:1.8}, 800);
+    })
+    // Pastilles pour les petits pays (sinon invisibles/incliquables)
+    .pointsData(dotItems)
+    .pointLat('lat').pointLng('lng')
+    .pointAltitude(0.015)
+    .pointResolution(6)
+    .pointLabel(p => mode==='discover'
+      ? '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+p.d.c+'</div>'
+      : '')
+    .onPointClick(p => {
+      if(mode!=='discover') return;
+      showCountry(p.d);
+      world.pointOfView({lat:p.lat, lng:p.lng, altitude:1.0}, 800);
     });
 
   // Rafraîchit les couleurs/altitudes (nouvelles fonctions = re-calcul garanti par globe.gl).
   // Le pays cible (mode jeu) est rempli en VERT et surélevé.
   function refresh(){
+    const isTarget = p => (mode==='game' && current && p.d && p.d.c===current.c);
     world
       .polygonAltitude(f => f===target ? 0.12 : 0.012)
       .polygonCapColor(f => {
@@ -242,7 +259,10 @@
         return (d ? (COLORS[d.k]||'#9d7bff') : '#888') + '55';
       })
       .polygonSideColor(f => f===target ? GREEN+'88' : 'rgba(157,123,255,0.12)')
-      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.35)');
+      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.35)')
+      .pointColor(p => isTarget(p) ? GREEN : '#ffcf4d')
+      .pointRadius(p => isTarget(p) ? 1.1 : 0.5)
+      .pointAltitude(p => isTarget(p) ? 0.04 : 0.015);
   }
   refresh();
 
@@ -357,6 +377,7 @@
 
   // Hooks de test
   window.__gameItems = gameItems.length;
+  window.__dots = dotItems.length;
   window.__nbPolygons = countries.features.length;
   window.__byISO = Object.keys(byISO).length;
   window.__startRound = startRound;

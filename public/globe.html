@@ -4,59 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
-  /* Si on arrive ici sans avoir ouvert l'accueil dans cette session
-     (= réouverture du site après fermeture), on repart de l'accueil. */
+  /* Réouverture du site après fermeture : on repart de l'accueil. */
   try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
 </script>
 <title>Globe interactif — Atlas de poche</title>
-<meta name="description" content="Globe terrestre 3D interactif : clique sur un pays pour voir son nom, son drapeau et sa capitale.">
+<meta name="description" content="Globe terrestre 3D interactif : découvre les pays ou joue à les deviner.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <style>
-  :root{ --eu:#5b8def; --as:#ff8f3f; --af:#2fc4a8; --na:#e8554e; --sa:#9b5de5; --oc:#00b8d4; }
+  :root{ --eu:#5b8def; --as:#ff8f3f; --af:#2fc4a8; --na:#e8554e; --sa:#9b5de5; --oc:#00b8d4; --green:#19d36b; }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{ font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#fff; background:#0d0a1f; overflow:hidden; }
   #globeViz{ position:fixed; inset:0; }
 
-  .topbar{ position:fixed; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; gap:12px; padding:14px 16px; pointer-events:none; }
-  .back{ pointer-events:auto; text-decoration:none; color:#fff; font-weight:800;
+  /* ---- Barre du haut ---- */
+  .topbar{ position:fixed; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px 14px; pointer-events:none; }
+  .topbar > *{ pointer-events:auto; }
+  .pill{ text-decoration:none; color:#fff; font-weight:800; font-size:.92rem;
     background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.2);
-    padding:9px 16px; border-radius:30px; font-size:0.95rem; display:flex; align-items:center; gap:7px; }
-  .back:hover{ background:rgba(255,255,255,0.24); }
-  .title{ font-weight:800; font-size:1rem; text-shadow:0 2px 10px rgba(0,0,0,.6); }
+    padding:9px 15px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:7px; }
+  .pill:hover{ background:rgba(255,255,255,0.24); }
+  .pill.active{ background:#fff; color:#6a5cff; border-color:#fff; }
 
-  #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:20; background:#0d0a1f; text-align:center; padding:20px; }
+  /* ---- Chargement ---- */
+  #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:#0d0a1f; text-align:center; padding:20px; }
   .spinner{ width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.2); border-top-color:#9d7bff; animation:spin 1s linear infinite; }
   @keyframes spin{to{transform:rotate(360deg)}}
 
   .hint{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:5;
     color:#fff; font-weight:700; font-size:.9rem; text-shadow:0 2px 8px rgba(0,0,0,.6);
-    background:rgba(0,0,0,.28); padding:9px 18px; border-radius:30px; backdrop-filter:blur(4px); }
+    background:rgba(0,0,0,.28); padding:9px 18px; border-radius:30px; backdrop-filter:blur(4px); text-align:center; }
   .hint.hide{ display:none; }
 
+  /* ---- Carte info (mode Découverte) ---- */
   #info{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(150%);
     z-index:10; width:min(92vw,420px);
     background:rgba(255,255,255,0.97); color:#2b2350; border-radius:20px;
     box-shadow:0 18px 50px rgba(0,0,0,.55); padding:16px 18px;
-    transition:transform .35s cubic-bezier(.2,.8,.2,1);
-    display:flex; align-items:center; gap:15px; }
+    transition:transform .35s cubic-bezier(.2,.8,.2,1); display:flex; align-items:center; gap:15px; }
   #info.show{ transform:translateX(-50%) translateY(0); }
-  #info .flag{ font-size:2.8rem; line-height:1; flex:none; }
   #info .flag img{ width:56px; height:auto; border-radius:5px; box-shadow:0 2px 7px rgba(0,0,0,.3); display:block; }
+  #info .flag{ font-size:2.8rem; line-height:1; flex:none; }
   #info .txt{ flex:1; min-width:0; }
   #info .country{ font-weight:800; font-size:1.3rem; line-height:1.1; }
-  #info .cap{ color:#6b6396; font-weight:700; margin-top:3px; font-size:.98rem; }
+  #info .cap{ color:#6b6396; font-weight:700; margin-top:3px; }
   #info .cap b{ color:#6a5cff; }
   #info .cont{ display:inline-block; margin-top:7px; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:#fff; background:#9d7bff; padding:3px 11px; border-radius:20px; }
   #info .close{ background:none;border:none;font-size:1.3rem;cursor:pointer;color:#b0a8c8; align-self:flex-start; line-height:1; }
+
+  /* ---- Panneau de jeu (sur le côté) ---- */
+  #gamePanel{ position:fixed; top:50%; right:20px; transform:translateY(-50%) translateX(130%);
+    z-index:12; width:300px; max-width:92vw;
+    background:rgba(255,255,255,0.97); color:#2b2350; border-radius:22px;
+    box-shadow:0 18px 50px rgba(0,0,0,.55); padding:20px;
+    transition:transform .4s cubic-bezier(.2,.8,.2,1); }
+  #gamePanel.show{ transform:translateY(-50%) translateX(0); }
+  .gp-head{ font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:8px; }
+  .gp-score{ font-size:.9rem; color:#6b6396; font-weight:700; margin-top:2px; }
+  .gp-score b{ color:#6a5cff; font-size:1.05rem; }
+  .gp-q{ margin:14px 0 10px; font-weight:700; font-size:.95rem; min-height:20px; }
+  .gp-field{ display:block; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#9088ad; margin:10px 0 4px; }
+  .gp-input{ width:100%; font-family:inherit; font-weight:700; font-size:1rem; padding:11px 12px;
+    border:2.5px solid #ece9ff; background:#f7f6ff; color:#2b2350; border-radius:12px; outline:none; }
+  .gp-input:focus{ border-color:#6a5cff; }
+  .gp-input.ok{ border-color:var(--green); background:#e7faf0; }
+  .gp-input.no{ border-color:#ef3e5b; background:#fdeaee; }
+  .gp-btn{ width:100%; margin-top:14px; font-family:inherit; font-weight:800; font-size:1rem;
+    padding:13px; border:none; border-radius:14px; cursor:pointer; color:#fff;
+    background:linear-gradient(100deg,#6a5cff,#ff5d8f); box-shadow:0 8px 20px rgba(106,92,255,.4); }
+  .gp-btn:hover{ filter:brightness(1.05); }
+  .gp-btn.sec{ background:#efedfb; color:#6a5cff; box-shadow:none; }
+  .gp-fb{ margin-top:12px; font-weight:800; font-size:.92rem; min-height:18px; }
+  .gp-fb .good{ color:#1fae6a; } .gp-fb .bad{ color:#ef3e5b; }
+  .gp-fb .reveal{ display:block; color:#6b6396; font-weight:700; font-size:.85rem; margin-top:3px; }
+  .hidden{ display:none !important; }
+
+  @media (max-width:600px){
+    #gamePanel{ top:auto; bottom:0; right:0; left:0; width:100%; max-width:100%;
+      transform:translateY(120%); border-radius:22px 22px 0 0; }
+    #gamePanel.show{ transform:translateY(0); }
+  }
 </style>
 </head>
 <body>
   <div id="globeViz"></div>
 
   <div class="topbar">
-    <a class="back" href="/index.html">← Retour</a>
-    <span class="title">🌍 Globe interactif</span>
+    <a class="pill" href="/index.html">← Retour</a>
+    <button class="pill active" id="btnDiscover">🔍 Découverte</button>
+    <button class="pill" id="btnGame">🎮 Lancer le jeu</button>
   </div>
 
   <div class="hint" id="hint">Fais tourner le globe 🌍 et clique sur un pays</div>
@@ -71,6 +107,22 @@
     <button class="close" id="iClose" aria-label="Fermer">✕</button>
   </div>
 
+  <div id="gamePanel">
+    <div class="gp-head">🎮 Devine le pays</div>
+    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span></div>
+    <div class="gp-q" id="gpQ">Appuie sur « Lancer le jeu » pour commencer.</div>
+    <div id="gpForm" class="hidden">
+      <label class="gp-field" for="inCountry">Pays</label>
+      <input class="gp-input" id="inCountry" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">
+      <label class="gp-field" for="inCapital">Capitale</label>
+      <input class="gp-input" id="inCapital" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Sa capitale…">
+      <div class="gp-fb" id="gpFb"></div>
+      <button class="gp-btn" id="gValidate">Valider ✅</button>
+    </div>
+    <button class="gp-btn sec hidden" id="gNext">Pays suivant ➡️</button>
+    <button class="gp-btn hidden" id="gStart">🚀 Lancer un pays</button>
+  </div>
+
   <div id="loading">
     <div class="spinner"></div>
     <div>Chargement du globe…</div>
@@ -80,20 +132,20 @@
 <script>
 (async function(){
   const COLORS = { "Europe":"#5b8def","Asie":"#ff8f3f","Afrique":"#2fc4a8","Amérique du Nord":"#e8554e","Amérique du Sud":"#9b5de5","Océanie":"#00b8d4" };
+  const GREEN = "#19d36b";
 
-  // Code ISO2 depuis l'emoji drapeau : 🇫🇷 -> "FR"
   function flagToISO(flag){
     const cp = Array.from(flag).map(c=>c.codePointAt(0));
     if(cp.length<2 || cp[0]<0x1F1E6) return "";
     return String.fromCharCode(cp[0]-0x1F1E6+65, cp[1]-0x1F1E6+65);
   }
-  // Vraie image de drapeau (s'affiche partout, même sur Windows)
   function flagImg(flag, h){
     const iso = flagToISO(flag).toLowerCase();
     return iso ? '<img alt="" src="https://flagcdn.com/h'+(h||40)+'/'+iso+'.png">' : flag;
   }
+  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'’\s.]/g,'').trim(); }
 
-  // On réutilise la base DATA d'index.html (une seule source de vérité)
+  // Base DATA depuis index.html (source unique)
   let DATA = [];
   try{
     const html = await (await fetch('/index.html')).text();
@@ -103,82 +155,186 @@
 
   const byISO = {};
   DATA.forEach(d=>{ const iso=flagToISO(d.f); if(iso) byISO[iso]=d; });
-  // Pays dont le code ISO manque dans la carte Natural Earth ("-99")
-  const adminFix = { "France":"FR", "Norway":"NO" };
-
+  const adminFix = { "France":"FR", "Norway":"NO", "Kosovo":"XK" };
   function lookup(props){
     let iso = props.ISO_A2;
     if(!iso || iso==="-99") iso = props.ISO_A2_EH || adminFix[props.ADMIN] || adminFix[props.NAME] || "";
     return byISO[iso] || null;
   }
 
-  // Carte des pays (GeoJSON)
+  // Carte des pays (50m = beaucoup plus de pays)
   let countries;
   try{
-    countries = await (await fetch('https://cdn.jsdelivr.net/gh/vasturiano/globe.gl@master/example/datasets/ne_110m_admin_0_countries.geojson')).json();
+    countries = await (await fetch('https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_0_countries.geojson')).json();
   }catch(e){
     document.getElementById('loading').innerHTML = '<div style="max-width:280px">😕 Impossible de charger la carte du monde.<br><br>Vérifie ta connexion Internet, puis recharge la page.</div>';
     return;
   }
 
-  const infoEl = document.getElementById('info');
-  function showCountry(d, fallbackName){
-    if(d){
-      document.getElementById('iFlag').innerHTML = flagImg(d.f, 60);
-      document.getElementById('iCountry').textContent = d.c;
-      document.getElementById('iCap').innerHTML = 'Capitale : <b>'+d.cap+'</b>';
-      const cont = document.getElementById('iCont');
-      cont.textContent = d.k; cont.style.background = COLORS[d.k]||'#9d7bff'; cont.style.display='inline-block';
-    } else {
-      document.getElementById('iFlag').textContent = '🏳️';
-      document.getElementById('iCountry').textContent = fallbackName || 'Pays inconnu';
-      document.getElementById('iCap').textContent = '(pas dans la liste des 195 pays)';
-      document.getElementById('iCont').style.display='none';
-    }
-    infoEl.classList.add('show');
-    document.getElementById('hint').classList.add('hide');
-  }
-  document.getElementById('iClose').onclick = ()=> infoEl.classList.remove('show');
+  // Pays jouables = ceux présents sur la carte ET dans notre base
+  const gamePool = countries.features.filter(f => lookup(f.properties));
 
-  let hovered = null;
-  const world = Globe()(document.getElementById('globeViz'))
+  // ---------- État ----------
+  let mode = "discover";     // "discover" | "game"
+  let hovered = null;        // survol (mode découverte)
+  let target = null;         // pays en vert (mode jeu)
+  let current = null;        // données du pays à deviner
+  let gScore = 0, gAsked = 0;
+  let spinning = false;
+
+  // ---------- Éléments ----------
+  const $ = id => document.getElementById(id);
+  const infoEl = $('info'), hintEl = $('hint'), panel = $('gamePanel');
+
+  // ---------- Globe ----------
+  const world = Globe()($('globeViz'))
     .backgroundColor('#0d0a1f')
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
     .polygonsData(countries.features)
     .polygonsTransitionDuration(120)
-    .polygonAltitude(f => f===hovered ? 0.06 : 0.012)
+    .polygonAltitude(f => f===target ? 0.07 : (mode==='discover' && f===hovered ? 0.05 : 0.012))
     .polygonCapColor(f => {
+      if(f===target) return GREEN+'cc';
       const d = lookup(f.properties);
       const base = d ? (COLORS[d.k]||'#9d7bff') : '#888';
-      return f===hovered ? base : base+'70';
+      return (mode==='discover' && f===hovered) ? base : base+'66';
     })
-    .polygonSideColor(()=> 'rgba(157,123,255,0.12)')
-    .polygonStrokeColor(()=> 'rgba(255,255,255,0.35)')
+    .polygonSideColor(f => f===target ? GREEN+'55' : 'rgba(157,123,255,0.12)')
+    .polygonStrokeColor(f => f===target ? GREEN : 'rgba(255,255,255,0.35)')
     .polygonLabel(f => {
+      if(mode!=='discover') return '';
       const d = lookup(f.properties);
-      return '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+(d?d.c:(f.properties.ADMIN||'')) +'</div>';
+      return '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+(d?d.c:(f.properties.ADMIN||''))+'</div>';
     })
-    .onPolygonHover(h => { hovered = h; world.polygonAltitude(world.polygonAltitude()); })
+    .onPolygonHover(h => { if(mode==='discover'){ hovered=h; refresh(); } })
     .onPolygonClick(f => {
+      if(mode!=='discover') return;
       showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
-      if(f.properties.LABEL_X!=null && f.properties.LABEL_Y!=null){
-        world.pointOfView({lat:+f.properties.LABEL_Y, lng:+f.properties.LABEL_X, altitude:1.8}, 800);
-      }
+      if(f.properties.LABEL_X!=null) world.pointOfView({lat:+f.properties.LABEL_Y, lng:+f.properties.LABEL_X, altitude:1.8}, 800);
     });
 
-  // Rotation automatique douce
-  world.controls().autoRotate = true;
-  world.controls().autoRotateSpeed = 0.45;
+  function refresh(){
+    world.polygonAltitude(world.polygonAltitude());
+    world.polygonCapColor(world.polygonCapColor());
+    world.polygonSideColor(world.polygonSideColor());
+    world.polygonStrokeColor(world.polygonStrokeColor());
+  }
 
   function resize(){ world.width(window.innerWidth); world.height(window.innerHeight); }
   window.addEventListener('resize', resize); resize();
+  world.controls().autoRotate = false; // pas de rotation auto par défaut
 
-  document.getElementById('loading').style.display='none';
+  // ---------- Mode Découverte ----------
+  function showCountry(d, fallbackName){
+    if(d){
+      $('iFlag').innerHTML = flagImg(d.f, 60);
+      $('iCountry').textContent = d.c;
+      $('iCap').innerHTML = 'Capitale : <b>'+d.cap+'</b>';
+      const c = $('iCont'); c.textContent = d.k; c.style.background = COLORS[d.k]||'#9d7bff'; c.style.display='inline-block';
+    } else {
+      $('iFlag').textContent = '🏳️';
+      $('iCountry').textContent = fallbackName || 'Pays inconnu';
+      $('iCap').textContent = '(pas dans la liste des pays)';
+      $('iCont').style.display='none';
+    }
+    infoEl.classList.add('show'); hintEl.classList.add('hide');
+  }
+  $('iClose').onclick = ()=> infoEl.classList.remove('show');
+
+  // ---------- Mode Jeu ----------
+  function startRound(){
+    if(spinning || !gamePool.length) return;
+    spinning = true;
+    target = null; current = null; refresh();
+    infoEl.classList.remove('show');
+    $('gpForm').classList.add('hidden');
+    $('gNext').classList.add('hidden');
+    $('gStart').classList.add('hidden');
+    $('gpQ').textContent = '🌍 Le globe tourne…';
+    // Animation : rotation rapide
+    world.controls().autoRotate = true;
+    world.controls().autoRotateSpeed = 16;
+    setTimeout(()=>{
+      world.controls().autoRotate = false;
+      // Choisir un pays au hasard
+      target = gamePool[Math.floor(Math.random()*gamePool.length)];
+      current = lookup(target.properties);
+      refresh(); // frontière verte
+      // Zoom sur le pays
+      const p = target.properties;
+      world.pointOfView({lat:+p.LABEL_Y, lng:+p.LABEL_X, altitude:0.62}, 1200);
+      // Afficher le formulaire
+      $('gpQ').textContent = 'Quel est ce pays (en vert) et sa capitale ?';
+      $('inCountry').value=''; $('inCapital').value='';
+      $('inCountry').className='gp-input'; $('inCapital').className='gp-input';
+      $('inCountry').disabled=false; $('inCapital').disabled=false;
+      $('gpFb').innerHTML='';
+      $('gpForm').classList.remove('hidden');
+      $('gValidate').classList.remove('hidden');
+      setTimeout(()=>$('inCountry').focus({preventScroll:true}), 50);
+      spinning = false;
+    }, 1700);
+  }
+
+  function checkAnswer(){
+    if(!current) return;
+    const inC = $('inCountry'), inK = $('inCapital');
+    const okC = inC.value.trim()!=='' && norm(inC.value)===norm(current.c);
+    const okK = inK.value.trim()!=='' && norm(inK.value)===norm(current.cap);
+    inC.disabled=true; inK.disabled=true;
+    inC.className = 'gp-input ' + (okC?'ok':'no');
+    inK.className = 'gp-input ' + (okK?'ok':'no');
+    gAsked++; if(okC && okK) gScore++;
+    $('gScore').textContent=gScore; $('gAsked').textContent=gAsked;
+    let fb = '';
+    if(okC && okK){ fb = '<span class="good">Bravo, tout est exact ! 🎉</span>'; }
+    else {
+      fb = '<span class="bad">'+((okC?'Capitale':(okK?'Pays':'Pays et capitale'))+' à revoir.')+'</span>'
+         + '<span class="reveal">'+flagImg(current.f,18)+' <b>'+current.c+'</b> — '+current.cap+'</span>';
+    }
+    $('gpFb').innerHTML = fb;
+    $('gValidate').classList.add('hidden');
+    $('gNext').classList.remove('hidden');
+  }
+
+  // ---------- Bascule de mode ----------
+  function setMode(m){
+    mode = m;
+    $('btnDiscover').classList.toggle('active', m==='discover');
+    $('btnGame').classList.toggle('active', m==='game');
+    target=null; hovered=null; current=null; refresh();
+    infoEl.classList.remove('show');
+    world.controls().autoRotate = false;
+    if(m==='discover'){
+      panel.classList.remove('show');
+      hintEl.classList.remove('hide');
+      world.pointOfView({altitude:2.4}, 800);
+    } else {
+      hintEl.classList.add('hide');
+      panel.classList.add('show');
+      $('gpForm').classList.add('hidden');
+      $('gNext').classList.add('hidden');
+      $('gStart').classList.add('hidden');
+      startRound(); // lance directement une manche
+    }
+  }
+
+  $('btnDiscover').onclick = ()=> setMode('discover');
+  $('btnGame').onclick = ()=> setMode('game');
+  $('gValidate').onclick = checkAnswer;
+  $('gNext').onclick = startRound;
+  $('gStart').onclick = startRound;
+  $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('inCapital').focus(); } });
+  $('inCapital').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); checkAnswer(); } });
+
+  $('loading').style.display='none';
 
   // Hooks de test
-  window.__byISOcount = Object.keys(byISO).length;
+  window.__gamePool = gamePool.length;
   window.__nbPolygons = countries.features.length;
-  window.__lookup = lookup;
+  window.__byISO = Object.keys(byISO).length;
+  window.__startRound = startRound;
+  window.__state = ()=>({mode, target: target&&lookup(target.properties)&&lookup(target.properties).c, current: current&&current.c});
 })();
 </script>
 </body>

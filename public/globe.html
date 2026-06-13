@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+  /* Si on arrive ici sans avoir ouvert l'accueil dans cette session
+     (= réouverture du site après fermeture), on repart de l'accueil. */
+  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
+</script>
 <title>Globe interactif — Atlas de poche</title>
 <meta name="description" content="Globe terrestre 3D interactif : clique sur un pays pour voir son nom, son drapeau et sa capitale.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">

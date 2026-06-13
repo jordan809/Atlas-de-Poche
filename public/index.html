@@ -508,6 +508,9 @@
 </div>
 <script>
   (function(){
+    // Jeton de session : marque que l'accueil a été ouvert dans cette session.
+    // Les pages globe/contact l'utilisent pour savoir si on vient de l'accueil.
+    try { sessionStorage.setItem('atlasNav', '1'); } catch (e) {}
     var menu = document.getElementById('menu');
     var btn = document.getElementById('menuBtn');
     btn.addEventListener('click', function(e){

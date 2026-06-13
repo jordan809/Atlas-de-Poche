@@ -153,13 +153,16 @@
     DATA = eval(m[1]);
   }catch(e){ console.warn('DATA introuvable :', e); }
 
-  const byISO = {};
-  DATA.forEach(d=>{ const iso=flagToISO(d.f); if(iso) byISO[iso]=d; });
+  const byISO = {}, byName = {};
+  DATA.forEach(d=>{ const iso=flagToISO(d.f); if(iso) byISO[iso]=d; byName[norm(d.c)]=d; });
   const adminFix = { "France":"FR", "Norway":"NO", "Kosovo":"XK" };
-  function lookup(props){
-    let iso = props.ISO_A2;
-    if(!iso || iso==="-99") iso = props.ISO_A2_EH || adminFix[props.ADMIN] || adminFix[props.NAME] || "";
-    return byISO[iso] || null;
+  function lookup(p){
+    let iso = (p.ISO_A2 && p.ISO_A2!=="-99") ? p.ISO_A2
+            : (p.ISO_A2_EH && p.ISO_A2_EH!=="-99") ? p.ISO_A2_EH
+            : (adminFix[p.ADMIN] || "");
+    if(iso && byISO[iso]) return byISO[iso];
+    for(const k of ['NAME_FR','ADMIN','NAME','GEOUNIT','SOVEREIGNT']){ if(p[k] && byName[norm(p[k])]) return byName[norm(p[k])]; }
+    return null;
   }
 
   // Carte des pays (50m = beaucoup plus de pays)
@@ -171,8 +174,33 @@
     return;
   }
 
-  // Pays jouables = ceux présents sur la carte ET dans notre base
-  const gamePool = countries.features.filter(f => lookup(f.properties));
+  // Bbox d'un pays (pour choisir le plus grand morceau + régler le zoom)
+  function eachCoord(geom, cb){
+    const c = geom && geom.coordinates; if(!c) return;
+    if(geom.type==='Polygon') c.forEach(r=>r.forEach(cb));
+    else if(geom.type==='MultiPolygon') c.forEach(poly=>poly.forEach(r=>r.forEach(cb)));
+  }
+  function bbox(f){
+    let mnLa=90,mxLa=-90,mnLo=180,mxLo=-180;
+    eachCoord(f.geometry, p=>{ if(p[0]<mnLo)mnLo=p[0]; if(p[0]>mxLo)mxLo=p[0]; if(p[1]<mnLa)mnLa=p[1]; if(p[1]>mxLa)mxLa=p[1]; });
+    return {mnLa,mxLa,mnLo,mxLo, latSpan:mxLa-mnLa, lngSpan:mxLo-mnLo};
+  }
+
+  // Un seul morceau par pays : on garde le plus grand (= le pays principal)
+  const bestByCountry = {};
+  countries.features.forEach(f=>{
+    const d = lookup(f.properties); if(!d) return;
+    const b = bbox(f);
+    const area = b.latSpan * Math.min(b.lngSpan, 180);
+    if(!bestByCountry[d.c] || area > bestByCountry[d.c].area){
+      const p = f.properties;
+      const lat = (p.LABEL_Y!=null && !isNaN(+p.LABEL_Y)) ? +p.LABEL_Y : (b.mnLa+b.mxLa)/2;
+      const lng = (p.LABEL_X!=null && !isNaN(+p.LABEL_X)) ? +p.LABEL_X : (b.mnLo+b.mxLo)/2;
+      const alt = Math.max(0.4, Math.min(1.6, b.latSpan/38 + 0.45));
+      bestByCountry[d.c] = { f, d, area, lat, lng, alt };
+    }
+  });
+  const gameItems = Object.values(bestByCountry);
 
   // ---------- État ----------
   let mode = "discover";     // "discover" | "game"
@@ -191,34 +219,32 @@
     .backgroundColor('#0d0a1f')
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
     .polygonsData(countries.features)
-    .polygonsTransitionDuration(120)
-    .polygonAltitude(f => f===target ? 0.07 : (mode==='discover' && f===hovered ? 0.05 : 0.012))
-    .polygonCapColor(f => {
-      if(f===target) return GREEN+'cc';
-      const d = lookup(f.properties);
-      const base = d ? (COLORS[d.k]||'#9d7bff') : '#888';
-      return (mode==='discover' && f===hovered) ? base : base+'66';
-    })
-    .polygonSideColor(f => f===target ? GREEN+'55' : 'rgba(157,123,255,0.12)')
-    .polygonStrokeColor(f => f===target ? GREEN : 'rgba(255,255,255,0.35)')
+    .polygonsTransitionDuration(300)
     .polygonLabel(f => {
       if(mode!=='discover') return '';
       const d = lookup(f.properties);
       return '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+(d?d.c:(f.properties.ADMIN||''))+'</div>';
     })
-    .onPolygonHover(h => { if(mode==='discover'){ hovered=h; refresh(); } })
     .onPolygonClick(f => {
       if(mode!=='discover') return;
       showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
       if(f.properties.LABEL_X!=null) world.pointOfView({lat:+f.properties.LABEL_Y, lng:+f.properties.LABEL_X, altitude:1.8}, 800);
     });
 
+  // Rafraîchit les couleurs/altitudes (nouvelles fonctions = re-calcul garanti par globe.gl).
+  // Le pays cible (mode jeu) est rempli en VERT et surélevé.
   function refresh(){
-    world.polygonAltitude(world.polygonAltitude());
-    world.polygonCapColor(world.polygonCapColor());
-    world.polygonSideColor(world.polygonSideColor());
-    world.polygonStrokeColor(world.polygonStrokeColor());
+    world
+      .polygonAltitude(f => f===target ? 0.12 : 0.012)
+      .polygonCapColor(f => {
+        if(f===target) return GREEN+'ee';
+        const d = lookup(f.properties);
+        return (d ? (COLORS[d.k]||'#9d7bff') : '#888') + '55';
+      })
+      .polygonSideColor(f => f===target ? GREEN+'88' : 'rgba(157,123,255,0.12)')
+      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.35)');
   }
+  refresh();
 
   function resize(){ world.width(window.innerWidth); world.height(window.innerHeight); }
   window.addEventListener('resize', resize); resize();
@@ -243,7 +269,7 @@
 
   // ---------- Mode Jeu ----------
   function startRound(){
-    if(spinning || !gamePool.length) return;
+    if(spinning || !gameItems.length) return;
     spinning = true;
     target = null; current = null; refresh();
     infoEl.classList.remove('show');
@@ -256,13 +282,13 @@
     world.controls().autoRotateSpeed = 16;
     setTimeout(()=>{
       world.controls().autoRotate = false;
-      // Choisir un pays au hasard
-      target = gamePool[Math.floor(Math.random()*gamePool.length)];
-      current = lookup(target.properties);
-      refresh(); // frontière verte
-      // Zoom sur le pays
-      const p = target.properties;
-      world.pointOfView({lat:+p.LABEL_Y, lng:+p.LABEL_X, altitude:0.62}, 1200);
+      // Choisir un pays au hasard (un seul morceau par pays, le plus grand)
+      const item = gameItems[Math.floor(Math.random()*gameItems.length)];
+      target = item.f;
+      current = item.d;
+      refresh(); // frontière + remplissage verts
+      // Zoom adapté à la taille du pays
+      world.pointOfView({lat:item.lat, lng:item.lng, altitude:item.alt}, 1200);
       // Afficher le formulaire
       $('gpQ').textContent = 'Quel est ce pays (en vert) et sa capitale ?';
       $('inCountry').value=''; $('inCapital').value='';
@@ -330,11 +356,11 @@
   $('loading').style.display='none';
 
   // Hooks de test
-  window.__gamePool = gamePool.length;
+  window.__gameItems = gameItems.length;
   window.__nbPolygons = countries.features.length;
   window.__byISO = Object.keys(byISO).length;
   window.__startRound = startRound;
-  window.__state = ()=>({mode, target: target&&lookup(target.properties)&&lookup(target.properties).c, current: current&&current.c});
+  window.__state = ()=>({mode, current: current&&current.c, hasTarget: !!target});
 })();
 </script>
 </body>

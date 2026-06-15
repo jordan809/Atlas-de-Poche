@@ -288,6 +288,121 @@
   .hidden { display: none !important; }
   footer { text-align: center; margin-top: 42px; color: #fff; font-weight: 600; font-size: 0.85rem; opacity: 0.9; }
 
+  /* ---------- Mode 1v1 ---------- */
+  .pvp-wrap { max-width: 560px; margin: 0 auto; }
+
+  .pvp-lobby {
+    background: #fff; border-radius: 26px; padding: 36px 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.22); text-align: center;
+  }
+  .pvp-lobby h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.8rem; color:var(--bg1); margin-bottom:6px; }
+  .pvp-lobby p { color:var(--ink-soft); font-weight:600; margin-bottom:28px; }
+  .pvp-big-btn {
+    width:100%; font-family:'Baloo 2',cursive; font-weight:700; font-size:1.1rem;
+    padding:16px; border:none; border-radius:16px; cursor:pointer; margin-bottom:12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .pvp-big-btn:hover { transform:translateY(-2px); }
+  .pvp-big-btn.create {
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color:#fff; box-shadow: 0 8px 20px rgba(106,92,255,0.4);
+  }
+  .pvp-sep { color:var(--ink-soft); font-weight:700; margin:8px 0 12px; }
+  .pvp-join-row { display:flex; gap:10px; }
+  .pvp-code-input {
+    flex:1; font-family:'Baloo 2',cursive; font-weight:800; font-size:1.4rem;
+    padding:12px 16px; border:2.5px solid #ece9ff; background:#f7f6ff;
+    color:var(--bg1); border-radius:14px; outline:none; text-align:center;
+    letter-spacing:0.2em; text-transform:uppercase; transition:border-color 0.15s;
+  }
+  .pvp-code-input:focus { border-color:var(--bg1); }
+  .pvp-big-btn.join {
+    background: rgba(106,92,255,0.12); color:var(--bg1);
+    border:2.5px solid var(--bg1); box-shadow:none;
+  }
+  .pvp-big-btn.join:hover { background:var(--bg1); color:#fff; }
+
+  .pvp-waiting {
+    background:#fff; border-radius:26px; padding:36px 28px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.22); text-align:center;
+  }
+  .pvp-room-code {
+    font-family:'Baloo 2',cursive; font-weight:800; font-size:3.5rem;
+    color:var(--bg1); letter-spacing:0.18em;
+    background:#f0eeff; border-radius:16px; padding:16px 24px;
+    margin:16px 0; display:inline-block;
+  }
+  .pvp-waiting p { color:var(--ink-soft); font-weight:600; }
+  .pvp-dots::after { content:'...'; animation: dots 1.2s steps(3,end) infinite; }
+  @keyframes dots { 0%,100%{content:'.'} 33%{content:'..'} 66%{content:'...'} }
+
+  .pvp-scoreboard {
+    display:flex; gap:12px; margin-bottom:16px;
+  }
+  .pvp-player {
+    flex:1; background:#fff; border-radius:18px; padding:14px 10px;
+    text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.12);
+    border-top:5px solid #ece9ff; transition:border-color 0.3s;
+  }
+  .pvp-player.me { border-top-color:var(--bg1); }
+  .pvp-player.them { border-top-color:var(--bg2); }
+  .pvp-player .pvp-name { font-weight:800; font-size:0.85rem; color:var(--ink-soft); letter-spacing:0.06em; text-transform:uppercase; }
+  .pvp-player .pvp-pts { font-family:'Baloo 2',cursive; font-weight:800; font-size:2.4rem; color:var(--ink); line-height:1; margin-top:4px; }
+
+  .pvp-question-card {
+    background:#fff; border-radius:26px; padding:28px 24px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.22); text-align:center; margin-bottom:14px;
+  }
+  .pvp-round-lbl { font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--bg2); font-weight:800; margin-bottom:8px; }
+  .pvp-flag { margin:8px 0; }
+  .pvp-flag img { width:100px; height:auto; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+  .pvp-inputs { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .pvp-input {
+    font-family:'Nunito',sans-serif; font-weight:700; font-size:1rem;
+    padding:13px 16px; border:2.5px solid #ece9ff; background:#f7f6ff;
+    color:var(--ink); border-radius:14px; outline:none; transition:border-color 0.15s;
+  }
+  .pvp-input:focus { border-color:var(--bg1); }
+  .pvp-input.correct { border-color:var(--good); background:#e7faf0; }
+  .pvp-input.wrong { border-color:var(--bad); background:#fdeaee; }
+  .pvp-input:disabled { opacity:1; cursor:default; }
+  .pvp-submit {
+    font-family:'Baloo 2',cursive; font-weight:700; font-size:1.05rem;
+    padding:14px; border:none; border-radius:14px; cursor:pointer; margin-top:4px;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff;
+    box-shadow:0 8px 20px rgba(106,92,255,0.4); transition:transform 0.15s;
+  }
+  .pvp-submit:hover { transform:translateY(-2px); }
+  .pvp-submit:disabled { opacity:0.5; cursor:default; transform:none; }
+
+  .pvp-status {
+    text-align:center; color:#fff; font-weight:800; font-size:1rem;
+    min-height:32px; margin-bottom:8px;
+  }
+  .pvp-reveal { background:#fff; border-radius:16px; padding:14px 18px; margin-top:10px; text-align:left; }
+  .pvp-reveal p { font-weight:700; font-size:0.9rem; color:var(--ink); margin:3px 0; }
+  .pvp-reveal span.ok { color:var(--good); }
+  .pvp-reveal span.ko { color:var(--bad); }
+
+  .pvp-end {
+    background:#fff; border-radius:26px; padding:36px 28px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.22); text-align:center;
+  }
+  .pvp-end .pvp-trophy { font-size:4rem; margin-bottom:8px; }
+  .pvp-end h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:2rem; color:var(--bg1); }
+  .pvp-end .pvp-final-scores { display:flex; gap:12px; margin:20px 0; }
+  .pvp-end .pvp-final-scores .pvp-player { flex:1; }
+
+  html.dark .pvp-lobby, html.dark .pvp-waiting, html.dark .pvp-question-card,
+  html.dark .pvp-end, html.dark .pvp-reveal { background:#1e1b2e; }
+  html.dark .pvp-lobby h2, html.dark .pvp-end h2 { color:#8b7eff; }
+  html.dark .pvp-player { background:#1e1b2e; }
+  html.dark .pvp-player .pvp-pts { color:#e8e2ff; }
+  html.dark .pvp-code-input { background:#2a2545; border-color:#3d3568; color:#8b7eff; }
+  html.dark .pvp-input { background:#2a2545; border-color:#3d3568; color:#e8e2ff; }
+  html.dark .pvp-room-code { background:#2a2545; }
+  html.dark .pvp-reveal p { color:#e8e2ff; }
+
   /* ---------- Sous-modes Drapeaux ---------- */
   .submodes {
     display: flex; justify-content: center; gap: 10px;
@@ -544,6 +659,7 @@
     <button class="mode-btn" data-mode="type">⌨️ Clavier</button>
     <button class="mode-btn" data-mode="timed">⏱️ Défi</button>
     <button class="mode-btn" data-mode="flags">🚩 Drapeaux</button>
+    <button class="mode-btn" data-mode="pvp">⚔️ 1v1</button>
   </div>
 
   <div class="options-bar hidden" id="optionsBar">
@@ -613,6 +729,76 @@
 
     <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-text" id="progressText">Réussite : —</div>
+  </section>
+
+  <section id="pvp" class="hidden">
+    <div class="pvp-wrap">
+
+      <!-- Lobby -->
+      <div id="pvpLobby" class="pvp-lobby">
+        <h2>⚔️ Mode 1v1</h2>
+        <p>Joue contre un ami en temps réel !</p>
+        <button class="pvp-big-btn create" id="pvpCreateBtn">🎮 Créer une partie</button>
+        <div class="pvp-sep">— ou —</div>
+        <div class="pvp-join-row">
+          <input class="pvp-code-input" id="pvpCodeInput" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false">
+          <button class="pvp-big-btn join" id="pvpJoinBtn" style="flex-shrink:0; width:auto; padding:0 20px;">Rejoindre</button>
+        </div>
+      </div>
+
+      <!-- Waiting -->
+      <div id="pvpWaiting" class="pvp-waiting hidden">
+        <p style="font-weight:700;color:var(--ink-soft);margin-bottom:8px;">Partage ce code à ton ami :</p>
+        <div class="pvp-room-code" id="pvpCodeDisplay">----</div>
+        <p>En attente de l'adversaire<span class="pvp-dots"></span></p>
+      </div>
+
+      <!-- Game -->
+      <div id="pvpGame" class="hidden">
+        <div class="pvp-scoreboard">
+          <div class="pvp-player me">
+            <div class="pvp-name" id="pvpMyName">Toi</div>
+            <div class="pvp-pts" id="pvpMyScore">0</div>
+          </div>
+          <div style="display:flex;align-items:center;color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:1.4rem;">VS</div>
+          <div class="pvp-player them">
+            <div class="pvp-name" id="pvpTheirName">Adversaire</div>
+            <div class="pvp-pts" id="pvpTheirScore">0</div>
+          </div>
+        </div>
+
+        <div class="pvp-question-card">
+          <div class="pvp-round-lbl" id="pvpRoundLbl">Question 1 / 10</div>
+          <div class="pvp-flag" id="pvpFlag"></div>
+          <div class="pvp-inputs">
+            <input class="pvp-input" id="pvpInputCountry" type="text" autocomplete="off" spellcheck="false" placeholder="🌍 Nom du pays…">
+            <input class="pvp-input" id="pvpInputCapital" type="text" autocomplete="off" spellcheck="false" placeholder="🏛️ Capitale…">
+          </div>
+          <button class="pvp-submit" id="pvpSubmitBtn" style="width:100%;margin-top:14px;">Valider ✅</button>
+          <div class="pvp-reveal hidden" id="pvpReveal"></div>
+        </div>
+
+        <div class="pvp-status" id="pvpStatus"></div>
+      </div>
+
+      <!-- End -->
+      <div id="pvpEnd" class="pvp-end hidden">
+        <div class="pvp-trophy" id="pvpTrophy">🏆</div>
+        <h2 id="pvpEndTitle">Résultats</h2>
+        <div class="pvp-final-scores">
+          <div class="pvp-player me">
+            <div class="pvp-name" id="pvpEndMyName">Toi</div>
+            <div class="pvp-pts" id="pvpEndMyScore">0</div>
+          </div>
+          <div class="pvp-player them">
+            <div class="pvp-name" id="pvpEndTheirName">Adversaire</div>
+            <div class="pvp-pts" id="pvpEndTheirScore">0</div>
+          </div>
+        </div>
+        <button class="pvp-big-btn create" id="pvpReplayBtn" style="margin-top:8px;">🔄 Rejouer</button>
+      </div>
+
+    </div>
   </section>
 
   <footer>{nombre} pays · Bonne exploration 🧭</footer>
@@ -1194,16 +1380,19 @@ function enterMode(mode){
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
   const isStudy = (mode==="study");
   const isFlags = (mode==="flags");
+  const isPvp   = (mode==="pvp");
   document.getElementById("study").classList.toggle("hidden", !isStudy);
   document.getElementById("flagsAll").classList.toggle("hidden", !isFlags || flagsSubMode!=="all");
-  document.getElementById("play").classList.toggle("hidden", isStudy || (isFlags && flagsSubMode==="all"));
-  document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isFlags);
+  document.getElementById("play").classList.toggle("hidden", isStudy || isPvp || (isFlags && flagsSubMode==="all"));
+  document.getElementById("pvp").classList.toggle("hidden", !isPvp);
+  document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isFlags || isPvp);
   document.getElementById("submodesBar").classList.toggle("hidden", !isFlags);
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
-  document.getElementById("dirToggle").classList.toggle("hidden", isFlags);
+  document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){ enterFlagsSubMode(flagsSubMode); }
+  else if(isPvp){ pvpShowSection('pvpLobby'); }
   else { startPlay(); }
 
 }
@@ -1444,6 +1633,214 @@ document.querySelector("footer").innerHTML =
   document.querySelector("footer").innerHTML.replace("{nombre}", DATA.length);
 renderRecords();
 renderStudy();
+
+// ---------- Mode 1v1 ----------
+const DB = "https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app";
+const TOTAL_ROUNDS = 10;
+
+let pvpRoom = null;       // code de la salle
+let pvpRole = null;       // "p1" ou "p2"
+let pvpIsHost = false;
+let pvpSSE = null;
+let pvpCurrentRound = -1;
+let pvpQuestions = [];
+let pvpSubmitted = false;
+
+const pvpOpponent = () => pvpRole === "p1" ? "p2" : "p1";
+
+async function dbGet(path){ const r = await fetch(`${DB}/${path}.json`); return r.json(); }
+async function dbSet(path,data){ return fetch(`${DB}/${path}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
+async function dbPatch(path,data){ return fetch(`${DB}/${path}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
+
+function dbListen(path, cb){
+  if(pvpSSE) pvpSSE.close();
+  pvpSSE = new EventSource(`${DB}/${path}.json`);
+  pvpSSE.addEventListener('put', async () => { const d=await dbGet(path); if(d) cb(d); });
+  pvpSSE.addEventListener('patch', async () => { const d=await dbGet(path); if(d) cb(d); });
+}
+
+function pvpCode(){ return Array.from({length:4}, ()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join(''); }
+
+function pvpShowSection(id){
+  ['pvpLobby','pvpWaiting','pvpGame','pvpEnd'].forEach(s=>document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+async function pvpCreate(){
+  const code = pvpCode();
+  pvpRoom = code; pvpRole = 'p1'; pvpIsHost = true; pvpSubmitted = false;
+
+  // Génère 10 questions aléatoires
+  pvpQuestions = shuffle(DATA).slice(0,TOTAL_ROUNDS).map(d=>({c:d.c,cap:d.cap,f:d.f}));
+
+  await dbSet(`rooms/${code}`, {
+    status:'waiting',
+    p1:{score:0,done:false,ac:'',ak:''},
+    p2:null,
+    round:-1,
+    questions: pvpQuestions,
+    createdAt: Date.now()
+  });
+
+  document.getElementById('pvpCodeDisplay').textContent = code;
+  pvpShowSection('pvpWaiting');
+  dbListen(`rooms/${code}`, pvpOnUpdate);
+}
+
+async function pvpJoin(){
+  const code = document.getElementById('pvpCodeInput').value.trim().toUpperCase();
+  if(code.length !== 4){ alert('Entre un code à 4 lettres !'); return; }
+
+  const room = await dbGet(`rooms/${code}`);
+  if(!room){ alert('Code invalide !'); return; }
+  if(room.status !== 'waiting'){ alert('Cette partie a déjà commencé !'); return; }
+  if(room.p2){ alert('La salle est complète !'); return; }
+
+  pvpRoom = code; pvpRole = 'p2'; pvpIsHost = false; pvpSubmitted = false;
+  pvpQuestions = room.questions;
+
+  await dbPatch(`rooms/${code}`, {
+    p2:{score:0,done:false,ac:'',ak:''},
+    status:'playing',
+    round:0
+  });
+
+  dbListen(`rooms/${code}`, pvpOnUpdate);
+}
+
+function pvpOnUpdate(room){
+  if(room.status === 'playing'){
+    const r = room.round;
+    if(r >= 0 && r !== pvpCurrentRound){
+      pvpCurrentRound = r;
+      pvpSubmitted = false;
+      pvpShowQuestion(room);
+    }
+    // Met à jour les scores
+    document.getElementById('pvpMyScore').textContent    = room[pvpRole]?.score ?? 0;
+    document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
+
+    // Si l'adversaire a soumis et moi aussi → montrer résultats et passer
+    const me = room[pvpRole], them = room[pvpOpponent()];
+    if(me?.done && them?.done && pvpCurrentRound === r){
+      pvpShowReveal(room);
+      // Hôte fait avancer après 3s
+      if(pvpIsHost){
+        setTimeout(async ()=>{
+          const nextRound = r+1;
+          if(nextRound >= TOTAL_ROUNDS){
+            await dbPatch(`rooms/${pvpRoom}`,{status:'finished'});
+          } else {
+            await dbPatch(`rooms/${pvpRoom}`,{
+              round: nextRound,
+              p1:{score:room.p1.score, done:false, ac:'', ak:''},
+              p2:{score:room.p2.score, done:false, ac:'', ak:''}
+            });
+          }
+        }, 3500);
+      }
+    }
+  }
+  if(room.status === 'finished'){
+    pvpShowEnd(room);
+  }
+}
+
+function pvpShowQuestion(room){
+  pvpShowSection('pvpGame');
+  const q = pvpQuestions[pvpCurrentRound];
+  document.getElementById('pvpRoundLbl').textContent = `Question ${pvpCurrentRound+1} / ${TOTAL_ROUNDS}`;
+  document.getElementById('pvpFlag').innerHTML = flagImg(q.f, 80);
+  document.getElementById('pvpInputCountry').value = '';
+  document.getElementById('pvpInputCapital').value = '';
+  document.getElementById('pvpInputCountry').disabled = false;
+  document.getElementById('pvpInputCapital').disabled = false;
+  document.getElementById('pvpInputCountry').className = 'pvp-input';
+  document.getElementById('pvpInputCapital').className = 'pvp-input';
+  document.getElementById('pvpSubmitBtn').disabled = false;
+  document.getElementById('pvpReveal').classList.add('hidden');
+  document.getElementById('pvpStatus').textContent = '';
+  document.getElementById('pvpMyScore').textContent    = room[pvpRole]?.score ?? 0;
+  document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
+  setTimeout(()=>document.getElementById('pvpInputCountry').focus({preventScroll:true}),30);
+}
+
+async function pvpSubmit(){
+  if(pvpSubmitted) return;
+  pvpSubmitted = true;
+  const q = pvpQuestions[pvpCurrentRound];
+  const ac = document.getElementById('pvpInputCountry').value.trim();
+  const ak = document.getElementById('pvpInputCapital').value.trim();
+  const okC = norm(ac) === norm(q.c);
+  const okK = norm(ak) === norm(q.cap);
+
+  // Calcul des points
+  const room = await dbGet(`rooms/${pvpRoom}`);
+  const prevScore = room[pvpRole]?.score ?? 0;
+  const gained = (okC?1:0)+(okK?1:0);
+
+  document.getElementById('pvpInputCountry').disabled = true;
+  document.getElementById('pvpInputCapital').disabled = true;
+  document.getElementById('pvpInputCountry').classList.add(okC?'correct':'wrong');
+  document.getElementById('pvpInputCapital').classList.add(okK?'correct':'wrong');
+  document.getElementById('pvpSubmitBtn').disabled = true;
+  document.getElementById('pvpStatus').textContent = '⏳ En attente de l\'adversaire…';
+
+  await dbPatch(`rooms/${pvpRoom}/${pvpRole}`, {
+    score: prevScore + gained,
+    done: true,
+    ac, ak
+  });
+}
+
+function pvpShowReveal(room){
+  const q = pvpQuestions[pvpCurrentRound];
+  const them = room[pvpOpponent()];
+  const okC = norm(them?.ac??'') === norm(q.c);
+  const okK = norm(them?.ak??'') === norm(q.cap);
+  const revealEl = document.getElementById('pvpReveal');
+  revealEl.innerHTML = `
+    <p>🌍 Pays : <strong>${q.c}</strong> — Adversaire : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
+    <p>🏛️ Capitale : <strong>${q.cap}</strong> — Adversaire : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
+    <p style="margin-top:6px;color:var(--ink-soft);font-size:0.85rem;">Prochaine question dans 3s…</p>`;
+  revealEl.classList.remove('hidden');
+  document.getElementById('pvpStatus').textContent = '';
+}
+
+function pvpShowEnd(room){
+  pvpShowSection('pvpEnd');
+  const myScore    = room[pvpRole]?.score ?? 0;
+  const theirScore = room[pvpOpponent()]?.score ?? 0;
+  document.getElementById('pvpEndMyScore').textContent    = myScore;
+  document.getElementById('pvpEndTheirScore').textContent = theirScore;
+  if(myScore > theirScore){
+    document.getElementById('pvpTrophy').textContent = '🏆';
+    document.getElementById('pvpEndTitle').textContent = 'Tu as gagné !';
+    confetti(60); soundFanfare();
+  } else if(theirScore > myScore){
+    document.getElementById('pvpTrophy').textContent = '😅';
+    document.getElementById('pvpEndTitle').textContent = 'Tu as perdu…';
+    soundWrong();
+  } else {
+    document.getElementById('pvpTrophy').textContent = '🤝';
+    document.getElementById('pvpEndTitle').textContent = 'Égalité !';
+  }
+}
+
+function pvpReset(){
+  if(pvpSSE){ pvpSSE.close(); pvpSSE = null; }
+  pvpRoom = null; pvpRole = null; pvpIsHost = false;
+  pvpCurrentRound = -1; pvpSubmitted = false;
+  document.getElementById('pvpCodeInput').value = '';
+  pvpShowSection('pvpLobby');
+}
+
+document.getElementById('pvpCreateBtn').onclick = pvpCreate;
+document.getElementById('pvpJoinBtn').onclick   = pvpJoin;
+document.getElementById('pvpCodeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpJoin(); });
+document.getElementById('pvpSubmitBtn').onclick  = pvpSubmit;
+document.getElementById('pvpInputCapital').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpSubmit(); });
+document.getElementById('pvpReplayBtn').onclick  = pvpReset;
 
 // ---------- PWA : enregistrement du service worker ----------
 if ("serviceWorker" in navigator) {

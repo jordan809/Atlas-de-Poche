@@ -1391,7 +1391,13 @@ function enterMode(mode){
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
 
   if(isStudy){ renderStudy(); }
-  else if(isFlags){ enterFlagsSubMode(flagsSubMode); }
+  else if(isFlags){
+    // En mode Drapeaux : toujours réinitialiser sur "Tous" les pays
+    activeFilter = "Tous";
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === "Tous"));
+    flagsAllInProgress = false; // forcer la réinitialisation de la grille
+    enterFlagsSubMode(flagsSubMode);
+  }
   else if(isPvp){ pvpShowSection('pvpLobby'); }
   else { startPlay(); }
 

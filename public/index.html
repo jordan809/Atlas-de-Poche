@@ -1488,8 +1488,9 @@ function renderFlagsAll(force=false){
   const btn = document.getElementById("flagsStartChronoBtn");
   if(btn){ btn.textContent = "🚀 Lancer le chrono"; btn.disabled = false; }
 
-  // Dans "tous les drapeaux" on affiche tous les pays du continent, sans filtre de difficulté
-  const list = activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter);
+  // Dans "tous les drapeaux" on affiche tous les pays du continent, sans filtre de difficulté.
+  // Ordre mélangé à chaque fois (pour ne pas mémoriser les positions et "tricher" sans le vouloir).
+  const list = shuffle(activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter));
   const grid = document.getElementById("flagsGrid");
   const checkBtn = document.getElementById("flagsCheckBtn");
   grid.innerHTML = "";

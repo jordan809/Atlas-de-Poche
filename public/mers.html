@@ -16,198 +16,143 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d;
-    --ink:#2b2350; --ink-soft:#6b6396;
-    --good:#1fae6a; --bad:#e84545;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  html {
-    min-height:100%;
-    background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%) no-repeat;
-  }
-  html.dark { background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat; }
-  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; -webkit-font-smoothing:antialiased; }
-  .bg { position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;
-    background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%); }
-  html.dark .bg { background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%); }
+  :root { --bg1:#6a5cff;--bg2:#ff5d8f;--bg3:#ffb84d;--ink:#2b2350;--ink-soft:#6b6396;--good:#1fae6a;--bad:#e84545; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{min-height:100%;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%) no-repeat;}
+  html.dark{background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat;}
+  body{font-family:'Nunito',sans-serif;color:var(--ink);background:transparent;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  .bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);}
+  html.dark .bg{background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%);}
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 16px 80px;}
 
-  .wrap { position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 16px 80px; }
-
-  header { text-align:center;margin-bottom:24px;color:#fff; }
-  .back-link {
-    display:inline-flex;align-items:center;gap:6px;
-    color:rgba(255,255,255,0.85);font-weight:700;font-size:0.9rem;
-    text-decoration:none;margin-bottom:18px;
-    background:rgba(255,255,255,0.2);backdrop-filter:blur(6px);
-    padding:8px 18px;border-radius:30px;transition:background 0.2s;
-  }
-  .back-link:hover { background:rgba(255,255,255,0.35); }
-  h1 { font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18); }
-  .sub { margin-top:8px;font-size:0.95rem;font-weight:600;opacity:0.95; }
+  header{text-align:center;margin-bottom:24px;color:#fff;}
+  .back-link{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);font-weight:700;font-size:0.9rem;text-decoration:none;margin-bottom:18px;background:rgba(255,255,255,0.2);backdrop-filter:blur(6px);padding:8px 18px;border-radius:30px;transition:background 0.2s;}
+  .back-link:hover{background:rgba(255,255,255,0.35);}
+  h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18);}
+  .sub{margin-top:8px;font-size:0.95rem;font-weight:600;opacity:0.95;}
 
   /* Onglets */
-  .tabs { display:flex;gap:8px;justify-content:center;margin-bottom:20px; }
-  .tab-btn {
-    font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;
-    padding:10px 26px;border:none;border-radius:50px;cursor:pointer;
-    background:rgba(255,255,255,0.22);backdrop-filter:blur(6px);
-    color:#fff;transition:background 0.2s,transform 0.15s;
-  }
-  .tab-btn:hover { background:rgba(255,255,255,0.38);transform:scale(1.04); }
-  .tab-btn.active { background:#fff;color:var(--bg1);box-shadow:0 6px 20px rgba(0,0,0,0.18); }
+  .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+  .tab-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:10px 26px;border:none;border-radius:50px;cursor:pointer;background:rgba(255,255,255,0.22);backdrop-filter:blur(6px);color:#fff;transition:background 0.2s,transform 0.15s;}
+  .tab-btn:hover{background:rgba(255,255,255,0.38);transform:scale(1.04);}
+  .tab-btn.active{background:#fff;color:var(--bg1);box-shadow:0 6px 20px rgba(0,0,0,0.18);}
 
-  /* Filtres océan */
-  .filter-bar { display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:22px; }
-  .filter-chip {
-    font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;
-    padding:6px 16px;border:2px solid rgba(255,255,255,0.45);
-    border-radius:50px;cursor:pointer;background:transparent;color:#fff;
-    transition:background 0.15s,border-color 0.15s;
-  }
-  .filter-chip.active { background:rgba(255,255,255,0.28);border-color:#fff; }
-  .filter-chip:hover { background:rgba(255,255,255,0.18); }
+  /* Filtres niveau 1 */
+  .filter-bar{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+  .filter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 16px;border:2px solid rgba(255,255,255,0.45);border-radius:50px;cursor:pointer;background:transparent;color:#fff;transition:background 0.15s,border-color 0.15s;}
+  .filter-chip.active{background:rgba(255,255,255,0.28);border-color:#fff;}
+  .filter-chip:hover{background:rgba(255,255,255,0.18);}
+
+  /* Filtres niveau 2 (sous-mers parent) */
+  .subfilter-bar{display:none;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;padding:10px 0 4px;}
+  .subfilter-bar.visible{display:flex;}
+  .subfilter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.78rem;padding:5px 14px;border:2px solid rgba(255,255,255,0.35);border-radius:50px;cursor:pointer;background:rgba(0,0,0,0.12);color:rgba(255,255,255,0.85);transition:background 0.15s,border-color 0.15s;}
+  .subfilter-chip.active{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.8);color:#fff;}
+  .subfilter-chip:hover{background:rgba(255,255,255,0.16);}
+  .subfilter-label{font-size:0.75rem;color:rgba(255,255,255,0.7);font-weight:600;align-self:center;white-space:nowrap;}
 
   /* ── RÉVISION ── */
-  #revSection { display:none; }
-  #revSection.on { display:block; }
+  #revSection{display:none;}
+  #revSection.on{display:block;}
+  .ocean-group{margin-bottom:32px;}
+  .ocean-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.15rem;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px;text-shadow:0 2px 8px rgba(0,0,0,0.2);}
 
-  .ocean-group { margin-bottom:30px; }
-  .ocean-title {
-    font-family:'Baloo 2',cursive;font-weight:800;font-size:1.15rem;
-    color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px;
-    text-shadow:0 2px 8px rgba(0,0,0,0.2);
+  /* Groupe parent (sous-mers regroupées sous leur mer mère) */
+  .parent-group{margin-bottom:18px;}
+  .parent-title{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:'Baloo 2',cursive;font-weight:700;font-size:0.88rem;
+    background:rgba(255,255,255,0.18);backdrop-filter:blur(4px);
+    color:#fff;padding:5px 16px;border-radius:30px;margin-bottom:10px;
+    border:1.5px solid rgba(255,255,255,0.35);
   }
-  .rev-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px; }
-  .rev-card {
-    background:#fff;border-radius:16px;padding:15px 17px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.11);
-    display:flex;flex-direction:column;gap:5px;
-  }
-  html.dark .rev-card { background:#1e1b2e; }
-  .rev-top { display:flex;align-items:center;gap:10px; }
-  .rev-icon { font-size:1.7rem;flex-shrink:0; }
-  .rev-name { font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;color:var(--ink); }
-  html.dark .rev-name { color:#e8e2ff; }
-  .rev-badge {
-    font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;
-    display:inline-block;margin-top:1px;
-  }
-  .badge-principale { background:#e0f0ff;color:#0077b6; }
-  .badge-sous-mer   { background:#e8f5ff;color:#0096c7; }
-  .badge-golfe      { background:#fff3e0;color:#e07000; }
-  .badge-fermee     { background:#f3e8ff;color:#7b2d8b; }
-  html.dark .badge-principale { background:#0a2a3a;color:#60c8f0; }
-  html.dark .badge-sous-mer   { background:#0a2030;color:#60d8f0; }
-  html.dark .badge-golfe      { background:#2a1e0a;color:#f0a040; }
-  html.dark .badge-fermee     { background:#2a0a3a;color:#c080f0; }
-  .rev-desc { font-size:0.83rem;color:var(--ink-soft);line-height:1.45;margin-top:3px; }
-  html.dark .rev-desc { color:#a89fd8; }
-  .rev-fact { font-size:0.78rem;font-weight:700;color:var(--bg1);margin-top:2px; }
-  html.dark .rev-fact { color:#9d91ff; }
+  .parent-title::before{content:"↳";opacity:0.7;}
+
+  .rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:11px;}
+  .rev-card{background:#fff;border-radius:16px;padding:15px 17px;box-shadow:0 6px 20px rgba(0,0,0,0.11);display:flex;flex-direction:column;gap:5px;}
+  html.dark .rev-card{background:#1e1b2e;}
+  .rev-top{display:flex;align-items:center;gap:10px;}
+  .rev-icon{font-size:1.7rem;flex-shrink:0;}
+  .rev-name{font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;color:var(--ink);}
+  html.dark .rev-name{color:#e8e2ff;}
+  .rev-badge{font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;display:inline-block;margin-top:1px;}
+  .badge-principale{background:#e0f0ff;color:#0077b6;}
+  .badge-sous-mer{background:#e8f5ff;color:#0096c7;}
+  .badge-golfe{background:#fff3e0;color:#e07000;}
+  .badge-fermee{background:#f3e8ff;color:#7b2d8b;}
+  html.dark .badge-principale{background:#0a2a3a;color:#60c8f0;}
+  html.dark .badge-sous-mer{background:#0a2030;color:#60d8f0;}
+  html.dark .badge-golfe{background:#2a1e0a;color:#f0a040;}
+  html.dark .badge-fermee{background:#2a0a3a;color:#c080f0;}
+  .rev-desc{font-size:0.83rem;color:var(--ink-soft);line-height:1.45;margin-top:3px;}
+  html.dark .rev-desc{color:#a89fd8;}
+  .rev-fact{font-size:0.78rem;font-weight:700;color:var(--bg1);margin-top:2px;}
+  html.dark .rev-fact{color:#9d91ff;}
 
   /* ── JEU ── */
-  #gameSection { display:none; }
-  #gameSection.on { display:block; }
+  #gameSection{display:none;}
+  #gameSection.on{display:block;}
+  .game-filter-bar{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+  .game-filter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 16px;border:2px solid rgba(255,255,255,0.45);border-radius:50px;cursor:pointer;background:transparent;color:#fff;transition:background 0.15s,border-color 0.15s;}
+  .game-filter-chip.active{background:rgba(255,255,255,0.28);border-color:#fff;}
+  .game-filter-chip:hover{background:rgba(255,255,255,0.18);}
+  .game-subfilter-bar{display:none;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;padding:6px 0 2px;}
+  .game-subfilter-bar.visible{display:flex;}
+  .game-subfilter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.78rem;padding:5px 14px;border:2px solid rgba(255,255,255,0.35);border-radius:50px;cursor:pointer;background:rgba(0,0,0,0.12);color:rgba(255,255,255,0.85);transition:background 0.15s,border-color 0.15s;}
+  .game-subfilter-chip.active{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.8);color:#fff;}
+  .game-subfilter-chip:hover{background:rgba(255,255,255,0.16);}
 
-  .game-filter-bar { display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:18px; }
-  .game-filter-chip {
-    font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;
-    padding:6px 16px;border:2px solid rgba(255,255,255,0.45);
-    border-radius:50px;cursor:pointer;background:transparent;color:#fff;
-    transition:background 0.15s,border-color 0.15s;
-  }
-  .game-filter-chip.active { background:rgba(255,255,255,0.28);border-color:#fff; }
-  .game-filter-chip:hover { background:rgba(255,255,255,0.18); }
-
-  .game-card {
-    background:#fff;border-radius:22px;padding:30px 26px;
-    box-shadow:0 16px 40px rgba(0,0,0,0.18);text-align:center;
-  }
-  html.dark .game-card { background:#1e1b2e; }
-  .g-progress { font-weight:700;font-size:0.85rem;color:var(--ink-soft);margin-bottom:14px; }
-  html.dark .g-progress { color:#a89fd8; }
-  .g-icon { font-size:3rem;margin-bottom:8px; }
-  .g-question { font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:var(--ink);line-height:1.45;margin-bottom:5px; }
-  html.dark .g-question { color:#e8e2ff; }
-  .g-hint { font-size:0.83rem;color:var(--ink-soft);margin-bottom:20px;font-style:italic; }
-  html.dark .g-hint { color:#a89fd8; }
-  .opts { display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px; }
-  .opt {
-    font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;
-    padding:13px 8px;border:2.5px solid #ece9ff;border-radius:13px;
-    background:#f7f6ff;color:var(--ink);cursor:pointer;
-    transition:background 0.15s,border-color 0.15s,transform 0.1s;
-  }
-  .opt:hover:not(:disabled) { background:#ede8ff;border-color:var(--bg1);transform:scale(1.02); }
-  .opt.correct { background:#e7faf0;border-color:var(--good);color:var(--good); }
-  .opt.wrong   { background:#fdeaee;border-color:var(--bad);color:var(--bad); }
-  .opt:disabled { cursor:default; }
-  html.dark .opt { background:#2a2545;border-color:#3d3568;color:#e8e2ff; }
-  html.dark .opt.correct { background:#1a3028;border-color:var(--good);color:#5de0a5; }
-  html.dark .opt.wrong   { background:#2e1820;border-color:var(--bad);color:#f08090; }
-  .g-feedback { min-height:26px;font-weight:800;font-size:0.95rem;margin-bottom:12px; }
-  .fb-good { color:var(--good); }
-  .fb-bad  { color:var(--bad); }
-  .next-btn {
-    font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;
-    padding:12px 32px;border:none;border-radius:50px;cursor:pointer;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);
-    transition:transform 0.15s;display:none;
-  }
-  .next-btn:hover { transform:translateY(-2px); }
-  .score-end { display:none;text-align:center;padding:8px 0; }
-  .score-end .se-icon { font-size:3.5rem;margin-bottom:10px; }
-  .score-end .se-txt { font-family:'Baloo 2',cursive;font-weight:800;font-size:2rem;color:var(--ink);margin-bottom:4px; }
-  html.dark .score-end .se-txt { color:#e8e2ff; }
-  .score-end .se-sub { color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px; }
-  .restart-btn {
-    font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;
-    padding:12px 32px;border:none;border-radius:50px;cursor:pointer;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);
-    transition:transform 0.15s;
-  }
-  .restart-btn:hover { transform:translateY(-2px); }
-
-  /* dark toggle */
-  .dark-toggle {
-    position:fixed;top:14px;right:16px;z-index:100;font-size:1.3rem;
-    width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;
-    background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-    transition:transform 0.2s,background 0.2s;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .dark-toggle:hover { transform:scale(1.12);background:rgba(255,255,255,0.4); }
-  html.dark .dark-toggle { background:rgba(0,0,0,0.35); }
-
-  @media(max-width:520px){
-    .opts { grid-template-columns:1fr; }
-    .game-card { padding:22px 14px; }
-    .rev-grid { grid-template-columns:1fr; }
-  }
+  .game-card{background:#fff;border-radius:22px;padding:30px 26px;box-shadow:0 16px 40px rgba(0,0,0,0.18);text-align:center;}
+  html.dark .game-card{background:#1e1b2e;}
+  .g-progress{font-weight:700;font-size:0.85rem;color:var(--ink-soft);margin-bottom:14px;}
+  html.dark .g-progress{color:#a89fd8;}
+  .g-icon{font-size:3rem;margin-bottom:8px;}
+  .g-question{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;color:var(--ink);line-height:1.45;margin-bottom:5px;}
+  html.dark .g-question{color:#e8e2ff;}
+  .g-hint{font-size:0.83rem;color:var(--ink-soft);margin-bottom:20px;font-style:italic;}
+  html.dark .g-hint{color:#a89fd8;}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+  .opt{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;padding:13px 8px;border:2.5px solid #ece9ff;border-radius:13px;background:#f7f6ff;color:var(--ink);cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s;}
+  .opt:hover:not(:disabled){background:#ede8ff;border-color:var(--bg1);transform:scale(1.02);}
+  .opt.correct{background:#e7faf0;border-color:var(--good);color:var(--good);}
+  .opt.wrong{background:#fdeaee;border-color:var(--bad);color:var(--bad);}
+  .opt:disabled{cursor:default;}
+  html.dark .opt{background:#2a2545;border-color:#3d3568;color:#e8e2ff;}
+  html.dark .opt.correct{background:#1a3028;border-color:var(--good);color:#5de0a5;}
+  html.dark .opt.wrong{background:#2e1820;border-color:var(--bad);color:#f08090;}
+  .g-feedback{min-height:26px;font-weight:800;font-size:0.95rem;margin-bottom:12px;}
+  .fb-good{color:var(--good);}
+  .fb-bad{color:var(--bad);}
+  .next-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);transition:transform 0.15s;display:none;}
+  .next-btn:hover{transform:translateY(-2px);}
+  .score-end{display:none;text-align:center;padding:8px 0;}
+  .score-end .se-icon{font-size:3.5rem;margin-bottom:10px;}
+  .score-end .se-txt{font-family:'Baloo 2',cursive;font-weight:800;font-size:2rem;color:var(--ink);margin-bottom:4px;}
+  html.dark .score-end .se-txt{color:#e8e2ff;}
+  .score-end .se-sub{color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;}
+  .restart-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);transition:transform 0.15s;}
+  .restart-btn:hover{transform:translateY(-2px);}
+  .dark-toggle{position:fixed;top:14px;right:16px;z-index:100;font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
+  .dark-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
+  html.dark .dark-toggle{background:rgba(0,0,0,0.35);}
+  @media(max-width:520px){.opts{grid-template-columns:1fr;}.game-card{padding:22px 14px;}.rev-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
 <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
-
 <div class="wrap">
   <header>
     <div><a class="back-link" href="/">← Retour au quiz</a></div>
     <h1>🌊 Mers &amp; Océans</h1>
     <p class="sub">Révise et teste-toi sur toutes les eaux du monde</p>
   </header>
-
-  <!-- Onglets -->
   <div class="tabs">
     <button class="tab-btn active" id="tabRev" onclick="switchTab('rev')">📖 Révision</button>
     <button class="tab-btn" id="tabGame" onclick="switchTab('game')">🎮 Jeu</button>
   </div>
 
-  <!-- ── RÉVISION ── -->
+  <!-- RÉVISION -->
   <section id="revSection" class="on">
     <div class="filter-bar" id="revFilterBar">
       <button class="filter-chip active" onclick="setRevFilter('Tous',this)">🌐 Tous</button>
@@ -218,10 +163,11 @@
       <button class="filter-chip" onclick="setRevFilter('Austral',this)">🐧 Austral</button>
       <button class="filter-chip" onclick="setRevFilter('Fermée',this)">🔒 Fermées</button>
     </div>
+    <div class="subfilter-bar" id="revSubFilterBar"></div>
     <div id="revContent"></div>
   </section>
 
-  <!-- ── JEU ── -->
+  <!-- JEU -->
   <section id="gameSection">
     <div class="game-filter-bar" id="gameFilterBar">
       <button class="game-filter-chip active" onclick="setGameFilter('Tous',this)">🌐 Tous</button>
@@ -232,6 +178,7 @@
       <button class="game-filter-chip" onclick="setGameFilter('Austral',this)">🐧 Austral</button>
       <button class="game-filter-chip" onclick="setGameFilter('Fermée',this)">🔒 Fermées</button>
     </div>
+    <div class="game-subfilter-bar" id="gameSubFilterBar"></div>
     <div class="game-card" id="gameCard">
       <div class="g-progress" id="gProgress"></div>
       <div class="g-icon" id="gIcon"></div>
@@ -251,436 +198,565 @@
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-//  DONNÉES
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════
+// DONNÉES
+// parent = null → mer principale/indépendante
+// parent = "Nom de la mer mère" → sous-mer
+// ════════════════════════════════════════
 const SEAS = [
-  // ── ATLANTIQUE ──────────────────────────────────────────
-  {name:"Mer Méditerranée",      ocean:"Atlantique", cat:"principale", icon:"⛵",
+  // ── ATLANTIQUE ───────────────────────────────
+  {name:"Mer Méditerranée",      ocean:"Atlantique", cat:"principale", parent:null, icon:"⛵",
    desc:"Enclavée entre l'Europe du Sud, l'Afrique du Nord et le Moyen-Orient. Berceau des civilisations grecque, romaine et égyptienne.",
    fact:"Reliée à l'Atlantique par le détroit de Gibraltar"},
-  {name:"Mer des Caraïbes",      ocean:"Atlantique", cat:"principale", icon:"🏝️",
+  {name:"Mer des Caraïbes",      ocean:"Atlantique", cat:"principale", parent:null, icon:"🏝️",
    desc:"Mer tropicale bordée par l'Amérique centrale, du Sud et les Antilles. Connue pour ses eaux turquoise et ses récifs coralliens.",
    fact:"Aussi appelée mer des Antilles"},
-  {name:"Mer du Nord",           ocean:"Atlantique", cat:"principale", icon:"🌬️",
-   desc:"Mer peu profonde entre le Royaume-Uni, la Scandinavie et l'Europe du Nord-Ouest. Importante zone de pêche et d'exploitation pétrolière.",
+  {name:"Mer du Nord",           ocean:"Atlantique", cat:"principale", parent:null, icon:"🌬️",
+   desc:"Mer peu profonde entre le Royaume-Uni, la Scandinavie et l'Europe du Nord-Ouest. Zone de pêche et d'exploitation pétrolière.",
    fact:"Relie l'Atlantique à la mer Baltique"},
-  {name:"Mer Baltique",          ocean:"Atlantique", cat:"principale", icon:"🦭",
-   desc:"Mer presque fermée entourée par les pays scandinaves et l'Europe centrale. La plus grande mer d'eau saumâtre du monde.",
+  {name:"Mer Baltique",          ocean:"Atlantique", cat:"principale", parent:null, icon:"🦭",
+   desc:"Mer presque fermée entourée par les pays scandinaves et l'Europe centrale. Plus grande mer d'eau saumâtre du monde.",
    fact:"Reliée à la mer du Nord par le détroit de Skagerrak"},
-  {name:"Mer de Norvège",        ocean:"Atlantique", cat:"principale", icon:"🐋",
-   desc:"Mer froide entre la Norvège, l'Islande et Jan Mayen. Elle est traversée par le Gulf Stream qui réchauffe l'Europe du Nord.",
+  {name:"Mer de Norvège",        ocean:"Atlantique", cat:"principale", parent:null, icon:"🐋",
+   desc:"Mer froide entre la Norvège, l'Islande et Jan Mayen. Traversée par le Gulf Stream qui réchauffe l'Europe du Nord.",
    fact:"Importante zone de pêche à la morue et au hareng"},
-  {name:"Mer du Labrador",       ocean:"Atlantique", cat:"principale", icon:"🧊",
+  {name:"Mer du Labrador",       ocean:"Atlantique", cat:"principale", parent:null, icon:"🧊",
    desc:"Bras de l'Atlantique entre le Canada (Labrador) et le Groenland. Connue pour ses icebergs et ses eaux très froides.",
    fact:"C'est là que le Titanic a heurté un iceberg en 1912"},
-  {name:"Mer de Scotia",         ocean:"Atlantique", cat:"principale", icon:"🌪️",
-   desc:"Mer agitée entre la Patagonie, les Malouines, la Géorgie du Sud et l'Antarctique. Passage des routes maritimes australes.",
+  {name:"Mer de Scotia",         ocean:"Atlantique", cat:"principale", parent:null, icon:"🌪️",
+   desc:"Mer agitée entre la Patagonie, les Malouines, la Géorgie du Sud et l'Antarctique.",
    fact:"Nommée d'après le navire Scotia de l'expédition écossaise (1902-04)"},
-  {name:"Mer des Sargasses",     ocean:"Atlantique", cat:"principale", icon:"🌿",
-   desc:"Unique mer sans côtes, délimitée par des courants oceaniques. Envahie par des algues sargasses flottantes. Située dans le triangle des Bermudes.",
+  {name:"Mer des Sargasses",     ocean:"Atlantique", cat:"principale", parent:null, icon:"🌿",
+   desc:"Unique mer sans côtes, délimitée par des courants. Envahie par des algues sargasses. Située dans le triangle des Bermudes.",
    fact:"Lieu de reproduction des anguilles d'Europe et d'Amérique"},
-  {name:"Mer d'Irlande",         ocean:"Atlantique", cat:"principale", icon:"☘️",
-   desc:"Mer étroite entre l'Irlande et la Grande-Bretagne (Angleterre et Pays de Galles). Traversée par de nombreuses liaisons maritimes.",
+  {name:"Mer d'Irlande",         ocean:"Atlantique", cat:"principale", parent:null, icon:"☘️",
+   desc:"Mer étroite entre l'Irlande et la Grande-Bretagne. Traversée par de nombreuses liaisons maritimes.",
    fact:"Profondeur maximale seulement 175 m"},
-  {name:"Mer Celtique",          ocean:"Atlantique", cat:"principale", icon:"🪨",
-   desc:"Mer entre la Bretagne, l'Irlande, le Pays de Galles et le Cornouailles. Zone de transition entre l'Atlantique et la Manche.",
+  {name:"Mer Celtique",          ocean:"Atlantique", cat:"principale", parent:null, icon:"🪨",
+   desc:"Mer entre la Bretagne, l'Irlande, le Pays de Galles et les Cornouailles. Zone de transition entre l'Atlantique et la Manche.",
    fact:"Riche en ressources halieutiques et en hydrocarbures"},
 
-  // Sous-mers Méditerranée
-  {name:"Mer d'Alboran",         ocean:"Atlantique", cat:"sous-mer", icon:"🐬",
-   desc:"Partie la plus occidentale de la Méditerranée, entre l'Espagne et le Maroc. Point d'entrée de l'eau atlantique en Méditerranée.",
+  // Sous-mers de la Méditerranée
+  {name:"Mer d'Alboran",    ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🐬",
+   desc:"Partie la plus occidentale de la Méditerranée, entre l'Espagne et le Maroc. Point d'entrée de l'eau atlantique.",
    fact:"Séparée de l'Atlantique par le détroit de Gibraltar"},
-  {name:"Mer des Baléares",      ocean:"Atlantique", cat:"sous-mer", icon:"🏖️",
-   desc:"Mer entre la côte est de l'Espagne et les îles Baléares (Majorque, Minorque, Ibiza). Très fréquentée par les touristes.",
+  {name:"Mer des Baléares", ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🏖️",
+   desc:"Mer entre la côte est de l'Espagne et les îles Baléares (Majorque, Minorque, Ibiza).",
    fact:"Fait partie du bassin occidental de la Méditerranée"},
-  {name:"Mer Ligure",            ocean:"Atlantique", cat:"sous-mer", icon:"⚓",
+  {name:"Mer Ligure",       ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"⚓",
    desc:"Mer entre la Riviera italienne, la Riviera française et la Corse. Entourée par Gênes, Nice et Bastia.",
    fact:"Nommée d'après la Ligurie, région du nord-ouest de l'Italie"},
-  {name:"Mer Tyrrhénienne",      ocean:"Atlantique", cat:"sous-mer", icon:"🌋",
-   desc:"Mer entre l'Italie continentale, la Corse, la Sardaigne et la Sicile. Baignée par des eaux chaudes, elle abrite de nombreux volcans sous-marins.",
+  {name:"Mer Tyrrhénienne", ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🌋",
+   desc:"Mer entre l'Italie continentale, la Corse, la Sardaigne et la Sicile. Abrite de nombreux volcans sous-marins.",
    fact:"Le Stromboli, volcan actif, se trouve sur ses bords"},
-  {name:"Mer Adriatique",        ocean:"Atlantique", cat:"sous-mer", icon:"🏛️",
-   desc:"Mer allongée entre l'Italie et les Balkans (Croatie, Monténégro, Albanie). Connue pour Venise et les nombreuses îles dalmates.",
+  {name:"Mer Adriatique",   ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🏛️",
+   desc:"Mer allongée entre l'Italie et les Balkans (Croatie, Monténégro, Albanie). Connue pour Venise et les îles dalmates.",
    fact:"Peu profonde au nord, jusqu'à 1 200 m au sud"},
-  {name:"Mer Ionienne",          ocean:"Atlantique", cat:"sous-mer", icon:"🏺",
-   desc:"Mer entre le sud de l'Italie, la Sicile et la Grèce. C'est la partie la plus profonde de la Méditerranée.",
+  {name:"Mer Ionienne",     ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🏺",
+   desc:"Mer entre le sud de l'Italie, la Sicile et la Grèce. La partie la plus profonde de la Méditerranée.",
    fact:"Point le plus profond : 5 267 m (fosse Calypso)"},
-  {name:"Mer Égée",              ocean:"Atlantique", cat:"sous-mer", icon:"🏛️",
-   desc:"Mer parsemée d'îles entre la Grèce et la Turquie. Berceau de la civilisation grecque antique. Plus de 2 000 îles grecques.",
+  {name:"Mer Égée",         ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🏛️",
+   desc:"Mer parsemée d'îles entre la Grèce et la Turquie. Berceau de la civilisation grecque antique.",
    fact:"Doit son nom à Égée, père mythologique de Thésée"},
-  {name:"Mer de Thrace",         ocean:"Atlantique", cat:"sous-mer", icon:"⚔️",
-   desc:"Partie nord-est de la mer Égée, entre la Grèce (Thrace) et la Turquie. Reliée à la mer Noire par le détroit des Dardanelles.",
-   fact:"Zone stratégique pour l'accès à Istanbul et la mer Noire"},
-  {name:"Mer de Crète",          ocean:"Atlantique", cat:"sous-mer", icon:"🫒",
-   desc:"Partie de la mer Égée entre la Grèce continentale et l'île de Crète. Parsemée de nombreuses petites îles des Cyclades.",
+  {name:"Mer de Thrace",    ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"⚔️",
+   desc:"Partie nord-est de la mer Égée, entre la Grèce et la Turquie. Reliée à la mer Noire par le détroit des Dardanelles.",
+   fact:"Zone stratégique pour l'accès à Istanbul"},
+  {name:"Mer de Crète",     ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🫒",
+   desc:"Partie de la mer Égée entre la Grèce continentale et l'île de Crète, parsemée des îles Cyclades.",
    fact:"La Crète est la plus grande île de Grèce"},
-  {name:"Mer de Libye",          ocean:"Atlantique", cat:"sous-mer", icon:"🐪",
-   desc:"Partie de la Méditerranée au nord de la Libye et à l'est de la Tunisie. Bordure méridionale de la Méditerranée orientale.",
+  {name:"Mer de Libye",     ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🐪",
+   desc:"Partie de la Méditerranée au nord de la Libye et à l'est de la Tunisie.",
    fact:"Communique avec la mer Ionienne à l'est"},
-  {name:"Mer de Cilicie",        ocean:"Atlantique", cat:"sous-mer", icon:"🌙",
-   desc:"Partie nord-est de la Méditerranée, bordée par la côte sud de la Turquie (ancienne Cilicie) et Chypre.",
+  {name:"Mer de Cilicie",   ocean:"Atlantique", cat:"sous-mer", parent:"Mer Méditerranée", icon:"🌙",
+   desc:"Partie nord-est de la Méditerranée, bordée par la côte sud de la Turquie et Chypre.",
    fact:"La Cilicie était une région de l'Antiquité en Anatolie"},
 
-  // Sous-mers Baltique
-  {name:"Golfe de Botnie",       ocean:"Atlantique", cat:"golfe", icon:"🌲",
-   desc:"Partie la plus septentrionale de la mer Baltique, entre la Suède et la Finlande. Ses eaux gèlent en hiver.",
+  // Sous-mers de la Baltique
+  {name:"Golfe de Botnie",    ocean:"Atlantique", cat:"golfe", parent:"Mer Baltique", icon:"🌲",
+   desc:"Partie la plus septentrionale de la mer Baltique, entre la Suède et la Finlande. Gèle en hiver.",
    fact:"Eau presque douce en raison de nombreuses rivières"},
-  {name:"Golfe de Finlande",     ocean:"Atlantique", cat:"golfe", icon:"🦌",
-   desc:"Prolongement est de la mer Baltique entre la Finlande, l'Estonie et la Russie. Saint-Pétersbourg est au fond de ce golfe.",
+  {name:"Golfe de Finlande",  ocean:"Atlantique", cat:"golfe", parent:"Mer Baltique", icon:"🦌",
+   desc:"Prolongement est de la Baltique entre la Finlande, l'Estonie et la Russie. Saint-Pétersbourg est au fond.",
    fact:"Saint-Pétersbourg y a été fondé en 1703 par Pierre le Grand"},
-  {name:"Golfe de Riga",         ocean:"Atlantique", cat:"golfe", icon:"🏰",
+  {name:"Golfe de Riga",      ocean:"Atlantique", cat:"golfe", parent:"Mer Baltique", icon:"🏰",
    desc:"Golfe de la Baltique entre la Lettonie et l'Estonie. La capitale lettone Riga lui doit son nom.",
    fact:"Gèle partiellement chaque hiver"},
 
-  // Caraïbes
-  {name:"Golfe du Mexique",      ocean:"Atlantique", cat:"golfe", icon:"🦞",
+  // Sous-zones des Caraïbes
+  {name:"Golfe du Mexique",   ocean:"Atlantique", cat:"golfe", parent:"Mer des Caraïbes", icon:"🦞",
    desc:"Grand golfe entre les États-Unis, le Mexique et Cuba. Important pour la pêche, le pétrole et le tourisme.",
    fact:"Frappé par les ouragans en été et en automne"},
-  {name:"Mer des Antilles",      ocean:"Atlantique", cat:"sous-mer", icon:"🎺",
-   desc:"Autre nom de la mer des Caraïbes, utilisé surtout par les Français et les Espagnols. Délimitée par les îles des Antilles.",
+  {name:"Mer des Antilles",   ocean:"Atlantique", cat:"sous-mer", parent:"Mer des Caraïbes", icon:"🎺",
+   desc:"Autre nom de la mer des Caraïbes, utilisé surtout par les Français. Délimitée par les îles des Antilles.",
    fact:"Les Grandes Antilles incluent Cuba, Haïti, Porto Rico et la Jamaïque"},
 
-  // ── PACIFIQUE ────────────────────────────────────────────
-  {name:"Mer de Chine méridionale", ocean:"Pacifique", cat:"principale", icon:"🐉",
-   desc:"Grande mer d'Asie du Sud-Est entourée par la Chine, le Vietnam, les Philippines et la Malaisie. Zone stratégique et très disputée.",
+  // ── PACIFIQUE ────────────────────────────────
+  {name:"Mer de Chine méridionale", ocean:"Pacifique", cat:"principale", parent:null, icon:"🐉",
+   desc:"Grande mer d'Asie du Sud-Est entourée par la Chine, le Vietnam, les Philippines et la Malaisie. Zone stratégique disputée.",
    fact:"Contient les îles Spratleys et Paracels, sources de conflits"},
-  {name:"Mer de Chine orientale",   ocean:"Pacifique", cat:"principale", icon:"⛩️",
+  {name:"Mer de Chine orientale",   ocean:"Pacifique", cat:"principale", parent:null, icon:"⛩️",
    desc:"Mer entre la Chine, le Japon, la Corée du Sud et Taïwan. Importantes routes maritimes commerciales.",
-   fact:"Les îles Senkaku/Diaoyu y sont disputées entre Japon et Chine"},
-  {name:"Mer du Japon",         ocean:"Pacifique", cat:"principale", icon:"🗾",
-   desc:"Mer entre le Japon, la Corée et la Russie. Appelée 'mer de l'Est' par les Coréens, ce qui crée une controverse.",
+   fact:"Les îles Senkaku/Diaoyu sont disputées entre le Japon et la Chine"},
+  {name:"Mer du Japon",      ocean:"Pacifique", cat:"principale", parent:null, icon:"🗾",
+   desc:"Mer entre le Japon, la Corée et la Russie. Appelée 'mer de l'Est' par les Coréens.",
    fact:"Séparée du Pacifique par les îles japonaises"},
-  {name:"Mer de Béring",        ocean:"Pacifique", cat:"principale", icon:"🦅",
-   desc:"Mer froide entre l'Alaska et la Russie. Là où l'Amérique et l'Asie sont les plus proches (86 km de distance).",
+  {name:"Mer de Béring",     ocean:"Pacifique", cat:"principale", parent:null, icon:"🦅",
+   desc:"Mer froide entre l'Alaska et la Russie. Là où l'Amérique et l'Asie sont les plus proches (86 km).",
    fact:"Séparée de l'Arctique par le détroit de Béring"},
-  {name:"Mer d'Okhotsk",        ocean:"Pacifique", cat:"principale", icon:"🐟",
-   desc:"Mer entre la Russie (Sibérie) et l'île de Sakhaline, bordée par les îles Kouriles et le Kamtchatka. Gèle en hiver.",
+  {name:"Mer d'Okhotsk",     ocean:"Pacifique", cat:"principale", parent:null, icon:"🐟",
+   desc:"Mer entre la Russie (Sibérie) et l'île de Sakhaline, bordée par les Kouriles et le Kamtchatka. Gèle en hiver.",
    fact:"Importante zone de pêche au crabe et au saumon"},
-  {name:"Mer des Philippines",  ocean:"Pacifique", cat:"principale", icon:"🏔️",
-   desc:"Vaste mer à l'est des Philippines, entre les Mariannes, les Carolines et Taïwan. Contient les plus grandes profondeurs océaniques.",
+  {name:"Mer des Philippines",ocean:"Pacifique", cat:"principale", parent:null, icon:"🏔️",
+   desc:"Vaste mer à l'est des Philippines, entre les Mariannes, les Carolines et Taïwan.",
    fact:"La fosse des Mariannes (11 034 m) se trouve dans cette mer"},
-  {name:"Mer de Corail",        ocean:"Pacifique", cat:"principale", icon:"🪸",
+  {name:"Mer de Corail",     ocean:"Pacifique", cat:"principale", parent:null, icon:"🪸",
    desc:"Mer au nord-est de l'Australie abritant la Grande Barrière de Corail, le plus grand récif du monde.",
    fact:"Théâtre d'une bataille navale décisive en mai 1942"},
-  {name:"Mer de Tasman",        ocean:"Pacifique", cat:"principale", icon:"🦘",
-   desc:"Mer entre l'Australie et la Nouvelle-Zélande. Traversée par les liaisons maritimes et aériennes trans-Tasman.",
+  {name:"Mer de Tasman",     ocean:"Pacifique", cat:"principale", parent:null, icon:"🦘",
+   desc:"Mer entre l'Australie et la Nouvelle-Zélande.",
    fact:"Nommée d'après l'explorateur néerlandais Abel Tasman (1642)"},
-  {name:"Mer de Java",          ocean:"Pacifique", cat:"principale", icon:"☕",
+  {name:"Mer de Java",       ocean:"Pacifique", cat:"principale", parent:null, icon:"☕",
    desc:"Mer entre Java, Sumatra, Bornéo et Sulawesi en Indonésie. Peu profonde mais très fréquentée.",
    fact:"Profondeur moyenne : seulement 46 m"},
-  {name:"Mer de Banda",         ocean:"Pacifique", cat:"principale", icon:"🌶️",
-   desc:"Mer entre les îles Moluques en Indonésie. Historiquement connue comme les 'Îles aux épices' (clous de girofle, muscade).",
+  {name:"Mer de Banda",      ocean:"Pacifique", cat:"principale", parent:null, icon:"🌶️",
+   desc:"Mer entre les îles Moluques en Indonésie. Historiquement connue comme les 'Îles aux épices'.",
    fact:"Les Moluques étaient la principale source de muscade au XVIIe s."},
-  {name:"Mer de Célèbes",       ocean:"Pacifique", cat:"principale", icon:"🦜",
+  {name:"Mer de Célèbes",    ocean:"Pacifique", cat:"principale", parent:null, icon:"🦜",
    desc:"Mer entre les Philippines et l'île indonésienne de Sulawesi (Célèbes). Riche biodiversité marine.",
    fact:"Sulawesi est l'île aux quatre péninsules"},
-  {name:"Mer de Salomon",       ocean:"Pacifique", cat:"principale", icon:"🐊",
-   desc:"Mer entre la Papouasie-Nouvelle-Guinée et les îles Salomon. Théâtre de violents combats navals en 1942-1943.",
+  {name:"Mer de Salomon",    ocean:"Pacifique", cat:"principale", parent:null, icon:"🐊",
+   desc:"Mer entre la Papouasie-Nouvelle-Guinée et les îles Salomon. Théâtre de violents combats navals en 1942-43.",
    fact:"Les îles Salomon constituent un État indépendant depuis 1978"},
 
-  // Sous-mers Pacifique
-  {name:"Mer de Sulu",          ocean:"Pacifique", cat:"sous-mer", icon:"🤿",
-   desc:"Mer entre les Philippines (archipel de Sulu) et la Malaisie (Bornéo). Connue pour sa biodiversité et la piraterie historique.",
+  // Sous-mers du Pacifique (sous Chine méridionale ou mers de l'archipel indonésien)
+  {name:"Mer de Sulu",        ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Chine méridionale", icon:"🤿",
+   desc:"Mer entre les Philippines (archipel de Sulu) et la Malaisie (Bornéo). Connue pour sa biodiversité.",
    fact:"L'archipel de Sulu compte plus de 900 îles"},
-  {name:"Mer des Moluques",     ocean:"Pacifique", cat:"sous-mer", icon:"🌺",
-   desc:"Mer entre les îles Moluques du Nord et la mer des Célèbes en Indonésie. Carrefour des routes maritimes historiques des épices.",
-   fact:"Fait partie de l'archipel indonésien"},
-  {name:"Mer de Flores",        ocean:"Pacifique", cat:"sous-mer", icon:"🦎",
-   desc:"Mer entre les îles de Lombok, Sumbawa, Flores et Sulawesi en Indonésie. L'île de Flores est réputée pour le volcan Kelimutu.",
-   fact:"Flores signifie 'fleurs' en portugais"},
-  {name:"Mer de Savu",          ocean:"Pacifique", cat:"sous-mer", icon:"🌴",
-   desc:"Petite mer entre les îles de Sumba, Savu et Timor en Indonésie. Transition entre l'océan Indien et le Pacifique.",
-   fact:"L'île de Savu est connue pour l'élevage de chevaux"},
-  {name:"Mer de Halmahera",     ocean:"Pacifique", cat:"sous-mer", icon:"🦩",
-   desc:"Mer autour de l'île d'Halmahera (Moluques du Nord). Alfred Russel Wallace y a élaboré sa théorie de l'évolution en parallèle de Darwin.",
-   fact:"Halmahera est la plus grande île des Moluques"},
-  {name:"Mer de Bismarck",      ocean:"Pacifique", cat:"sous-mer", icon:"⚓",
-   desc:"Mer entre la Nouvelle-Bretagne et la Nouvelle-Irlande en Papouasie-Nouvelle-Guinée. Théâtre de la bataille de la mer de Bismarck (1943).",
-   fact:"Nommée d'après le chancelier allemand Otto von Bismarck"},
-  {name:"Mer de Mindanao",      ocean:"Pacifique", cat:"sous-mer", icon:"🐙",
-   desc:"Mer dans la partie sud des Philippines autour de l'île de Mindanao. Contient de profondes fosses océaniques.",
+  {name:"Mer de Mindanao",    ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Chine méridionale", icon:"🐙",
+   desc:"Mer dans la partie sud des Philippines autour de l'île de Mindanao. Contient de profondes fosses.",
    fact:"La fosse de Mindanao atteint 10 500 m de profondeur"},
+  {name:"Mer des Moluques",   ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Banda", icon:"🌺",
+   desc:"Mer entre les îles Moluques du Nord. Carrefour des routes maritimes historiques des épices.",
+   fact:"Fait partie de l'archipel indonésien"},
+  {name:"Mer de Flores",      ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Java", icon:"🦎",
+   desc:"Mer entre les îles de Lombok, Sumbawa, Flores et Sulawesi en Indonésie.",
+   fact:"Flores signifie 'fleurs' en portugais"},
+  {name:"Mer de Savu",        ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Java", icon:"🌴",
+   desc:"Petite mer entre les îles de Sumba, Savu et Timor en Indonésie.",
+   fact:"L'île de Savu est connue pour l'élevage de chevaux"},
+  {name:"Mer de Halmahera",   ocean:"Pacifique", cat:"sous-mer", parent:"Mer des Moluques", icon:"🦩",
+   desc:"Mer autour de l'île d'Halmahera (Moluques du Nord). Wallace y élabora sa théorie de l'évolution.",
+   fact:"Halmahera est la plus grande île des Moluques"},
+  {name:"Mer de Bismarck",    ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Salomon", icon:"⚓",
+   desc:"Mer entre la Nouvelle-Bretagne et la Nouvelle-Irlande en PNG. Théâtre de la bataille de la mer de Bismarck (1943).",
+   fact:"Nommée d'après le chancelier allemand Otto von Bismarck"},
 
-  // ── ARCTIQUE ─────────────────────────────────────────────
-  {name:"Mer de Barents",        ocean:"Arctique", cat:"principale", icon:"🐻‍❄️",
-   desc:"Mer arctique entre la Norvège, la Russie et l'archipel du Svalbard. Importante zone de pêche et d'exploration pétrolière.",
+  // ── ARCTIQUE ─────────────────────────────────
+  {name:"Mer de Barents",    ocean:"Arctique", cat:"principale", parent:null, icon:"🐻‍❄️",
+   desc:"Mer arctique entre la Norvège, la Russie et le Svalbard. Zone de pêche et d'exploration pétrolière.",
    fact:"Nommée d'après l'explorateur néerlandais Willem Barents (1596)"},
-  {name:"Mer de Kara",           ocean:"Arctique", cat:"principale", icon:"🌊",
-   desc:"Mer entre la Sibérie occidentale et les îles Nouvelle-Zemble. Réceptrice de grands fleuves sibériens (Ob, Ienisseï).",
+  {name:"Mer de Kara",       ocean:"Arctique", cat:"principale", parent:null, icon:"🌊",
+   desc:"Mer entre la Sibérie occidentale et les îles Nouvelle-Zemble. Reçoit les eaux de l'Ob et de l'Ienisseï.",
    fact:"L'URSS y a effectué des essais nucléaires sous-marins"},
-  {name:"Mer de Laptev",         ocean:"Arctique", cat:"principale", icon:"🧊",
+  {name:"Mer de Laptev",     ocean:"Arctique", cat:"principale", parent:null, icon:"🧊",
    desc:"Mer arctique au nord de la Sibérie centrale. Très peu profonde et gelée la majeure partie de l'année.",
    fact:"Nommée d'après les frères Laptev, explorateurs russes du XVIIIe s."},
-  {name:"Mer de Sibérie orientale", ocean:"Arctique", cat:"principale", icon:"🌨️",
-   desc:"La mer arctique la plus froide et la plus plate. Située au nord-est de la Sibérie, entre la mer de Laptev et le détroit de Béring.",
+  {name:"Mer de Sibérie orientale", ocean:"Arctique", cat:"principale", parent:null, icon:"🌨️",
+   desc:"La mer arctique la plus froide et la plus plate, au nord-est de la Sibérie.",
    fact:"Sa profondeur moyenne est de seulement 54 m"},
-  {name:"Mer des Tchouktches",   ocean:"Arctique", cat:"principale", icon:"🦣",
+  {name:"Mer des Tchouktches", ocean:"Arctique", cat:"principale", parent:null, icon:"🦣",
    desc:"Mer entre l'Alaska et la Chukotka russe, au nord du détroit de Béring. Zone de migration des baleines grises.",
    fact:"Nommée d'après les Tchouktches, peuple autochtone de Sibérie"},
-  {name:"Mer de Beaufort",       ocean:"Arctique", cat:"principale", icon:"🛢️",
-   desc:"Mer arctique au nord de l'Alaska et du Canada occidental. Sous-sol riche en pétrole et gaz, sujet de controverses environnementales.",
+  {name:"Mer de Beaufort",   ocean:"Arctique", cat:"principale", parent:null, icon:"🛢️",
+   desc:"Mer arctique au nord de l'Alaska et du Canada. Sous-sol riche en pétrole et gaz.",
    fact:"Nommée d'après l'amiral britannique Francis Beaufort"},
-  {name:"Mer du Groenland",      ocean:"Arctique", cat:"principale", icon:"🌍",
+  {name:"Mer du Groenland",  ocean:"Arctique", cat:"principale", parent:null, icon:"🌍",
    desc:"Mer entre le Groenland, le Svalbard et l'Islande. Importante pour la formation des eaux profondes de l'Atlantique.",
    fact:"Participe à la régulation du climat de l'hémisphère nord"},
-  {name:"Mer de Lincoln",        ocean:"Arctique", cat:"principale", icon:"❄️",
-   desc:"Mer arctique entre le nord du Groenland et l'île d'Ellesmere au Canada. L'une des mers les plus septentrionales du monde.",
+  {name:"Mer de Lincoln",    ocean:"Arctique", cat:"principale", parent:null, icon:"❄️",
+   desc:"Mer arctique entre le nord du Groenland et l'île d'Ellesmere au Canada. L'une des plus septentrionales.",
    fact:"Presque toujours recouverte de glace permanente"},
 
-  // ── INDIEN ───────────────────────────────────────────────
-  {name:"Mer Rouge",             ocean:"Indien", cat:"principale", icon:"🦈",
-   desc:"Mer étroite entre l'Afrique (Égypte, Soudan, Érythrée) et la péninsule arabique. Reliée à la Méditerranée par le canal de Suez.",
+  // ── INDIEN ───────────────────────────────────
+  {name:"Mer Rouge",           ocean:"Indien", cat:"principale", parent:null, icon:"🦈",
+   desc:"Mer étroite entre l'Afrique et la péninsule arabique. Reliée à la Méditerranée par le canal de Suez.",
    fact:"L'une des mers les plus salées du monde (41 g/l)"},
-  {name:"Mer d'Arabie",          ocean:"Indien", cat:"principale", icon:"🏺",
-   desc:"Partie nord-ouest de l'océan Indien, bordée par l'Arabie, l'Inde et la Corne de l'Afrique. Importante route commerciale historique.",
+  {name:"Mer d'Arabie",        ocean:"Indien", cat:"principale", parent:null, icon:"🏺",
+   desc:"Partie nord-ouest de l'océan Indien, bordée par l'Arabie, l'Inde et la Corne de l'Afrique.",
    fact:"Les moussons y dominent la navigation depuis l'Antiquité"},
-  {name:"Mer d'Oman",            ocean:"Indien", cat:"principale", icon:"🛢️",
-   desc:"Mer entre l'Oman, le Pakistan et l'Inde. Prolongement nord-ouest de l'océan Indien. Débouche sur le Golfe Persique.",
+  {name:"Mer d'Oman",          ocean:"Indien", cat:"principale", parent:null, icon:"🛢️",
+   desc:"Mer entre l'Oman, le Pakistan et l'Inde. Débouche sur le Golfe Persique.",
    fact:"Le détroit d'Ormuz est l'un des passages pétroliers les plus critiques"},
-  {name:"Mer d'Andaman",         ocean:"Indien", cat:"principale", icon:"🏝️",
-   desc:"Mer entre le Myanmar, la Thaïlande, la Malaisie et les îles Andaman-et-Nicobar. Très touchée par le tsunami de 2004.",
-   fact:"Nommée d'après les îles Andaman peuplées de tribus isolées"},
-  {name:"Mer de Timor",          ocean:"Indien", cat:"principale", icon:"🦅",
-   desc:"Mer entre Timor oriental, l'Indonésie et l'Australie du Nord. Région riche en pétrole et gaz offshore.",
+  {name:"Mer d'Andaman",       ocean:"Indien", cat:"principale", parent:null, icon:"🏝️",
+   desc:"Mer entre le Myanmar, la Thaïlande, la Malaisie et les îles Andaman. Touchée par le tsunami de 2004.",
+   fact:"Les îles Andaman abritent des tribus restées isolées du monde moderne"},
+  {name:"Mer de Timor",        ocean:"Indien", cat:"principale", parent:null, icon:"🦅",
+   desc:"Mer entre Timor oriental, l'Indonésie et l'Australie du Nord. Riche en pétrole et gaz offshore.",
    fact:"Le Timor oriental a accédé à l'indépendance en 2002"},
-  {name:"Mer de Laquedives",     ocean:"Indien", cat:"principale", icon:"🐠",
-   desc:"Mer entre les îles Laquedives (Lakshadweep), les Maldives et la côte ouest de l'Inde. Eaux tropicales cristallines.",
+  {name:"Mer de Laquedives",   ocean:"Indien", cat:"principale", parent:null, icon:"🐠",
+   desc:"Mer entre les îles Laquedives (Lakshadweep), les Maldives et la côte ouest de l'Inde.",
    fact:"Les Lakshadweep sont le plus petit territoire de l'Inde"},
 
-  // ── AUSTRAL ──────────────────────────────────────────────
-  {name:"Mer de Weddell",        ocean:"Austral", cat:"principale", icon:"🐧",
+  // ── AUSTRAL ──────────────────────────────────
+  {name:"Mer de Weddell",         ocean:"Austral", cat:"principale", parent:null, icon:"🐧",
    desc:"Mer au large de l'Antarctique, à l'est de la péninsule antarctique. Connue pour ses icebergs tabulaires géants.",
    fact:"L'Endurance de Shackleton y fut piégée dans les glaces en 1915"},
-  {name:"Mer de Ross",           ocean:"Austral", cat:"principale", icon:"🧊",
-   desc:"Mer profonde au sud du Pacifique, bordant l'Antarctique. Contient la plateforme de glace de Ross, la plus grande du monde.",
+  {name:"Mer de Ross",            ocean:"Austral", cat:"principale", parent:null, icon:"🧊",
+   desc:"Mer profonde au sud du Pacifique, bordant l'Antarctique. Contient la plateforme de glace de Ross.",
    fact:"Nommée d'après l'explorateur britannique James Clark Ross (1841)"},
-  {name:"Mer d'Amundsen",        ocean:"Austral", cat:"principale", icon:"🧭",
-   desc:"Mer côtière de l'Antarctique occidental. La banquise y fond plus vite que partout ailleurs en raison du réchauffement climatique.",
+  {name:"Mer d'Amundsen",         ocean:"Austral", cat:"principale", parent:null, icon:"🧭",
+   desc:"Mer côtière de l'Antarctique occidental. La banquise y fond plus vite qu'ailleurs à cause du réchauffement.",
    fact:"Nommée d'après Roald Amundsen, premier homme au pôle Sud (1911)"},
-  {name:"Mer de Bellingshausen", ocean:"Austral", cat:"principale", icon:"🐳",
-   desc:"Mer entre la péninsule antarctique et les îles Pierre Ier et Alexandre Ier. Zone de recherche sur le changement climatique.",
+  {name:"Mer de Bellingshausen",  ocean:"Austral", cat:"principale", parent:null, icon:"🐳",
+   desc:"Mer entre la péninsule antarctique et les îles Pierre Ier et Alexandre Ier.",
    fact:"Nommée d'après l'explorateur russe Fabian von Bellingshausen"},
-  {name:"Mer de Davis",          ocean:"Austral", cat:"principale", icon:"🌬️",
+  {name:"Mer de Davis",           ocean:"Austral", cat:"principale", parent:null, icon:"🌬️",
    desc:"Mer entre la Terre d'Adélie (Antarctique) et l'Australie. Traversée par des expéditions scientifiques australiennes.",
    fact:"Nommée d'après John King Davis, capitaine de navire polaire"},
-  {name:"Mer de Somov",          ocean:"Austral", cat:"principale", icon:"❄️",
-   desc:"Mer côtière de l'Antarctique oriental, au large de la Terre de Wilkes. Nommée en hommage à un explorateur soviétique.",
+  {name:"Mer de Somov",           ocean:"Austral", cat:"principale", parent:null, icon:"❄️",
+   desc:"Mer côtière de l'Antarctique oriental, au large de la Terre de Wilkes.",
    fact:"Nommée d'après Mikhaïl Somov, explorateur polaire soviétique"},
-  {name:"Mer de Lazarev",        ocean:"Austral", cat:"principale", icon:"🌊",
-   desc:"Mer côtière de l'Antarctique occidental au large de la Terre de la Reine Maud. Zone peu explorée.",
+  {name:"Mer de Lazarev",         ocean:"Austral", cat:"principale", parent:null, icon:"🌊",
+   desc:"Mer côtière de l'Antarctique occidental au large de la Terre de la Reine Maud.",
    fact:"Nommée d'après l'amiral russe Mikhaïl Lazarev"},
-  {name:"Mer de Riiser-Larsen",  ocean:"Austral", cat:"principale", icon:"🐦",
+  {name:"Mer de Riiser-Larsen",   ocean:"Austral", cat:"principale", parent:null, icon:"🐦",
    desc:"Mer antarctique entre la mer de Weddell et la mer de Lazarev. Zone de formation de glace en hiver.",
    fact:"Nommée d'après l'aviateur et explorateur norvégien Hjalmar Riiser-Larsen"},
 
-  // ── FERMÉES ──────────────────────────────────────────────
-  {name:"Mer Caspienne",         ocean:"Fermée", cat:"fermee", icon:"🛢️",
-   desc:"Le plus grand lac du monde, souvent appelé mer en raison de sa taille. Entourée par la Russie, le Kazakhstan, l'Azerbaïdjan, l'Iran et le Turkménistan.",
+  // ── FERMÉES ──────────────────────────────────
+  {name:"Mer Caspienne", ocean:"Fermée", cat:"fermee", parent:null, icon:"🛢️",
+   desc:"Le plus grand lac du monde, souvent appelé mer. Entourée par la Russie, le Kazakhstan, l'Azerbaïdjan, l'Iran et le Turkménistan.",
    fact:"Riche en réserves de pétrole et de gaz naturel"},
-  {name:"Mer Noire",             ocean:"Fermée", cat:"fermee", icon:"🌑",
-   desc:"Mer intérieure entre l'Europe de l'Est et la Turquie, entourée par 6 pays. Reliée à la Méditerranée par le détroit du Bosphore et Istanbul.",
+  {name:"Mer Noire",     ocean:"Fermée", cat:"fermee", parent:null, icon:"🌑",
+   desc:"Mer intérieure entre l'Europe de l'Est et la Turquie. Reliée à la Méditerranée par le détroit du Bosphore.",
    fact:"Presque dépourvue d'oxygène en profondeur (eau anoxique)"},
-  {name:"Mer d'Azov",            ocean:"Fermée", cat:"fermee", icon:"🌾",
-   desc:"Petite mer peu profonde au nord de la mer Noire, entre l'Ukraine et la Russie. La mer la plus petite du monde selon certaines définitions.",
-   fact:"Profondeur maximale : seulement 14 m"},
-  {name:"Mer Morte",             ocean:"Fermée", cat:"fermee", icon:"🧂",
-   desc:"Lac hypersalin entre Israël, la Jordanie et la Cisjordanie. Aucun poisson n'y vit. On y flotte naturellement sans effort.",
+  {name:"Mer d'Azov",    ocean:"Fermée", cat:"fermee", parent:"Mer Noire", icon:"🌾",
+   desc:"Petite mer peu profonde au nord de la mer Noire, entre l'Ukraine et la Russie.",
+   fact:"La mer la moins profonde du monde : maximum 14 m"},
+  {name:"Mer Morte",     ocean:"Fermée", cat:"fermee", parent:null, icon:"🧂",
+   desc:"Lac hypersalin entre Israël, la Jordanie et la Cisjordanie. Aucun poisson n'y vit. On y flotte naturellement.",
    fact:"Point le plus bas de la Terre (430 m sous le niveau de la mer)"},
-  {name:"Mer d'Aral",            ocean:"Fermée", cat:"fermee", icon:"😢",
-   desc:"Ancien grand lac salé entre le Kazakhstan et l'Ouzbékistan. A perdu 90% de son volume depuis les années 1960 à cause des détournements d'eau soviétiques.",
+  {name:"Mer d'Aral",    ocean:"Fermée", cat:"fermee", parent:null, icon:"😢",
+   desc:"Ancien grand lac salé entre le Kazakhstan et l'Ouzbékistan. A perdu 90% de son volume depuis les années 1960.",
    fact:"L'une des pires catastrophes environnementales causées par l'homme"},
 ];
 
-// ════════════════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════════════════
-let activeTab   = "rev";
-let revFilter   = "Tous";
-let gameFilter  = "Tous";
-let gamePool    = [], gameIdx = 0, gameScore = 0;
-let answered    = false, currentAns = "";
-
-// ════════════════════════════════════════════════════════════
-//  DARK MODE
-// ════════════════════════════════════════════════════════════
-const darkToggle = document.getElementById("darkToggle");
-let darkOn = localStorage.getItem("darkMode") === "1";
-function applyDark(){
-  document.documentElement.classList.toggle("dark", darkOn);
-  darkToggle.textContent = darkOn ? "☀️" : "🌙";
-}
-applyDark();
-darkToggle.onclick = () => {
-  darkOn = !darkOn;
-  localStorage.setItem("darkMode", darkOn ? "1" : "0");
-  applyDark();
+// ════════════════════════════════════════
+// CONSTANTES
+// ════════════════════════════════════════
+const OCEAN_META = {
+  "Atlantique": {label:"🌎 Océan Atlantique", order:1},
+  "Pacifique":  {label:"🌏 Océan Pacifique",  order:2},
+  "Arctique":   {label:"❄️ Océan Arctique",   order:3},
+  "Indien":     {label:"🌍 Océan Indien",     order:4},
+  "Austral":    {label:"🐧 Océan Austral",    order:5},
+  "Fermée":     {label:"🔒 Mers fermées",     order:6},
 };
+const BADGE_CLASS = {principale:"badge-principale","sous-mer":"badge-sous-mer",golfe:"badge-golfe",fermee:"badge-fermee"};
+const BADGE_LABEL = {principale:"Mer principale","sous-mer":"Sous-mer","golfe":"Golfe",fermee:"Mer fermée"};
 
-// ════════════════════════════════════════════════════════════
-//  ONGLETS
-// ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let activeTab="rev", revFilter="Tous", revSubFilter="Tous";
+let gameFilter="Tous", gameSubFilter="Tous";
+let gamePool=[], gameIdx=0, gameScore=0, answered=false, currentAns="";
+
+// ════════════════════════════════════════
+// DARK MODE
+// ════════════════════════════════════════
+const darkToggle=document.getElementById("darkToggle");
+let darkOn=localStorage.getItem("darkMode")==="1";
+function applyDark(){document.documentElement.classList.toggle("dark",darkOn);darkToggle.textContent=darkOn?"☀️":"🌙";}
+applyDark();
+darkToggle.onclick=()=>{darkOn=!darkOn;localStorage.setItem("darkMode",darkOn?"1":"0");applyDark();};
+
+// ════════════════════════════════════════
+// ONGLETS
+// ════════════════════════════════════════
 function switchTab(tab){
-  activeTab = tab;
-  document.getElementById("tabRev").classList.toggle("active", tab==="rev");
-  document.getElementById("tabGame").classList.toggle("active", tab==="game");
-  document.getElementById("revSection").classList.toggle("on", tab==="rev");
-  document.getElementById("gameSection").classList.toggle("on", tab==="game");
+  activeTab=tab;
+  document.getElementById("tabRev").classList.toggle("active",tab==="rev");
+  document.getElementById("tabGame").classList.toggle("active",tab==="game");
+  document.getElementById("revSection").classList.toggle("on",tab==="rev");
+  document.getElementById("gameSection").classList.toggle("on",tab==="game");
   if(tab==="game") startGame();
 }
 
-// ════════════════════════════════════════════════════════════
-//  RÉVISION
-// ════════════════════════════════════════════════════════════
-const OCEAN_META = {
-  "Atlantique": { label:"🌎 Océan Atlantique", order:1 },
-  "Pacifique":  { label:"🌏 Océan Pacifique",  order:2 },
-  "Arctique":   { label:"❄️ Océan Arctique",   order:3 },
-  "Indien":     { label:"🌍 Océan Indien",     order:4 },
-  "Austral":    { label:"🐧 Océan Austral",    order:5 },
-  "Fermée":     { label:"🔒 Mers fermées",     order:6 },
-};
-const BADGE = { "principale":"badge-principale","sous-mer":"badge-sous-mer","golfe":"badge-golfe","fermee":"badge-fermee" };
-const BADGE_LABEL = { "principale":"Mer principale","sous-mer":"Sous-mer / zone","golfe":"Golfe","fermee":"Mer fermée" };
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+// Retourne les mers du filtre océan (ou toutes)
+function byOcean(ocean){ return ocean==="Tous" ? SEAS : SEAS.filter(s=>s.ocean===ocean); }
 
+// Retourne les noms de parents uniques pour un océan (mers qui ont des sous-mers)
+function getParents(ocean){
+  const data = byOcean(ocean);
+  const parents = new Set();
+  data.forEach(s=>{ if(s.parent) parents.add(s.parent); });
+  return [...parents];
+}
+
+// Filtre final avec sous-filtre parent
+function filteredSeas(ocean, subFilter){
+  let data = byOcean(ocean);
+  if(subFilter && subFilter!=="Tous"){
+    // Affiche soit la mer mère, soit ses sous-mers
+    data = data.filter(s => s.name===subFilter || s.parent===subFilter);
+  }
+  return data;
+}
+
+// ════════════════════════════════════════
+// RÉVISION — filtres
+// ════════════════════════════════════════
 function setRevFilter(f, el){
-  revFilter = f;
+  revFilter=f; revSubFilter="Tous";
   document.querySelectorAll("#revFilterBar .filter-chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+  renderRevSubFilters();
+  renderRevision();
+}
+
+function setRevSubFilter(f, el){
+  revSubFilter=f;
+  document.querySelectorAll("#revSubFilterBar .subfilter-chip").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
   renderRevision();
 }
 
-function renderRevision(){
-  const container = document.getElementById("revContent");
-  container.innerHTML = "";
-  const data = revFilter==="Tous" ? SEAS : SEAS.filter(s=>s.ocean===revFilter);
+function renderRevSubFilters(){
+  const bar = document.getElementById("revSubFilterBar");
+  bar.innerHTML="";
+  if(revFilter==="Tous"){ bar.classList.remove("visible"); return; }
+  const parents = getParents(revFilter);
+  if(parents.length===0){ bar.classList.remove("visible"); return; }
 
-  // grouper par océan
-  const groups = {};
-  data.forEach(s => {
-    if(!groups[s.ocean]) groups[s.ocean] = [];
-    groups[s.ocean].push(s);
-  });
+  bar.classList.add("visible");
+  // Bouton "Toutes"
+  const all = document.createElement("button");
+  all.className="subfilter-chip active";
+  all.textContent="Toutes";
+  all.onclick=()=>setRevSubFilter("Tous",all);
+  bar.appendChild(all);
 
-  Object.keys(groups).sort((a,b)=>OCEAN_META[a].order - OCEAN_META[b].order).forEach(ocean => {
-    const grp = document.createElement("div");
-    grp.className = "ocean-group";
-    const title = document.createElement("div");
-    title.className = "ocean-title";
-    title.textContent = OCEAN_META[ocean].label;
-    grp.appendChild(title);
-    const grid = document.createElement("div");
-    grid.className = "rev-grid";
-    groups[ocean].forEach(s => {
-      const card = document.createElement("div");
-      card.className = "rev-card";
-      card.innerHTML = `
-        <div class="rev-top">
-          <div class="rev-icon">${s.icon}</div>
-          <div>
-            <div class="rev-name">${s.name}</div>
-            <span class="rev-badge ${BADGE[s.cat]}">${BADGE_LABEL[s.cat]}</span>
-          </div>
-        </div>
-        <div class="rev-desc">${s.desc}</div>
-        <div class="rev-fact">📌 ${s.fact}</div>
-      `;
-      grid.appendChild(card);
-    });
-    grp.appendChild(grid);
-    container.appendChild(grp);
+  parents.forEach(p=>{
+    const btn=document.createElement("button");
+    btn.className="subfilter-chip";
+    btn.textContent="↳ "+p;
+    btn.onclick=()=>setRevSubFilter(p,btn);
+    bar.appendChild(btn);
   });
 }
 
-// ════════════════════════════════════════════════════════════
-//  JEU
-// ════════════════════════════════════════════════════════════
-function shuffle(a){ return [...a].sort(()=>Math.random()-.5); }
+// ════════════════════════════════════════
+// RÉVISION — rendu
+// ════════════════════════════════════════
+function renderRevision(){
+  const container=document.getElementById("revContent");
+  container.innerHTML="";
+  const data = filteredSeas(revFilter, revSubFilter);
 
+  if(revFilter==="Tous"){
+    // Grouper par océan
+    const groups={};
+    data.forEach(s=>{ if(!groups[s.ocean]) groups[s.ocean]=[]; groups[s.ocean].push(s); });
+    Object.keys(groups).sort((a,b)=>OCEAN_META[a].order-OCEAN_META[b].order).forEach(ocean=>{
+      container.appendChild(buildOceanGroup(ocean, groups[ocean]));
+    });
+  } else {
+    // Un seul océan : grouper par parent (mères principales + leurs sous-mers)
+    container.appendChild(buildOceanGroup(revFilter, data, true));
+  }
+}
+
+function buildOceanGroup(ocean, data, showParentGroups=false){
+  const wrap=document.createElement("div");
+  wrap.className="ocean-group";
+  const title=document.createElement("div");
+  title.className="ocean-title";
+  title.textContent=OCEAN_META[ocean].label;
+  wrap.appendChild(title);
+
+  if(!showParentGroups){
+    // Grille simple
+    const grid=document.createElement("div");
+    grid.className="rev-grid";
+    data.forEach(s=>grid.appendChild(makeCard(s)));
+    wrap.appendChild(grid);
+  } else {
+    // Séparer : mers sans parent, puis sous-groupes par parent
+    const standalone = data.filter(s=>!s.parent);
+    const withParent = data.filter(s=>s.parent);
+
+    // Mers principales / indépendantes
+    if(standalone.length){
+      const grid=document.createElement("div");
+      grid.className="rev-grid";
+      standalone.forEach(s=>grid.appendChild(makeCard(s)));
+      wrap.appendChild(grid);
+    }
+
+    // Regrouper les sous-mers par parent
+    if(withParent.length){
+      const parentGroups={};
+      withParent.forEach(s=>{ if(!parentGroups[s.parent]) parentGroups[s.parent]=[]; parentGroups[s.parent].push(s); });
+      Object.keys(parentGroups).forEach(parent=>{
+        const pg=document.createElement("div");
+        pg.className="parent-group";
+        const ptitle=document.createElement("div");
+        ptitle.className="parent-title";
+        ptitle.textContent=" Sous-mers de la "+parent;
+        pg.appendChild(ptitle);
+        const grid=document.createElement("div");
+        grid.className="rev-grid";
+        parentGroups[parent].forEach(s=>grid.appendChild(makeCard(s)));
+        pg.appendChild(grid);
+        wrap.appendChild(pg);
+      });
+    }
+  }
+  return wrap;
+}
+
+function makeCard(s){
+  const card=document.createElement("div");
+  card.className="rev-card";
+  card.innerHTML=`
+    <div class="rev-top">
+      <div class="rev-icon">${s.icon}</div>
+      <div>
+        <div class="rev-name">${s.name}</div>
+        <span class="rev-badge ${BADGE_CLASS[s.cat]}">${BADGE_LABEL[s.cat]}</span>
+        ${s.parent ? `<span class="rev-badge badge-sous-mer" style="margin-left:4px;opacity:0.8">↳ ${s.parent}</span>` : ""}
+      </div>
+    </div>
+    <div class="rev-desc">${s.desc}</div>
+    <div class="rev-fact">📌 ${s.fact}</div>
+  `;
+  return card;
+}
+
+// ════════════════════════════════════════
+// JEU — filtres
+// ════════════════════════════════════════
 function setGameFilter(f, el){
-  gameFilter = f;
+  gameFilter=f; gameSubFilter="Tous";
   document.querySelectorAll("#gameFilterBar .game-filter-chip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+  renderGameSubFilters();
+  startGame();
+}
+
+function setGameSubFilter(f, el){
+  gameSubFilter=f;
+  document.querySelectorAll("#gameSubFilterBar .game-subfilter-chip").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
   startGame();
 }
 
+function renderGameSubFilters(){
+  const bar=document.getElementById("gameSubFilterBar");
+  bar.innerHTML="";
+  if(gameFilter==="Tous"){ bar.classList.remove("visible"); return; }
+  const parents=getParents(gameFilter);
+  if(parents.length===0){ bar.classList.remove("visible"); return; }
+  bar.classList.add("visible");
+  const all=document.createElement("button");
+  all.className="game-subfilter-chip active";
+  all.textContent="Toutes";
+  all.onclick=()=>setGameSubFilter("Tous",all);
+  bar.appendChild(all);
+  parents.forEach(p=>{
+    const btn=document.createElement("button");
+    btn.className="game-subfilter-chip";
+    btn.textContent="↳ "+p;
+    btn.onclick=()=>setGameSubFilter(p,btn);
+    bar.appendChild(btn);
+  });
+}
+
+// ════════════════════════════════════════
+// JEU
+// ════════════════════════════════════════
+function shuffle(a){return [...a].sort(()=>Math.random()-.5);}
+
 function startGame(){
-  const pool = gameFilter==="Tous" ? SEAS : SEAS.filter(s=>s.ocean===gameFilter);
-  gamePool  = shuffle(pool);
-  gameIdx   = 0;
-  gameScore = 0;
-  document.getElementById("scoreEnd").style.display  = "none";
-  document.getElementById("gOpts").style.display     = "grid";
-  document.getElementById("gProgress").style.display = "block";
-  document.getElementById("gIcon").style.display     = "block";
-  document.getElementById("gQuestion").style.display = "block";
-  document.getElementById("gHint").style.display     = "block";
+  gamePool=shuffle(filteredSeas(gameFilter,gameSubFilter));
+  gameIdx=0; gameScore=0;
+  document.getElementById("scoreEnd").style.display="none";
+  document.getElementById("gOpts").style.display="grid";
+  document.getElementById("gProgress").style.display="block";
+  document.getElementById("gIcon").style.display="block";
+  document.getElementById("gQuestion").style.display="block";
+  document.getElementById("gHint").style.display="block";
   showQ();
 }
 
 function showQ(){
-  if(gameIdx >= gamePool.length){ showScore(); return; }
-  answered = false;
-  const q = gamePool[gameIdx];
-  currentAns = q.name;
-  document.getElementById("gProgress").textContent = `Question ${gameIdx+1} / ${gamePool.length}`;
-  document.getElementById("gIcon").textContent     = q.icon;
-  document.getElementById("gQuestion").textContent = q.desc;
-  document.getElementById("gHint").textContent     = `${OCEAN_META[q.ocean].label}  •  ${q.fact}`;
-  document.getElementById("gFeedback").textContent = "";
-  document.getElementById("gFeedback").className   = "g-feedback";
-  document.getElementById("nextBtn").style.display = "none";
+  if(gameIdx>=gamePool.length){showScore();return;}
+  answered=false;
+  const q=gamePool[gameIdx];
+  currentAns=q.name;
+  document.getElementById("gProgress").textContent=`Question ${gameIdx+1} / ${gamePool.length}`;
+  document.getElementById("gIcon").textContent=q.icon;
+  document.getElementById("gQuestion").textContent=q.desc;
+  const parentInfo=q.parent ? ` — Sous-mer de : ${q.parent}` : "";
+  document.getElementById("gHint").textContent=`${OCEAN_META[q.ocean].label}${parentInfo}  •  ${q.fact}`;
+  document.getElementById("gFeedback").textContent="";
+  document.getElementById("gFeedback").className="g-feedback";
+  document.getElementById("nextBtn").style.display="none";
 
-  // 4 propositions
-  const pool = gameFilter==="Tous" ? SEAS : SEAS.filter(s=>s.ocean===gameFilter);
-  const others = shuffle(pool.filter(s=>s.name!==q.name)).slice(0,3);
-  const opts   = shuffle([q,...others]);
-  const grid   = document.getElementById("gOpts");
-  grid.innerHTML = "";
-  opts.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.className = "opt";
-    btn.textContent = opt.name;
-    btn.onclick = () => answerQ(btn, opt.name);
+  // 4 propositions depuis le même pool de jeu
+  const pool=gamePool.length>=4 ? gamePool : SEAS;
+  const others=shuffle(pool.filter(s=>s.name!==q.name)).slice(0,3);
+  const opts=shuffle([q,...others]);
+  const grid=document.getElementById("gOpts");
+  grid.innerHTML="";
+  opts.forEach(opt=>{
+    const btn=document.createElement("button");
+    btn.className="opt";
+    btn.textContent=opt.name;
+    btn.onclick=()=>answerQ(btn,opt.name);
     grid.appendChild(btn);
   });
 }
 
-function answerQ(btn, chosen){
+function answerQ(btn,chosen){
   if(answered) return;
-  answered = true;
-  const ok = chosen === currentAns;
+  answered=true;
+  const ok=chosen===currentAns;
   if(ok) gameScore++;
-  document.querySelectorAll(".opt").forEach(b => {
-    b.disabled = true;
+  document.querySelectorAll(".opt").forEach(b=>{
+    b.disabled=true;
     if(b.textContent===currentAns) b.classList.add("correct");
-    else if(b===btn && !ok)        b.classList.add("wrong");
+    else if(b===btn&&!ok) b.classList.add("wrong");
   });
-  const fb = document.getElementById("gFeedback");
-  if(ok){ fb.textContent="✅ Bonne réponse !"; fb.className="g-feedback fb-good"; }
-  else   { fb.textContent=`❌ C'était : ${currentAns}`; fb.className="g-feedback fb-bad"; }
-  document.getElementById("nextBtn").style.display = "inline-block";
+  const fb=document.getElementById("gFeedback");
+  if(ok){fb.textContent="✅ Bonne réponse !";fb.className="g-feedback fb-good";}
+  else{fb.textContent=`❌ C'était : ${currentAns}`;fb.className="g-feedback fb-bad";}
+  document.getElementById("nextBtn").style.display="inline-block";
 }
 
-function nextQ(){ gameIdx++; showQ(); }
+function nextQ(){gameIdx++;showQ();}
 
 function showScore(){
-  const pct  = Math.round((gameScore/gamePool.length)*100);
-  const icon = pct===100?"🏆":pct>=75?"🎉":pct>=50?"👍":"💪";
-  document.getElementById("gOpts").style.display     = "none";
-  document.getElementById("gProgress").style.display = "none";
-  document.getElementById("gIcon").style.display     = "none";
-  document.getElementById("gQuestion").style.display = "none";
-  document.getElementById("gHint").style.display     = "none";
-  document.getElementById("gFeedback").textContent   = "";
-  document.getElementById("nextBtn").style.display   = "none";
-  document.getElementById("seIcon").textContent = icon;
-  document.getElementById("seTxt").textContent  = `${gameScore} / ${gamePool.length}`;
-  document.getElementById("seSub").textContent  = `${pct}% de bonnes réponses`;
-  document.getElementById("scoreEnd").style.display = "block";
+  const pct=Math.round((gameScore/gamePool.length)*100);
+  const icon=pct===100?"🏆":pct>=75?"🎉":pct>=50?"👍":"💪";
+  document.getElementById("gOpts").style.display="none";
+  document.getElementById("gProgress").style.display="none";
+  document.getElementById("gIcon").style.display="none";
+  document.getElementById("gQuestion").style.display="none";
+  document.getElementById("gHint").style.display="none";
+  document.getElementById("gFeedback").textContent="";
+  document.getElementById("nextBtn").style.display="none";
+  document.getElementById("seIcon").textContent=icon;
+  document.getElementById("seTxt").textContent=`${gameScore} / ${gamePool.length}`;
+  document.getElementById("seSub").textContent=`${pct}% de bonnes réponses`;
+  document.getElementById("scoreEnd").style.display="block";
 }
 
-// ── Init ────────────────────────────────────────────────────
+// ── Init ──────────────────────────────
 renderRevision();
 </script>
 </body>

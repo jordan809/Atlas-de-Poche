@@ -1681,7 +1681,8 @@ async function pvpCreate(){
   pvpRoom = code; pvpRole = 'p1'; pvpIsHost = true; pvpSubmitted = false;
 
   // Génère 10 questions aléatoires
-  pvpQuestions = shuffle(DATA).slice(0,TOTAL_ROUNDS).map(d=>({c:d.c,cap:d.cap,f:d.f}));
+  const pvpPool = pool().length >= TOTAL_ROUNDS ? pool() : DATA;
+  pvpQuestions = shuffle(pvpPool).slice(0,TOTAL_ROUNDS).map(d=>({c:d.c,cap:d.cap,f:d.f}));
 
   await dbSet(`rooms/${code}`, {
     status:'waiting',

@@ -157,6 +157,9 @@
   html.dark .vocab-def{color:#a89fd8;}
   .vocab-example{font-size:0.82rem;font-weight:700;color:var(--bg1);margin-top:2px;}
   html.dark .vocab-example{color:#9d91ff;}
+  .vocab-img{width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:4px;display:block;}
+  .vocab-img-wrap{position:relative;border-radius:10px;overflow:hidden;margin-top:6px;}
+  .vocab-img-credit{position:absolute;bottom:0;right:0;background:rgba(0,0,0,0.45);color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:6px 0 0 0;}
   .vocab-section-title{
     font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;
     color:#fff;margin:22px 0 12px;
@@ -1099,84 +1102,108 @@ const VOCAB = [
   // ── Types de masses d'eau ────────────────────────────────
   { section: "🌊 Types de masses d'eau" },
   { term:"Océan", en:"Ocean", icon:"🌍",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/24701-nature-natural-beauty.jpg/640px-24701-nature-natural-beauty.jpg", credit:"© Wikimedia",
     def:"La plus grande étendue d'eau salée. Il existe 5 océans sur Terre : Pacifique, Atlantique, Indien, Arctique et Austral. Ils couvrent 71% de la surface terrestre.",
     ex:"Exemples : Océan Pacifique, Océan Atlantique" },
   { term:"Mer", en:"Sea", icon:"🌊",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Mediterranean_Sea_%28centered%29.jpg/640px-Mediterranean_Sea_%28centered%29.jpg", credit:"© NASA/Wikimedia",
     def:"Étendue d'eau salée plus petite qu'un océan, souvent partiellement entourée de terres. Une mer est toujours reliée à un océan.",
     ex:"Exemples : Mer Méditerranée, Mer des Caraïbes, Mer du Nord" },
   { term:"Sous-mer", en:"Sub-sea / Marginal sea", icon:"🔵",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Adriatic_Sea_%28Idrija_Bay%29.jpg/640px-Adriatic_Sea_%28Idrija_Bay%29.jpg", credit:"© Wikimedia",
     def:"Subdivision d'une mer plus grande. Une sous-mer est une zone géographiquement ou océanographiquement distincte à l'intérieur d'une mer principale.",
     ex:"Exemples : Mer Adriatique (↳ Méditerranée), Mer de Sulu (↳ Chine méridionale)" },
   { term:"Mer fermée", en:"Enclosed sea / Inland sea", icon:"🔒",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caspian_Sea_from_orbit.jpg/640px-Caspian_Sea_from_orbit.jpg", credit:"© NASA/Wikimedia",
     def:"Mer totalement enclavée dans les terres, sans accès direct à l'océan, ou reliée uniquement par un détroit très étroit. Peut être salée, saumâtre ou douce.",
     ex:"Exemples : Mer Caspienne, Mer Noire, Mer Morte, Mer d'Aral" },
   { term:"Mer intérieure", en:"Inland sea", icon:"🏝️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Baltic_Sea_map.png/640px-Baltic_Sea_map.png", credit:"© Wikimedia",
     def:"Mer entourée de terres sur presque tous ses côtés, reliée à l'océan par un ou plusieurs passages étroits.",
     ex:"Exemples : Mer Baltique, Mer de Seto (Japon), Mer de Marmara" },
   { term:"Lac", en:"Lake", icon:"💧",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Dead_Sea_-_Drone_photo%2C_November_2019.jpg/640px-Dead_Sea_-_Drone_photo%2C_November_2019.jpg", credit:"© Wikimedia",
     def:"Étendue d'eau douce (ou salée) entourée de terres de tous côtés, sans lien avec l'océan. Certains lacs sont appelés 'mers' par tradition historique.",
     ex:"Exemples : Mer Caspienne (plus grand lac du monde), Mer de Galilée, Grand Lac Salé" },
 
   // ── Formes géographiques côtières ────────────────────────
   { section: "🗺️ Formes géographiques côtières" },
   { term:"Golfe", en:"Gulf", icon:"🫙",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Gulf_of_Mexico_and_Caribbean_Sea.jpg/640px-Gulf_of_Mexico_and_Caribbean_Sea.jpg", credit:"© NASA/Wikimedia",
     def:"Grande baie profonde et bien délimitée, où la mer pénètre dans les terres. Plus grand et plus fermé qu'une baie. Souvent nommé golfe pour des étendues très importantes.",
     ex:"Exemples : Golfe du Mexique, Golfe Persique, Golfe du Bengale" },
   { term:"Baie", en:"Bay", icon:"🏖️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Bay_of_Fundy_01.jpg/640px-Bay_of_Fundy_01.jpg", credit:"© Wikimedia",
     def:"Échancrure côtière arrondie où la mer s'avance dans les terres. Moins profonde et moins fermée qu'un golfe. Taille très variable.",
     ex:"Exemples : Baie d'Hudson, Baie de Botnie, Baie de Gdańsk" },
   { term:"Détroit", en:"Strait", icon:"🚢",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Strait_of_Gibraltar_from_space.jpg/640px-Strait_of_Gibraltar_from_space.jpg", credit:"© NASA/Wikimedia",
     def:"Passage maritime étroit entre deux terres, reliant deux mers ou deux étendues d'eau. Souvent très stratégique pour la navigation.",
     ex:"Exemples : Détroit de Gibraltar, Détroit de Davis, Détroit du Bosphore" },
   { term:"Canal", en:"Canal / Channel", icon:"⛵",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Panama_Canal_Gatun_Locks.jpg/640px-Panama_Canal_Gatun_Locks.jpg", credit:"© Wikimedia",
     def:"Voie d'eau artificielle creusée par l'homme pour relier deux mers, ou bras de mer naturel entre deux terres. Terme utilisé pour des passages très fréquentés.",
     ex:"Exemples : Canal du Yucatán, Canal de Suez, Canal de Panama (artificiel)" },
   { term:"Fjord", en:"Fjord", icon:"🏔️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Geirangerfjord%2C_Norway.jpg/640px-Geirangerfjord%2C_Norway.jpg", credit:"© Wikimedia",
     def:"Longue vallée glaciaire envahie par la mer, formant un bras de mer étroit et profond entre des falaises. Typique des pays nordiques.",
     ex:"Exemples : Fjords de Norvège, Fjords du Groenland, Fjords de Nouvelle-Zélande" },
   { term:"Lagune", en:"Lagoon", icon:"🌴",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Venice_from_the_International_Space_Station.jpg/640px-Venice_from_the_International_Space_Station.jpg", credit:"© NASA/Wikimedia",
     def:"Étendue d'eau côtière peu profonde, séparée de la mer par un cordon littoral, une barrière de sable ou un récif corallien.",
     ex:"Exemples : Lagune de Venise, lagon de Bora-Bora, Grande Barrière de Corail" },
   { term:"Estuaire", en:"Estuary", icon:"🌿",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Gironde_Estuary_from_space.jpg/640px-Gironde_Estuary_from_space.jpg", credit:"© NASA/Wikimedia",
     def:"Zone où un fleuve se jette dans la mer, mêlant eau douce et eau salée. L'eau y est saumâtre et la profondeur variable selon les marées.",
     ex:"Exemples : Estuaire de la Gironde, Estuaire de la Tamise, Estuaire du Rio de la Plata" },
 
   // ── Termes océanographiques ───────────────────────────────
   { section: "🔬 Termes océanographiques" },
   { term:"Bassin océanique", en:"Ocean basin", icon:"🔬",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Oceanic_basin.jpg/640px-Oceanic_basin.jpg", credit:"© Wikimedia",
     def:"Grande dépression sous-marine dans le fond de l'océan. Terme scientifique utilisé en océanographie pour désigner des zones profondes délimitées.",
     ex:"Exemples : Bassin de Colombie (Caraïbes), Bassin des Philippines, Bassin d'Australie" },
   { term:"Fosse océanique", en:"Ocean trench", icon:"📉",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Oceanic_trench_cross_section.jpg/640px-Oceanic_trench_cross_section.jpg", credit:"© Wikimedia",
     def:"Dépression très profonde du fond océanique, formée par la subduction d'une plaque tectonique sous une autre. Les plus profondes atteignent plus de 10 000 m.",
     ex:"Exemples : Fosse des Mariannes (11 034 m), Fosse des Tonga (10 882 m), Fosse de Puerto Rico" },
   { term:"Plateau continental", en:"Continental shelf", icon:"🏔️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Continental_shelf.png/640px-Continental_shelf.png", credit:"© Wikimedia",
     def:"Zone peu profonde du fond marin qui borde les continents, avant la grande descente vers les fonds océaniques. Riche en ressources halieutiques et pétrolières.",
     ex:"Exemples : Plateau de la mer du Nord, Plateau des Malouines (Mer d'Argentine)" },
   { term:"Dorsale océanique", en:"Mid-ocean ridge", icon:"⛰️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Mid-ocean_ridge.jpg/640px-Mid-ocean_ridge.jpg", credit:"© Wikimedia",
     def:"Chaîne de montagnes sous-marines formée par l'écartement des plaques tectoniques. Zone d'activité volcanique et de création de nouveau plancher océanique.",
     ex:"Exemples : Dorsale médio-atlantique, Dorsale du Pacifique Est" },
   { term:"Courant marin", en:"Ocean current", icon:"🌀",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Corrientes-oceanicas.gif/640px-Corrientes-oceanicas.gif", credit:"© NASA/Wikimedia",
     def:"Déplacement continu d'eau de mer dans une direction donnée. Les courants chauds réchauffent les côtes qu'ils longent, les courants froids les refroidissent.",
     ex:"Exemples : Gulf Stream (chaud), Courant de Humboldt (froid), Courant somalien" },
   { term:"Zone économique exclusive (ZEE)", en:"Exclusive Economic Zone (EEZ)", icon:"📐",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Exclusive_economic_zones.png/640px-Exclusive_economic_zones.png", credit:"© Wikimedia",
     def:"Zone maritime s'étendant jusqu'à 200 milles nautiques (370 km) des côtes d'un pays. Ce pays y a des droits exclusifs sur les ressources naturelles.",
     ex:"La France possède la 2e plus grande ZEE du monde grâce à ses territoires d'outre-mer" },
 
   // ── Classification des mers ───────────────────────────────
   { section: "📋 Comment classer les mers ?" },
   { term:"Mer principale", en:"Main sea", icon:"⭐",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Mediterranean_Sea_-_NASA_World_Wind.jpg/640px-Mediterranean_Sea_-_NASA_World_Wind.jpg", credit:"© NASA/Wikimedia",
     def:"Mer directement rattachée à un océan, suffisamment grande et distincte pour être considérée indépendamment. Elle peut elle-même contenir des sous-mers.",
     ex:"Exemples : Mer Méditerranée, Mer des Caraïbes, Mer de Chine méridionale" },
   { term:"Mer marginale", en:"Marginal sea", icon:"🔲",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Sea_of_Japan_%28orthographic_projection%29.svg/640px-Sea_of_Japan_%28orthographic_projection%29.svg.png", credit:"© Wikimedia",
     def:"Mer partiellement entourée de terres et d'îles, en bordure d'un océan. Elle communique librement avec l'océan mais est délimitée géographiquement.",
     ex:"Exemples : Mer du Japon, Mer d'Okhotsk, Mer de Béring" },
   { term:"Mer épicontinentale", en:"Epicontinental sea", icon:"🗺️",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/North_Sea_map.png/640px-North_Sea_map.png", credit:"© Wikimedia",
     def:"Mer peu profonde recouvrant une partie du plateau continental. Elle s'est formée lors de montées du niveau marin inondant des terres basses.",
     ex:"Exemples : Mer du Nord, Mer Baltique, Mer Jaune" },
   { term:"Doublon de classification", en:"Dual classification", icon:"🔀",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Greenland_Sea_map.png/640px-Greenland_Sea_map.png", credit:"© Wikimedia",
     def:"Certaines mers apparaissent dans plusieurs catégories selon les sources géographiques. Cela est normal : les classifications varient selon les pays et les organismes.",
     ex:"Exemples : Mer du Groenland (Arctique ET Atlantique), Mer de Timor (Indien ET Pacifique)" },
   { term:"Synonymes géographiques", en:"Geographic synonyms", icon:"🔤",
+    img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Sea_of_Japan_naming_dispute.png/640px-Sea_of_Japan_naming_dispute.png", credit:"© Wikimedia",
     def:"Une même mer peut porter plusieurs noms selon la langue ou le pays. Ces noms sont tous valides et doivent être acceptés.",
     ex:"Mer du Japon = Mer de l'Est • Mer de Célèbes = Mer de Sulawesi • Mer des Moluques = Mer de Maluku" },
 ];
@@ -1199,6 +1226,11 @@ function renderVocab(){
     }
     const card = document.createElement("div");
     card.className = "vocab-card";
+    const imgHtml = v.img ? `
+      <div class="vocab-img-wrap">
+        <img class="vocab-img" src="${v.img}" alt="${v.term}" loading="lazy" onerror="this.parentElement.style.display='none'">
+        ${v.credit ? `<span class="vocab-img-credit">${v.credit}</span>` : ""}
+      </div>` : "";
     card.innerHTML = `
       <div class="vocab-card-top">
         <div class="vocab-icon">${v.icon}</div>
@@ -1207,6 +1239,7 @@ function renderVocab(){
           <div class="vocab-en">${v.en}</div>
         </div>
       </div>
+      ${imgHtml}
       <div class="vocab-def">${v.def}</div>
       <div class="vocab-example">💡 ${v.ex}</div>
     `;

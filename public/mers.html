@@ -136,6 +136,34 @@
   .score-end .se-sub{color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;}
   .restart-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);transition:transform 0.15s;}
   .restart-btn:hover{transform:translateY(-2px);}
+  /* ── VOCABULAIRE ── */
+  #vocabSection{display:none;}
+  #vocabSection.on{display:block;}
+  .vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+  .vocab-card{
+    background:#fff;border-radius:18px;padding:20px 22px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.11);
+    display:flex;flex-direction:column;gap:8px;
+    border-left:5px solid var(--bg1);
+  }
+  html.dark .vocab-card{background:#1e1b2e;}
+  .vocab-card-top{display:flex;align-items:center;gap:12px;}
+  .vocab-icon{font-size:2.2rem;flex-shrink:0;}
+  .vocab-term{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;color:var(--ink);}
+  html.dark .vocab-term{color:#e8e2ff;}
+  .vocab-en{font-size:0.78rem;font-weight:700;color:var(--ink-soft);font-style:italic;}
+  html.dark .vocab-en{color:#a89fd8;}
+  .vocab-def{font-size:0.87rem;color:var(--ink-soft);line-height:1.55;}
+  html.dark .vocab-def{color:#a89fd8;}
+  .vocab-example{font-size:0.82rem;font-weight:700;color:var(--bg1);margin-top:2px;}
+  html.dark .vocab-example{color:#9d91ff;}
+  .vocab-section-title{
+    font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;
+    color:#fff;margin:22px 0 12px;
+    display:flex;align-items:center;gap:8px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.2);
+  }
+
   .dark-toggle{position:fixed;top:14px;right:16px;z-index:100;font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
   .dark-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
   html.dark .dark-toggle{background:rgba(0,0,0,0.35);}
@@ -154,6 +182,7 @@
   <div class="tabs">
     <button class="tab-btn active" id="tabRev" onclick="switchTab('rev')">📖 Révision</button>
     <button class="tab-btn" id="tabGame" onclick="switchTab('game')">🎮 Jeu</button>
+    <button class="tab-btn" id="tabVocab" onclick="switchTab('vocab')">📚 Vocabulaire</button>
   </div>
 
   <!-- RÉVISION -->
@@ -198,6 +227,11 @@
         <button class="restart-btn" onclick="startGame()">🔄 Recommencer</button>
       </div>
     </div>
+  </section>
+
+  <!-- VOCABULAIRE -->
+  <section id="vocabSection">
+    <div id="vocabContent"></div>
   </section>
 </div>
 
@@ -772,8 +806,13 @@ function switchTab(tab){
   activeTab=tab;
   document.getElementById("tabRev").classList.toggle("active",tab==="rev");
   document.getElementById("tabGame").classList.toggle("active",tab==="game");
+  document.getElementById("tabVocab").classList.toggle("active",tab==="vocab");
   document.getElementById("revSection").classList.toggle("on",tab==="rev");
   document.getElementById("gameSection").classList.toggle("on",tab==="game");
+  document.getElementById("vocabSection").classList.toggle("on",tab==="vocab");
+  // Masquer les filtres en mode vocab
+  document.getElementById("revFilterBar").style.display = tab==="rev" ? "flex" : "none";
+  document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
   if(tab==="game") startGame();
 }
 
@@ -1053,8 +1092,131 @@ function showScore(){
   document.getElementById("scoreEnd").style.display="block";
 }
 
+// ════════════════════════════════════════
+// VOCABULAIRE
+// ════════════════════════════════════════
+const VOCAB = [
+  // ── Types de masses d'eau ────────────────────────────────
+  { section: "🌊 Types de masses d'eau" },
+  { term:"Océan", en:"Ocean", icon:"🌍",
+    def:"La plus grande étendue d'eau salée. Il existe 5 océans sur Terre : Pacifique, Atlantique, Indien, Arctique et Austral. Ils couvrent 71% de la surface terrestre.",
+    ex:"Exemples : Océan Pacifique, Océan Atlantique" },
+  { term:"Mer", en:"Sea", icon:"🌊",
+    def:"Étendue d'eau salée plus petite qu'un océan, souvent partiellement entourée de terres. Une mer est toujours reliée à un océan.",
+    ex:"Exemples : Mer Méditerranée, Mer des Caraïbes, Mer du Nord" },
+  { term:"Sous-mer", en:"Sub-sea / Marginal sea", icon:"🔵",
+    def:"Subdivision d'une mer plus grande. Une sous-mer est une zone géographiquement ou océanographiquement distincte à l'intérieur d'une mer principale.",
+    ex:"Exemples : Mer Adriatique (↳ Méditerranée), Mer de Sulu (↳ Chine méridionale)" },
+  { term:"Mer fermée", en:"Enclosed sea / Inland sea", icon:"🔒",
+    def:"Mer totalement enclavée dans les terres, sans accès direct à l'océan, ou reliée uniquement par un détroit très étroit. Peut être salée, saumâtre ou douce.",
+    ex:"Exemples : Mer Caspienne, Mer Noire, Mer Morte, Mer d'Aral" },
+  { term:"Mer intérieure", en:"Inland sea", icon:"🏝️",
+    def:"Mer entourée de terres sur presque tous ses côtés, reliée à l'océan par un ou plusieurs passages étroits.",
+    ex:"Exemples : Mer Baltique, Mer de Seto (Japon), Mer de Marmara" },
+  { term:"Lac", en:"Lake", icon:"💧",
+    def:"Étendue d'eau douce (ou salée) entourée de terres de tous côtés, sans lien avec l'océan. Certains lacs sont appelés 'mers' par tradition historique.",
+    ex:"Exemples : Mer Caspienne (plus grand lac du monde), Mer de Galilée, Grand Lac Salé" },
+
+  // ── Formes géographiques côtières ────────────────────────
+  { section: "🗺️ Formes géographiques côtières" },
+  { term:"Golfe", en:"Gulf", icon:"🫙",
+    def:"Grande baie profonde et bien délimitée, où la mer pénètre dans les terres. Plus grand et plus fermé qu'une baie. Souvent nommé golfe pour des étendues très importantes.",
+    ex:"Exemples : Golfe du Mexique, Golfe Persique, Golfe du Bengale" },
+  { term:"Baie", en:"Bay", icon:"🏖️",
+    def:"Échancrure côtière arrondie où la mer s'avance dans les terres. Moins profonde et moins fermée qu'un golfe. Taille très variable.",
+    ex:"Exemples : Baie d'Hudson, Baie de Botnie, Baie de Gdańsk" },
+  { term:"Détroit", en:"Strait", icon:"🚢",
+    def:"Passage maritime étroit entre deux terres, reliant deux mers ou deux étendues d'eau. Souvent très stratégique pour la navigation.",
+    ex:"Exemples : Détroit de Gibraltar, Détroit de Davis, Détroit du Bosphore" },
+  { term:"Canal", en:"Canal / Channel", icon:"⛵",
+    def:"Voie d'eau artificielle creusée par l'homme pour relier deux mers, ou bras de mer naturel entre deux terres. Terme utilisé pour des passages très fréquentés.",
+    ex:"Exemples : Canal du Yucatán, Canal de Suez, Canal de Panama (artificiel)" },
+  { term:"Fjord", en:"Fjord", icon:"🏔️",
+    def:"Longue vallée glaciaire envahie par la mer, formant un bras de mer étroit et profond entre des falaises. Typique des pays nordiques.",
+    ex:"Exemples : Fjords de Norvège, Fjords du Groenland, Fjords de Nouvelle-Zélande" },
+  { term:"Lagune", en:"Lagoon", icon:"🌴",
+    def:"Étendue d'eau côtière peu profonde, séparée de la mer par un cordon littoral, une barrière de sable ou un récif corallien.",
+    ex:"Exemples : Lagune de Venise, lagon de Bora-Bora, Grande Barrière de Corail" },
+  { term:"Estuaire", en:"Estuary", icon:"🌿",
+    def:"Zone où un fleuve se jette dans la mer, mêlant eau douce et eau salée. L'eau y est saumâtre et la profondeur variable selon les marées.",
+    ex:"Exemples : Estuaire de la Gironde, Estuaire de la Tamise, Estuaire du Rio de la Plata" },
+
+  // ── Termes océanographiques ───────────────────────────────
+  { section: "🔬 Termes océanographiques" },
+  { term:"Bassin océanique", en:"Ocean basin", icon:"🔬",
+    def:"Grande dépression sous-marine dans le fond de l'océan. Terme scientifique utilisé en océanographie pour désigner des zones profondes délimitées.",
+    ex:"Exemples : Bassin de Colombie (Caraïbes), Bassin des Philippines, Bassin d'Australie" },
+  { term:"Fosse océanique", en:"Ocean trench", icon:"📉",
+    def:"Dépression très profonde du fond océanique, formée par la subduction d'une plaque tectonique sous une autre. Les plus profondes atteignent plus de 10 000 m.",
+    ex:"Exemples : Fosse des Mariannes (11 034 m), Fosse des Tonga (10 882 m), Fosse de Puerto Rico" },
+  { term:"Plateau continental", en:"Continental shelf", icon:"🏔️",
+    def:"Zone peu profonde du fond marin qui borde les continents, avant la grande descente vers les fonds océaniques. Riche en ressources halieutiques et pétrolières.",
+    ex:"Exemples : Plateau de la mer du Nord, Plateau des Malouines (Mer d'Argentine)" },
+  { term:"Dorsale océanique", en:"Mid-ocean ridge", icon:"⛰️",
+    def:"Chaîne de montagnes sous-marines formée par l'écartement des plaques tectoniques. Zone d'activité volcanique et de création de nouveau plancher océanique.",
+    ex:"Exemples : Dorsale médio-atlantique, Dorsale du Pacifique Est" },
+  { term:"Courant marin", en:"Ocean current", icon:"🌀",
+    def:"Déplacement continu d'eau de mer dans une direction donnée. Les courants chauds réchauffent les côtes qu'ils longent, les courants froids les refroidissent.",
+    ex:"Exemples : Gulf Stream (chaud), Courant de Humboldt (froid), Courant somalien" },
+  { term:"Zone économique exclusive (ZEE)", en:"Exclusive Economic Zone (EEZ)", icon:"📐",
+    def:"Zone maritime s'étendant jusqu'à 200 milles nautiques (370 km) des côtes d'un pays. Ce pays y a des droits exclusifs sur les ressources naturelles.",
+    ex:"La France possède la 2e plus grande ZEE du monde grâce à ses territoires d'outre-mer" },
+
+  // ── Classification des mers ───────────────────────────────
+  { section: "📋 Comment classer les mers ?" },
+  { term:"Mer principale", en:"Main sea", icon:"⭐",
+    def:"Mer directement rattachée à un océan, suffisamment grande et distincte pour être considérée indépendamment. Elle peut elle-même contenir des sous-mers.",
+    ex:"Exemples : Mer Méditerranée, Mer des Caraïbes, Mer de Chine méridionale" },
+  { term:"Mer marginale", en:"Marginal sea", icon:"🔲",
+    def:"Mer partiellement entourée de terres et d'îles, en bordure d'un océan. Elle communique librement avec l'océan mais est délimitée géographiquement.",
+    ex:"Exemples : Mer du Japon, Mer d'Okhotsk, Mer de Béring" },
+  { term:"Mer épicontinentale", en:"Epicontinental sea", icon:"🗺️",
+    def:"Mer peu profonde recouvrant une partie du plateau continental. Elle s'est formée lors de montées du niveau marin inondant des terres basses.",
+    ex:"Exemples : Mer du Nord, Mer Baltique, Mer Jaune" },
+  { term:"Doublon de classification", en:"Dual classification", icon:"🔀",
+    def:"Certaines mers apparaissent dans plusieurs catégories selon les sources géographiques. Cela est normal : les classifications varient selon les pays et les organismes.",
+    ex:"Exemples : Mer du Groenland (Arctique ET Atlantique), Mer de Timor (Indien ET Pacifique)" },
+  { term:"Synonymes géographiques", en:"Geographic synonyms", icon:"🔤",
+    def:"Une même mer peut porter plusieurs noms selon la langue ou le pays. Ces noms sont tous valides et doivent être acceptés.",
+    ex:"Mer du Japon = Mer de l'Est • Mer de Célèbes = Mer de Sulawesi • Mer des Moluques = Mer de Maluku" },
+];
+
+function renderVocab(){
+  const container = document.getElementById("vocabContent");
+  container.innerHTML = "";
+  let currentGrid = null;
+
+  VOCAB.forEach(v => {
+    if(v.section){
+      const title = document.createElement("div");
+      title.className = "vocab-section-title";
+      title.textContent = v.section;
+      container.appendChild(title);
+      currentGrid = document.createElement("div");
+      currentGrid.className = "vocab-grid";
+      container.appendChild(currentGrid);
+      return;
+    }
+    const card = document.createElement("div");
+    card.className = "vocab-card";
+    card.innerHTML = `
+      <div class="vocab-card-top">
+        <div class="vocab-icon">${v.icon}</div>
+        <div>
+          <div class="vocab-term">${v.term}</div>
+          <div class="vocab-en">${v.en}</div>
+        </div>
+      </div>
+      <div class="vocab-def">${v.def}</div>
+      <div class="vocab-example">💡 ${v.ex}</div>
+    `;
+    if(currentGrid) currentGrid.appendChild(card);
+  });
+}
+
 // ── Init ──────────────────────────────
 renderRevision();
+renderVocab();
 </script>
 </body>
 </html>

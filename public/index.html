@@ -1690,6 +1690,8 @@ async function pvpCreate(){
     p2:null,
     round:-1,
     questions: pvpQuestions,
+    filter: activeFilter,
+    hard: hard,
     createdAt: Date.now()
   });
 
@@ -1709,6 +1711,17 @@ async function pvpJoin(){
 
   pvpRoom = code; pvpRole = 'p2'; pvpIsHost = false; pvpSubmitted = false;
   pvpQuestions = room.questions;
+
+  // Appliquer le filtre et la difficulté de l'hôte
+  if(room.filter){
+    activeFilter = room.filter;
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === activeFilter));
+  }
+  if(room.hard !== undefined){
+    hard = room.hard;
+    const hardBtn = document.getElementById("hardToggle");
+    if(hardBtn) hardBtn.classList.toggle("active", hard);
+  }
 
   await dbPatch(`rooms/${code}`, {
     p2:{score:0,done:false,ac:'',ak:''},

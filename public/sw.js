@@ -4,7 +4,7 @@
      et la version en cache en secours quand on est hors-ligne.
    - Autres ressources (icônes, manifest…) : cache d'abord, mise à jour en arrière-plan.
    La version ci-dessous sert à vider l'ancien cache lors d'une mise à jour. */
-const CACHE = "atlas-de-poche-v20";
+const CACHE = "atlas-de-poche-v21";
 
 const ASSETS = [
   "/",

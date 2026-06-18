@@ -300,6 +300,15 @@
   }
   .pvp-lobby h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.8rem; color:var(--bg1); margin-bottom:6px; }
   .pvp-lobby p { color:var(--ink-soft); font-weight:600; margin-bottom:28px; }
+  .pvp-rounds-lbl { color:var(--ink-soft); font-weight:800; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:9px; }
+  .pvp-rounds { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-bottom:22px; }
+  .pvp-round-btn {
+    font-family:'Baloo 2',cursive; font-weight:700; font-size:1rem;
+    padding:9px 0; width:60px; border:2.5px solid #ece9ff; background:#f7f6ff;
+    color:var(--bg1); border-radius:12px; cursor:pointer; transition:all 0.15s ease;
+  }
+  .pvp-round-btn:hover { border-color:var(--bg1); }
+  .pvp-round-btn.active { background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; border-color:transparent; }
   .pvp-big-btn {
     width:100%; font-family:'Baloo 2',cursive; font-weight:700; font-size:1.1rem;
     padding:16px; border:none; border-radius:16px; cursor:pointer; margin-bottom:12px;
@@ -742,6 +751,14 @@
       <div id="pvpLobby" class="pvp-lobby">
         <h2>⚔️ Mode 1v1</h2>
         <p>Joue contre un ami en temps réel !</p>
+        <div class="pvp-rounds-lbl">Nombre de manches</div>
+        <div class="pvp-rounds" id="pvpRounds">
+          <button class="pvp-round-btn active" data-rounds="10">10</button>
+          <button class="pvp-round-btn" data-rounds="30">30</button>
+          <button class="pvp-round-btn" data-rounds="50">50</button>
+          <button class="pvp-round-btn" data-rounds="100">100</button>
+          <button class="pvp-round-btn" data-rounds="max">Max</button>
+        </div>
         <button class="pvp-big-btn create" id="pvpCreateBtn">🎮 Créer une partie</button>
         <div class="pvp-sep">— ou —</div>
         <div class="pvp-join-row">
@@ -1651,7 +1668,6 @@ renderStudy();
 
 // ---------- Mode 1v1 ----------
 const DB = "https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app";
-const TOTAL_ROUNDS = 10;
 
 let pvpRoom = null;       // code de la salle
 let pvpRole = null;       // "p1" ou "p2"
@@ -1660,6 +1676,19 @@ let pvpSSE = null;
 let pvpCurrentRound = -1;
 let pvpQuestions = [];
 let pvpSubmitted = false;
+let pvpRoundChoice = 10;  // 10 | 30 | 50 | 100 | 'max'
+
+// Tous les pays du continent choisi (sert à plafonner le nombre de manches)
+function pvpAvailable(){ return activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter); }
+
+// Sélecteur du nombre de manches
+document.querySelectorAll('.pvp-round-btn').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.pvp-round-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    pvpRoundChoice = b.dataset.rounds === 'max' ? 'max' : parseInt(b.dataset.rounds, 10);
+  };
+});
 
 const pvpOpponent = () => pvpRole === "p1" ? "p2" : "p1";
 
@@ -1685,9 +1714,10 @@ async function pvpCreate(){
   const code = pvpCode();
   pvpRoom = code; pvpRole = 'p1'; pvpIsHost = true; pvpSubmitted = false;
 
-  // Génère 10 questions aléatoires
-  const pvpPool = pool().length >= TOTAL_ROUNDS ? pool() : DATA;
-  pvpQuestions = shuffle(pvpPool).slice(0,TOTAL_ROUNDS).map(d=>({c:d.c,cap:d.cap,f:d.f}));
+  // Génère les questions : nombre de manches choisi, plafonné au nb de pays du continent
+  const avail = pvpAvailable();
+  const rounds = pvpRoundChoice === 'max' ? avail.length : Math.min(pvpRoundChoice, avail.length);
+  pvpQuestions = shuffle(avail).slice(0, rounds).map(d=>({c:d.c,cap:d.cap,f:d.f}));
 
   await dbSet(`rooms/${code}`, {
     status:'waiting',
@@ -1759,7 +1789,7 @@ function pvpOnUpdate(room){
       if(pvpIsHost){
         setTimeout(async ()=>{
           const nextRound = r+1;
-          if(nextRound >= TOTAL_ROUNDS){
+          if(nextRound >= pvpQuestions.length){
             await dbPatch(`rooms/${pvpRoom}`,{status:'finished'});
           } else {
             await dbPatch(`rooms/${pvpRoom}`,{
@@ -1781,7 +1811,7 @@ function pvpShowQuestion(room){
   filtersEl.classList.add('locked'); // continent figé pendant la partie (les 2 joueurs)
   pvpShowSection('pvpGame');
   const q = pvpQuestions[pvpCurrentRound];
-  document.getElementById('pvpRoundLbl').textContent = `Question ${pvpCurrentRound+1} / ${TOTAL_ROUNDS}`;
+  document.getElementById('pvpRoundLbl').textContent = `Question ${pvpCurrentRound+1} / ${pvpQuestions.length}`;
   document.getElementById('pvpFlag').innerHTML = flagImg(q.f, 80);
   document.getElementById('pvpInputCountry').value = '';
   document.getElementById('pvpInputCapital').value = '';

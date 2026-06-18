@@ -309,6 +309,11 @@
   }
   .pvp-round-btn:hover { border-color:var(--bg1); }
   .pvp-round-btn.active { background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; border-color:transparent; }
+  .pvp-pseudo { width:100%; font-family:'Nunito',sans-serif; font-weight:700; font-size:1.05rem; padding:12px 16px; border:2.5px solid #ece9ff; background:#f7f6ff; color:var(--ink); border-radius:14px; outline:none; text-align:center; margin-bottom:18px; }
+  .pvp-pseudo:focus { border-color:var(--bg1); }
+  .pvp-timer { height:10px; background:#ece9ff; border-radius:8px; overflow:hidden; margin-bottom:5px; }
+  .pvp-timer-fill { height:100%; width:100%; background:#1fae6a; border-radius:8px; transition:width 1s linear, background 0.3s; }
+  .pvp-timer-text { text-align:center; font-weight:800; color:var(--ink-soft); font-size:0.9rem; margin-bottom:10px; }
   .pvp-big-btn {
     width:100%; font-family:'Baloo 2',cursive; font-weight:700; font-size:1.1rem;
     padding:16px; border:none; border-radius:16px; cursor:pointer; margin-bottom:12px;
@@ -751,6 +756,7 @@
       <div id="pvpLobby" class="pvp-lobby">
         <h2>⚔️ Mode 1v1</h2>
         <p>Joue contre un ami en temps réel !</p>
+        <input class="pvp-pseudo" id="pvpPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false">
         <div class="pvp-rounds-lbl">Nombre de manches</div>
         <div class="pvp-rounds" id="pvpRounds">
           <button class="pvp-round-btn active" data-rounds="10">10</button>
@@ -769,9 +775,12 @@
 
       <!-- Waiting -->
       <div id="pvpWaiting" class="pvp-waiting hidden">
-        <p style="font-weight:700;color:var(--ink-soft);margin-bottom:8px;">Partage ce code à ton ami :</p>
-        <div class="pvp-room-code" id="pvpCodeDisplay">----</div>
-        <p>En attente de l'adversaire<span class="pvp-dots"></span></p>
+        <div id="pvpWaitCodeWrap">
+          <p style="font-weight:700;color:var(--ink-soft);margin-bottom:8px;">Partage ce code à ton ami :</p>
+          <div class="pvp-room-code" id="pvpCodeDisplay">----</div>
+        </div>
+        <p id="pvpWaitStatus">En attente de l'adversaire<span class="pvp-dots"></span></p>
+        <button class="pvp-big-btn create hidden" id="pvpStartBtn" style="margin-top:16px;">🚀 Lancer la partie</button>
       </div>
 
       <!-- Game -->
@@ -790,6 +799,8 @@
 
         <div class="pvp-question-card">
           <div class="pvp-round-lbl" id="pvpRoundLbl">Question 1 / 10</div>
+          <div class="pvp-timer" id="pvpTimer"><div class="pvp-timer-fill" id="pvpTimerFill"></div></div>
+          <div class="pvp-timer-text" id="pvpTimerText">20 s</div>
           <div class="pvp-flag" id="pvpFlag"></div>
           <div class="pvp-inputs">
             <input class="pvp-input" id="pvpInputCountry" type="text" autocomplete="off" spellcheck="false" placeholder="🌍 Nom du pays…">
@@ -1677,9 +1688,34 @@ let pvpCurrentRound = -1;
 let pvpQuestions = [];
 let pvpSubmitted = false;
 let pvpRoundChoice = 10;  // 10 | 30 | 50 | 100 | 'max'
+let pvpTimerId = null;
+const PVP_TIME = 20;      // secondes par question
 
 // Tous les pays du continent choisi (sert à plafonner le nombre de manches)
 function pvpAvailable(){ return activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter); }
+
+// Pseudo saisi par le joueur (avec valeur de secours)
+function pvpGetPseudo(def){ const v = (document.getElementById('pvpPseudo').value||'').trim(); return v || def; }
+function pvpName(room, role){ return (role==='p1' ? room.p1name : room.p2name) || (role==='p1' ? 'Joueur 1' : 'Joueur 2'); }
+
+// Chrono de 20 s par question
+function pvpStopTimer(){ if(pvpTimerId){ clearInterval(pvpTimerId); pvpTimerId=null; } }
+function pvpStartTimer(){
+  pvpStopTimer();
+  let t = PVP_TIME;
+  const fill = document.getElementById('pvpTimerFill');
+  const txt = document.getElementById('pvpTimerText');
+  const wrap = document.getElementById('pvpTimer');
+  wrap.style.display=''; txt.style.display='';
+  fill.style.width='100%'; fill.style.background='#1fae6a'; txt.textContent = t+' s';
+  pvpTimerId = setInterval(()=>{
+    t--;
+    txt.textContent = Math.max(t,0)+' s';
+    fill.style.width = Math.max(t,0)/PVP_TIME*100 + '%';
+    if(t<=5) fill.style.background='#ef3e5b';
+    if(t<=0){ pvpStopTimer(); if(!pvpSubmitted) pvpSubmit(); }
+  }, 1000);
+}
 
 // Sélecteur du nombre de manches
 document.querySelectorAll('.pvp-round-btn').forEach(b=>{
@@ -1723,6 +1759,7 @@ async function pvpCreate(){
     status:'waiting',
     p1:{score:0,done:false,ac:'',ak:''},
     p2:null,
+    p1name: pvpGetPseudo('Joueur 1'),
     round:-1,
     questions: pvpQuestions,
     filter: activeFilter,
@@ -1730,7 +1767,11 @@ async function pvpCreate(){
     createdAt: Date.now()
   });
 
+  // Écran d'attente côté hôte : code visible, bouton Lancer caché tant que personne n'a rejoint
   document.getElementById('pvpCodeDisplay').textContent = code;
+  document.getElementById('pvpWaitCodeWrap').classList.remove('hidden');
+  document.getElementById('pvpStartBtn').classList.add('hidden');
+  document.getElementById('pvpWaitStatus').innerHTML = "En attente de l'adversaire<span class='pvp-dots'></span>";
   filtersEl.classList.add('locked'); // continent figé pour toute la partie
   pvpShowSection('pvpWaiting');
   dbListen(`rooms/${code}`, pvpOnUpdate);
@@ -1762,14 +1803,36 @@ async function pvpJoin(){
 
   await dbPatch(`rooms/${code}`, {
     p2:{score:0,done:false,ac:'',ak:''},
-    status:'playing',
-    round:0
+    p2name: pvpGetPseudo('Joueur 2')
   });
 
+  // Le joueur 2 attend que l'hôte lance la partie
+  document.getElementById('pvpWaitCodeWrap').classList.add('hidden');
+  document.getElementById('pvpStartBtn').classList.add('hidden');
+  document.getElementById('pvpWaitStatus').innerHTML = "En attente que l'hôte lance la partie<span class='pvp-dots'></span>";
+  pvpShowSection('pvpWaiting');
   dbListen(`rooms/${code}`, pvpOnUpdate);
 }
 
+// L'hôte lance la partie quand il le souhaite
+async function pvpStart(){
+  await dbPatch(`rooms/${pvpRoom}`, {
+    status:'playing',
+    round:0,
+    p1:{score:0,done:false,ac:'',ak:''},
+    p2:{score:0,done:false,ac:'',ak:''}
+  });
+}
+
 function pvpOnUpdate(room){
+  if(room.status === 'waiting'){
+    // L'hôte voit que le joueur 2 a rejoint → il peut lancer
+    if(pvpIsHost && room.p2){
+      document.getElementById('pvpWaitStatus').innerHTML = `✅ <strong>${pvpName(room,'p2')}</strong> a rejoint !`;
+      document.getElementById('pvpStartBtn').classList.remove('hidden');
+    }
+    return;
+  }
   if(room.status === 'playing'){
     const r = room.round;
     if(r >= 0 && r !== pvpCurrentRound){
@@ -1824,12 +1887,16 @@ function pvpShowQuestion(room){
   document.getElementById('pvpStatus').textContent = '';
   document.getElementById('pvpMyScore').textContent    = room[pvpRole]?.score ?? 0;
   document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
+  document.getElementById('pvpMyName').textContent    = pvpName(room, pvpRole);
+  document.getElementById('pvpTheirName').textContent = pvpName(room, pvpOpponent());
+  pvpStartTimer();
   setTimeout(()=>document.getElementById('pvpInputCountry').focus({preventScroll:true}),30);
 }
 
 async function pvpSubmit(){
   if(pvpSubmitted) return;
   pvpSubmitted = true;
+  pvpStopTimer();
   const q = pvpQuestions[pvpCurrentRound];
   const ac = document.getElementById('pvpInputCountry').value.trim();
   const ak = document.getElementById('pvpInputCapital').value.trim();
@@ -1856,25 +1923,32 @@ async function pvpSubmit(){
 }
 
 function pvpShowReveal(room){
+  pvpStopTimer();
+  document.getElementById('pvpTimer').style.display='none';
+  document.getElementById('pvpTimerText').style.display='none';
   const q = pvpQuestions[pvpCurrentRound];
   const them = room[pvpOpponent()];
+  const themName = pvpName(room, pvpOpponent());
   const okC = norm(them?.ac??'') === norm(q.c);
   const okK = norm(them?.ak??'') === norm(q.cap);
   const revealEl = document.getElementById('pvpReveal');
   revealEl.innerHTML = `
-    <p>🌍 Pays : <strong>${q.c}</strong> — Adversaire : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
-    <p>🏛️ Capitale : <strong>${q.cap}</strong> — Adversaire : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
+    <p>🌍 Pays : <strong>${q.c}</strong> — ${themName} : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
+    <p>🏛️ Capitale : <strong>${q.cap}</strong> — ${themName} : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
     <p style="margin-top:6px;color:var(--ink-soft);font-size:0.85rem;">Prochaine question dans 3s…</p>`;
   revealEl.classList.remove('hidden');
   document.getElementById('pvpStatus').textContent = '';
 }
 
 function pvpShowEnd(room){
+  pvpStopTimer();
   pvpShowSection('pvpEnd');
   const myScore    = room[pvpRole]?.score ?? 0;
   const theirScore = room[pvpOpponent()]?.score ?? 0;
   document.getElementById('pvpEndMyScore').textContent    = myScore;
   document.getElementById('pvpEndTheirScore').textContent = theirScore;
+  document.getElementById('pvpEndMyName').textContent    = pvpName(room, pvpRole);
+  document.getElementById('pvpEndTheirName').textContent = pvpName(room, pvpOpponent());
   if(myScore > theirScore){
     document.getElementById('pvpTrophy').textContent = '🏆';
     document.getElementById('pvpEndTitle').textContent = 'Tu as gagné !';
@@ -1890,6 +1964,7 @@ function pvpShowEnd(room){
 }
 
 function pvpReset(){
+  pvpStopTimer();
   if(pvpSSE){ pvpSSE.close(); pvpSSE = null; }
   pvpRoom = null; pvpRole = null; pvpIsHost = false;
   pvpCurrentRound = -1; pvpSubmitted = false;
@@ -1899,6 +1974,7 @@ function pvpReset(){
 }
 
 document.getElementById('pvpCreateBtn').onclick = pvpCreate;
+document.getElementById('pvpStartBtn').onclick  = pvpStart;
 document.getElementById('pvpJoinBtn').onclick   = pvpJoin;
 document.getElementById('pvpCodeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpJoin(); });
 document.getElementById('pvpSubmitBtn').onclick  = pvpSubmit;

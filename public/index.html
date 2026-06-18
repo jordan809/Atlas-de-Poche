@@ -149,6 +149,9 @@
   }
   .chip:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
   .chip.active { background: #fff; color: var(--ink); border-color: #fff; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+  /* En 1v1, une fois la partie créée/rejointe, le continent est verrouillé */
+  .filters.locked .chip { pointer-events: none; opacity: 0.35; }
+  .filters.locked .chip.active { opacity: 1; }
 
   /* ---------- Study grid ---------- */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
@@ -1125,6 +1128,7 @@ CONTINENTS.forEach(name=>{
   b.className="chip"+(name==="Tous"?" active":"");
   b.textContent=name;
   b.onclick=()=>{
+    if(filtersEl.classList.contains("locked")) return; // continent verrouillé (1v1 en cours)
     activeFilter=name;
     document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
     b.classList.add("active");
@@ -1381,6 +1385,7 @@ function enterMode(mode){
   stopTimer();
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
   activeFilter = "Tous";
+  filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
   const isStudy = (mode==="study");
@@ -1696,6 +1701,7 @@ async function pvpCreate(){
   });
 
   document.getElementById('pvpCodeDisplay').textContent = code;
+  filtersEl.classList.add('locked'); // continent figé pour toute la partie
   pvpShowSection('pvpWaiting');
   dbListen(`rooms/${code}`, pvpOnUpdate);
 }
@@ -1717,6 +1723,7 @@ async function pvpJoin(){
     activeFilter = room.filter;
     document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === activeFilter));
   }
+  filtersEl.classList.add('locked'); // le joueur 2 garde le continent choisi par l'hôte
   if(room.hard !== undefined){
     hard = room.hard;
     const hardBtn = document.getElementById("hardToggle");
@@ -1856,6 +1863,7 @@ function pvpReset(){
   pvpRoom = null; pvpRole = null; pvpIsHost = false;
   pvpCurrentRound = -1; pvpSubmitted = false;
   document.getElementById('pvpCodeInput').value = '';
+  filtersEl.classList.remove('locked'); // on peut rechoisir un continent
   pvpShowSection('pvpLobby');
 }
 

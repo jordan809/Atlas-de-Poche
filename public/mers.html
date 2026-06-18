@@ -88,6 +88,10 @@
   html.dark .rev-desc{color:#a89fd8;}
   .rev-fact{font-size:0.78rem;font-weight:700;color:var(--bg1);margin-top:2px;}
   html.dark .rev-fact{color:#9d91ff;}
+  .rev-alias{font-size:0.78rem;color:#0096c7;font-weight:600;margin-top:2px;}
+  .rev-dual{font-size:0.78rem;color:#e07000;font-weight:600;margin-top:1px;}
+  html.dark .rev-alias{color:#60d8f0;}
+  html.dark .rev-dual{color:#f0a040;}
 
   /* ── JEU ── */
   #gameSection{display:none;}
@@ -205,7 +209,7 @@
 // ════════════════════════════════════════
 const SEAS = [
   // ── ATLANTIQUE ───────────────────────────────
-  {name:"Mer Méditerranée",      ocean:"Atlantique", cat:"principale", parent:null, icon:"⛵",
+  {name:"Mer Méditerranée",      ocean:"Atlantique", cat:"principale", parent:null, icon:"⛵", alt:"Mediterranean Sea",
    desc:"Enclavée entre l'Europe du Sud, l'Afrique du Nord et le Moyen-Orient. Berceau des civilisations grecque, romaine et égyptienne.",
    fact:"Reliée à l'Atlantique par le détroit de Gibraltar"},
   {name:"Mer des Caraïbes",      ocean:"Atlantique", cat:"principale", parent:null, icon:"🏝️",
@@ -217,7 +221,7 @@ const SEAS = [
   {name:"Mer Baltique",          ocean:"Atlantique", cat:"principale", parent:null, icon:"🦭",
    desc:"Mer presque fermée entourée par les pays scandinaves et l'Europe centrale. Plus grande mer d'eau saumâtre du monde.",
    fact:"Reliée à la mer du Nord par le détroit de Skagerrak"},
-  {name:"Mer de Norvège",        ocean:"Atlantique", cat:"principale", parent:null, icon:"🐋",
+  {name:"Mer de Norvège",        ocean:"Atlantique", cat:"principale", parent:null, icon:"🐋", dual:"parfois Arctique",
    desc:"Mer froide entre la Norvège, l'Islande et Jan Mayen. Traversée par le Gulf Stream qui réchauffe l'Europe du Nord.",
    fact:"Importante zone de pêche à la morue et au hareng"},
   {name:"Mer du Labrador",       ocean:"Atlantique", cat:"principale", parent:null, icon:"🧊",
@@ -291,13 +295,13 @@ const SEAS = [
    fact:"Les Grandes Antilles incluent Cuba, Haïti, Porto Rico et la Jamaïque"},
 
   // ── PACIFIQUE ────────────────────────────────
-  {name:"Mer de Chine méridionale", ocean:"Pacifique", cat:"principale", parent:null, icon:"🐉",
+  {name:"Mer de Chine méridionale", ocean:"Pacifique", cat:"principale", parent:null, icon:"🐉", alt:"South China Sea",
    desc:"Grande mer d'Asie du Sud-Est entourée par la Chine, le Vietnam, les Philippines et la Malaisie. Zone stratégique disputée.",
    fact:"Contient les îles Spratleys et Paracels, sources de conflits"},
   {name:"Mer de Chine orientale",   ocean:"Pacifique", cat:"principale", parent:null, icon:"⛩️",
    desc:"Mer entre la Chine, le Japon, la Corée du Sud et Taïwan. Importantes routes maritimes commerciales.",
    fact:"Les îles Senkaku/Diaoyu sont disputées entre le Japon et la Chine"},
-  {name:"Mer du Japon",      ocean:"Pacifique", cat:"principale", parent:null, icon:"🗾",
+  {name:"Mer du Japon",      ocean:"Pacifique", cat:"principale", parent:null, icon:"🗾", alt:"Mer de l'Est (Corée)",
    desc:"Mer entre le Japon, la Corée et la Russie. Appelée 'mer de l'Est' par les Coréens.",
    fact:"Séparée du Pacifique par les îles japonaises"},
   {name:"Mer de Béring",     ocean:"Pacifique", cat:"principale", parent:null, icon:"🦅",
@@ -321,7 +325,7 @@ const SEAS = [
   {name:"Mer de Banda",      ocean:"Pacifique", cat:"principale", parent:null, icon:"🌶️",
    desc:"Mer entre les îles Moluques en Indonésie. Historiquement connue comme les 'Îles aux épices'.",
    fact:"Les Moluques étaient la principale source de muscade au XVIIe s."},
-  {name:"Mer de Célèbes",    ocean:"Pacifique", cat:"principale", parent:null, icon:"🦜",
+  {name:"Mer de Célèbes",    ocean:"Pacifique", cat:"principale", parent:null, icon:"🦜", alt:"Mer de Sulawesi",
    desc:"Mer entre les Philippines et l'île indonésienne de Sulawesi (Célèbes). Riche biodiversité marine.",
    fact:"Sulawesi est l'île aux quatre péninsules"},
   {name:"Mer de Salomon",    ocean:"Pacifique", cat:"principale", parent:null, icon:"🐊",
@@ -335,7 +339,7 @@ const SEAS = [
   {name:"Mer de Mindanao",    ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Chine méridionale", icon:"🐙",
    desc:"Mer dans la partie sud des Philippines autour de l'île de Mindanao. Contient de profondes fosses.",
    fact:"La fosse de Mindanao atteint 10 500 m de profondeur"},
-  {name:"Mer des Moluques",   ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Banda", icon:"🌺",
+  {name:"Mer des Moluques",   ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Banda", icon:"🌺", alt:"Mer de Maluku",
    desc:"Mer entre les îles Moluques du Nord. Carrefour des routes maritimes historiques des épices.",
    fact:"Fait partie de l'archipel indonésien"},
   {name:"Mer de Flores",      ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Java", icon:"🦎",
@@ -352,7 +356,7 @@ const SEAS = [
    fact:"Nommée d'après le chancelier allemand Otto von Bismarck"},
 
   // ── ARCTIQUE ─────────────────────────────────
-  {name:"Mer de Barents",    ocean:"Arctique", cat:"principale", parent:null, icon:"🐻‍❄️",
+  {name:"Mer de Barents",    ocean:"Arctique", cat:"principale", parent:null, icon:"🐻‍❄️", dual:"parfois Atlantique",
    desc:"Mer arctique entre la Norvège, la Russie et le Svalbard. Zone de pêche et d'exploration pétrolière.",
    fact:"Nommée d'après l'explorateur néerlandais Willem Barents (1596)"},
   {name:"Mer de Kara",       ocean:"Arctique", cat:"principale", parent:null, icon:"🌊",
@@ -370,7 +374,7 @@ const SEAS = [
   {name:"Mer de Beaufort",   ocean:"Arctique", cat:"principale", parent:null, icon:"🛢️",
    desc:"Mer arctique au nord de l'Alaska et du Canada. Sous-sol riche en pétrole et gaz.",
    fact:"Nommée d'après l'amiral britannique Francis Beaufort"},
-  {name:"Mer du Groenland",  ocean:"Arctique", cat:"principale", parent:null, icon:"🌍",
+  {name:"Mer du Groenland",  ocean:"Arctique", cat:"principale", parent:null, icon:"🌍", dual:"aussi Atlantique",
    desc:"Mer entre le Groenland, le Svalbard et l'Islande. Importante pour la formation des eaux profondes de l'Atlantique.",
    fact:"Participe à la régulation du climat de l'hémisphère nord"},
   {name:"Mer de Lincoln",    ocean:"Arctique", cat:"principale", parent:null, icon:"❄️",
@@ -387,10 +391,10 @@ const SEAS = [
   {name:"Mer d'Oman",          ocean:"Indien", cat:"principale", parent:null, icon:"🛢️",
    desc:"Mer entre l'Oman, le Pakistan et l'Inde. Débouche sur le Golfe Persique.",
    fact:"Le détroit d'Ormuz est l'un des passages pétroliers les plus critiques"},
-  {name:"Mer d'Andaman",       ocean:"Indien", cat:"principale", parent:null, icon:"🏝️",
+  {name:"Mer d'Andaman",       ocean:"Indien", cat:"principale", parent:null, icon:"🏝️", alt:"Andaman Sea",
    desc:"Mer entre le Myanmar, la Thaïlande, la Malaisie et les îles Andaman. Touchée par le tsunami de 2004.",
    fact:"Les îles Andaman abritent des tribus restées isolées du monde moderne"},
-  {name:"Mer de Timor",        ocean:"Indien", cat:"principale", parent:null, icon:"🦅",
+  {name:"Mer de Timor",        ocean:"Indien", cat:"principale", parent:null, icon:"🦅", dual:"aussi Pacifique",
    desc:"Mer entre Timor oriental, l'Indonésie et l'Australie du Nord. Riche en pétrole et gaz offshore.",
    fact:"Le Timor oriental a accédé à l'indépendance en 2002"},
   {name:"Mer de Laquedives",   ocean:"Indien", cat:"principale", parent:null, icon:"🐠",
@@ -548,6 +552,39 @@ const SEAS = [
   {name:"Mer d'Enderby",       ocean:"Austral", cat:"principale", parent:null, icon:"🐧",
    desc:"Mer antarctique au large de la Terre d'Enderby, entre les mers de Lazarev et de Cosmonautes.",
    fact:"Nommée d'après la compagnie baleinière Enderby Brothers qui explora ces eaux au XIXe s."},
+
+  // ── DOUBLONS INTER-OCÉANS ────────────────────
+  // Mer du Groenland → aussi Atlantique
+  {name:"Mer du Groenland",  ocean:"Atlantique", cat:"principale", parent:null, icon:"🌍", dual:"aussi Arctique",
+   desc:"Mer entre le Groenland, le Svalbard et l'Islande. Classée tantôt dans l'Atlantique Nord, tantôt dans l'Arctique.",
+   fact:"Joue un rôle clé dans la circulation thermohaline de l'Atlantique Nord"},
+  // Mer de Norvège → aussi Arctique
+  {name:"Mer de Norvège",    ocean:"Arctique", cat:"principale", parent:null, icon:"🐋", dual:"aussi Atlantique",
+   desc:"Mer froide entre la Norvège, l'Islande et Jan Mayen. Certaines classifications la rattachent à l'Arctique.",
+   fact:"Le Gulf Stream la traverse, adoucissant le climat norvégien"},
+  // Mer de Barents → aussi Atlantique
+  {name:"Mer de Barents",    ocean:"Atlantique", cat:"principale", parent:null, icon:"🐻‍❄️", dual:"aussi Arctique",
+   desc:"Mer entre la Norvège et la Russie, parfois rattachée à l'Atlantique Nord en raison des courants chauds qui la traversent.",
+   fact:"Nommée d'après l'explorateur néerlandais Willem Barents (1596)"},
+  // Mer de Timor → aussi Pacifique
+  {name:"Mer de Timor",      ocean:"Pacifique", cat:"sous-mer", parent:"Mer de Java", icon:"🦅", dual:"aussi Indien",
+   desc:"Mer entre Timor et l'Australie du Nord, parfois classée dans le Pacifique en raison de sa proximité avec l'archipel indonésien.",
+   fact:"Le Timor oriental a accédé à l'indépendance en 2002"},
+  // Golfe du Mexique → aussi indépendant
+  {name:"Golfe du Mexique",  ocean:"Atlantique", cat:"principale", parent:null, icon:"🦞", dual:"sous-zone des Caraïbes",
+   desc:"Grand golfe souvent traité comme mer indépendante entre les États-Unis, le Mexique et Cuba. Important pour la pêche et le pétrole.",
+   fact:"Frappé régulièrement par des ouragans en été et en automne"},
+
+  // ── BASSINS OCÉANOGRAPHIQUES ─────────────────
+  {name:"Bassin du Venezuela", ocean:"Atlantique", cat:"sous-mer", parent:"Mer des Caraïbes", icon:"🔬",
+   desc:"Dépression sous-marine dans la partie sud-ouest de la mer des Caraïbes, au large du Venezuela. Terme océanographique.",
+   fact:"Profondeur maximale : environ 5 630 m"},
+  {name:"Bassin des Philippines", ocean:"Pacifique", cat:"principale", parent:null, icon:"🔬",
+   desc:"Vaste dépression sous-marine à l'ouest du Pacifique, entre les Philippines, le Japon et les Mariannes. Zone scientifique.",
+   fact:"L'une des zones les plus profondes du Pacifique occidental (jusqu'à 5 700 m)"},
+  {name:"Bassin d'Australie",  ocean:"Indien", cat:"principale", parent:null, icon:"🔬",
+   desc:"Grande dépression sous-marine au cœur de l'océan Indien, au sud-ouest de l'Australie. Terme océanographique.",
+   fact:"S'étend sur environ 3 000 km de long, jusqu'à 5 600 m de profondeur"},
 ];
 
 // ════════════════════════════════════════
@@ -731,6 +768,8 @@ function buildOceanGroup(ocean, data, showParentGroups=false){
 function makeCard(s){
   const card=document.createElement("div");
   card.className="rev-card";
+  const aliasHtml  = s.alt  ? `<div class="rev-alias">🔤 Aussi appelée : ${s.alt}</div>` : "";
+  const dualHtml   = s.dual ? `<div class="rev-dual">🔀 Aussi classée : ${s.dual}</div>` : "";
   card.innerHTML=`
     <div class="rev-top">
       <div class="rev-icon">${s.icon}</div>
@@ -741,6 +780,7 @@ function makeCard(s){
       </div>
     </div>
     <div class="rev-desc">${s.desc}</div>
+    ${aliasHtml}${dualHtml}
     <div class="rev-fact">📌 ${s.fact}</div>
   `;
   return card;

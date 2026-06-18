@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
+</script>
+<title>Mers & Océans — Atlas de poche</title>
+<meta name="description" content="Apprends les mers et océans du monde avec Atlas de poche : révision et quiz interactif.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6179297154791284" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d;
+    --card:#ffffff; --ink:#2b2350; --ink-soft:#6b6396;
+    --good:#1fae6a; --bad:#e84545;
+    --ocean:#0077b6; --sea:#00b4d8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    min-height: 100%;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat;
+  }
+  html.dark {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%) no-repeat;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    background: transparent;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bg {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh; z-index: 0; pointer-events: none;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+  }
+  html.dark .bg {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%);
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto;
+    padding: 40px 18px 80px;
+  }
+
+  header { text-align: center; margin-bottom: 28px; color: #fff; }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.85); font-weight: 700; font-size: 0.9rem;
+    text-decoration: none; margin-bottom: 20px;
+    background: rgba(255,255,255,0.2); backdrop-filter: blur(6px);
+    padding: 8px 18px; border-radius: 30px;
+    transition: background 0.2s;
+  }
+  .back-link:hover { background: rgba(255,255,255,0.35); }
+  h1 {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  }
+  .sub { margin-top: 8px; font-size: 1rem; font-weight: 600; opacity: 0.95; }
+
+  /* Onglets */
+  .tabs {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 24px;
+  }
+  .tab-btn {
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1rem;
+    padding: 10px 28px; border: none; border-radius: 50px; cursor: pointer;
+    background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
+    color: #fff; transition: background 0.2s, transform 0.15s;
+  }
+  .tab-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.04); }
+  .tab-btn.active {
+    background: #fff; color: var(--bg1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+  }
+
+  /* Filtre type */
+  .filter-bar {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .filter-chip {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.88rem;
+    padding: 7px 18px; border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 50px; cursor: pointer; background: transparent; color: #fff;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .filter-chip.active { background: rgba(255,255,255,0.3); border-color: #fff; }
+  .filter-chip:hover { background: rgba(255,255,255,0.2); }
+
+  /* ---------- RÉVISION ---------- */
+  #revisionSection { display: none; }
+  #revisionSection.visible { display: block; }
+
+  .rev-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .rev-card {
+    background: #fff; border-radius: 18px;
+    padding: 18px 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .rev-card-top {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .rev-icon { font-size: 2rem; flex-shrink: 0; }
+  .rev-name {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 1.1rem; color: var(--ink);
+  }
+  .rev-type {
+    font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; display: inline-block; margin-top: 2px;
+  }
+  .rev-type.ocean { background: #e0f4ff; color: var(--ocean); }
+  .rev-type.mer { background: #e0faff; color: #007ea7; }
+  .rev-type.golfe { background: #fff3e0; color: #e07000; }
+  .rev-desc {
+    font-size: 0.88rem; color: var(--ink-soft); line-height: 1.5;
+    margin-top: 4px;
+  }
+  .rev-fact {
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--bg1); margin-top: 2px;
+  }
+
+  html.dark .rev-card { background: #1e1b2e; }
+  html.dark .rev-name { color: #e8e2ff; }
+  html.dark .rev-desc { color: #a89fd8; }
+  html.dark .rev-fact { color: #9d91ff; }
+  html.dark .rev-type.ocean { background: #0d2a3a; color: #60c8f0; }
+  html.dark .rev-type.mer { background: #0d2a30; color: #60d8f0; }
+  html.dark .rev-type.golfe { background: #2a1e0a; color: #f0a040; }
+
+  /* ---------- JEU ---------- */
+  #gameSection { display: none; }
+  #gameSection.visible { display: block; }
+
+  .game-card {
+    background: #fff; border-radius: 22px;
+    padding: 32px 28px; box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    text-align: center;
+  }
+  html.dark .game-card { background: #1e1b2e; }
+
+  .game-progress {
+    font-weight: 700; font-size: 0.88rem; color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  html.dark .game-progress { color: #a89fd8; }
+
+  .game-icon { font-size: 3.5rem; margin-bottom: 10px; }
+  .game-question {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 1.15rem; color: var(--ink); line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  html.dark .game-question { color: #e8e2ff; }
+  .game-hint {
+    font-size: 0.88rem; color: var(--ink-soft); margin-bottom: 24px; font-style: italic;
+  }
+  html.dark .game-hint { color: #a89fd8; }
+
+  .options-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; margin-bottom: 20px;
+  }
+  .opt-btn {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem;
+    padding: 14px 10px; border: 2.5px solid #ece9ff; border-radius: 14px;
+    background: #f7f6ff; color: var(--ink); cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    text-align: center;
+  }
+  .opt-btn:hover:not(:disabled) { background: #ede8ff; border-color: var(--bg1); transform: scale(1.02); }
+  .opt-btn.correct { background: #e7faf0; border-color: var(--good); color: var(--good); }
+  .opt-btn.wrong   { background: #fdeaee; border-color: var(--bad); color: var(--bad); }
+  .opt-btn:disabled { cursor: default; }
+
+  html.dark .opt-btn { background: #2a2545; border-color: #3d3568; color: #e8e2ff; }
+  html.dark .opt-btn.correct { background: #1a3028; border-color: var(--good); color: #5de0a5; }
+  html.dark .opt-btn.wrong   { background: #2e1820; border-color: var(--bad); color: #f08090; }
+
+  .game-feedback {
+    min-height: 28px; font-weight: 800; font-size: 1rem; margin-bottom: 14px;
+  }
+  .feedback-good { color: var(--good); }
+  .feedback-bad  { color: var(--bad); }
+
+  .next-btn {
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem;
+    padding: 13px 36px; border: none; border-radius: 50px; cursor: pointer;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: #fff; box-shadow: 0 8px 20px rgba(106,92,255,0.35);
+    transition: transform 0.15s; display: none;
+  }
+  .next-btn:hover { transform: translateY(-2px); }
+
+  /* Score final */
+  .score-end {
+    display: none; text-align: center; padding: 10px 0;
+  }
+  .score-end .score-icon { font-size: 4rem; margin-bottom: 12px; }
+  .score-end .score-txt {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 2rem; color: var(--ink); margin-bottom: 6px;
+  }
+  html.dark .score-end .score-txt { color: #e8e2ff; }
+  .score-end .score-sub {
+    color: var(--ink-soft); font-size: 0.95rem; margin-bottom: 24px;
+  }
+  .restart-btn {
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem;
+    padding: 13px 36px; border: none; border-radius: 50px; cursor: pointer;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    color: #fff; box-shadow: 0 8px 20px rgba(106,92,255,0.35);
+    transition: transform 0.15s;
+  }
+  .restart-btn:hover { transform: translateY(-2px); }
+
+  /* Dark toggle */
+  .dark-toggle {
+    position: fixed; top: 14px; right: 16px; z-index: 100;
+    font-size: 1.3rem; width: 42px; height: 42px;
+    border: none; border-radius: 50%; cursor: pointer;
+    background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dark-toggle:hover { transform: scale(1.12); background: rgba(255,255,255,0.4); }
+  html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
+
+  @media (max-width: 520px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .game-card { padding: 24px 18px; }
+    .rev-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+
+<div class="wrap">
+  <header>
+    <div><a class="back-link" href="/">← Retour au quiz</a></div>
+    <h1>🌊 Mers &amp; Océans</h1>
+    <p class="sub">Explore et teste tes connaissances sur les eaux du monde</p>
+  </header>
+
+  <!-- Onglets -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabRevision" onclick="switchTab('revision')">📖 Révision</button>
+    <button class="tab-btn" id="tabGame" onclick="switchTab('game')">🎮 Jeu</button>
+  </div>
+
+  <!-- Filtre -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-chip active" data-filter="Tous" onclick="setFilter('Tous',this)">Tous</button>
+    <button class="filter-chip" data-filter="Océan" onclick="setFilter('Océan',this)">🌐 Océans</button>
+    <button class="filter-chip" data-filter="Mer" onclick="setFilter('Mer',this)">🌊 Mers</button>
+    <button class="filter-chip" data-filter="Golfe" onclick="setFilter('Golfe',this)">🫙 Golfes</button>
+  </div>
+
+  <!-- Révision -->
+  <section id="revisionSection" class="visible">
+    <div class="rev-grid" id="revGrid"></div>
+  </section>
+
+  <!-- Jeu -->
+  <section id="gameSection">
+    <div class="game-card" id="gameCard">
+      <div class="game-progress" id="gameProgress">Question 1 / 15</div>
+      <div class="game-icon" id="gameIcon">🌊</div>
+      <div class="game-question" id="gameQuestion"></div>
+      <div class="game-hint" id="gameHint"></div>
+      <div class="options-grid" id="optionsGrid"></div>
+      <div class="game-feedback" id="gameFeedback"></div>
+      <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Question suivante →</button>
+
+      <div class="score-end" id="scoreEnd">
+        <div class="score-icon" id="scoreIcon">🏆</div>
+        <div class="score-txt" id="scoreTxt"></div>
+        <div class="score-sub" id="scoreSub"></div>
+        <button class="restart-btn" onclick="startGame()">🔄 Recommencer</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+// ─── Données ───────────────────────────────────────────────
+const SEAS = [
+  // OCÉANS
+  { name:"Océan Pacifique", type:"Océan", icon:"🌏",
+    desc:"Le plus grand océan du monde, il couvre plus d'un tiers de la surface terrestre et s'étend entre les Amériques, l'Asie et l'Océanie.",
+    fact:"Surface : ~165 millions de km²" },
+  { name:"Océan Atlantique", type:"Océan", icon:"🌎",
+    desc:"Deuxième plus grand océan, il sépare l'Europe et l'Afrique des Amériques. Il abrite le triangle des Bermudes.",
+    fact:"Surface : ~106 millions de km²" },
+  { name:"Océan Indien", type:"Océan", icon:"🌍",
+    desc:"Troisième plus grand océan, bordé par l'Afrique, l'Asie et l'Australie. C'est l'océan le plus chaud du monde.",
+    fact:"Surface : ~70 millions de km²" },
+  { name:"Océan Arctique", type:"Océan", icon:"🧊",
+    desc:"Le plus petit et le moins profond des océans, centré sur le pôle Nord. Il est en grande partie recouvert de glace.",
+    fact:"Surface : ~14 millions de km²" },
+  { name:"Océan Antarctique", type:"Océan", icon:"🐧",
+    desc:"Aussi appelé Océan Austral, il entoure l'Antarctique et est le deuxième plus petit océan. Reconnu officiellement en 2000.",
+    fact:"Surface : ~20 millions de km²" },
+  // MERS
+  { name:"Mer Méditerranée", type:"Mer", icon:"⛵",
+    desc:"Enclavée entre l'Europe du Sud, l'Afrique du Nord et le Moyen-Orient. Berceau de nombreuses civilisations antiques.",
+    fact:"Reliée à l'Atlantique par le détroit de Gibraltar" },
+  { name:"Mer des Caraïbes", type:"Mer", icon:"🏝️",
+    desc:"Mer tropicale bordée par l'Amérique centrale, du Sud et les Antilles. Connue pour ses eaux turquoise et ses récifs coralliens.",
+    fact:"Aussi appelée mer des Antilles" },
+  { name:"Mer du Nord", type:"Mer", icon:"🌬️",
+    desc:"Mer peu profonde entre le Royaume-Uni, la Scandinavie et l'Europe du Nord-Ouest. Importante zone de pêche et de pétrole.",
+    fact:"Relie l'Atlantique à la mer Baltique" },
+  { name:"Mer Baltique", type:"Mer", icon:"🦭",
+    desc:"Mer presque fermée entourée par les pays scandinaves et l'Europe centrale. C'est la plus grande mer d'eau saumâtre du monde.",
+    fact:"Reliée à la mer du Nord par le détroit de Skagerrak" },
+  { name:"Mer Rouge", type:"Mer", icon:"🦈",
+    desc:"Mer étroite entre l'Afrique et la péninsule arabique. Reliée à la Méditerranée par le canal de Suez.",
+    fact:"L'une des mers les plus salées du monde" },
+  { name:"Mer d'Arabie", type:"Mer", icon:"🏺",
+    desc:"Partie nord-ouest de l'océan Indien, bordée par la péninsule arabique, l'Inde et la Corne de l'Afrique.",
+    fact:"Importante route commerciale maritime historique" },
+  { name:"Mer de Chine méridionale", type:"Mer", icon:"🐉",
+    desc:"Grande mer d'Asie du Sud-Est, entourée par la Chine, le Vietnam, les Philippines et la Malaisie. Zone stratégique disputée.",
+    fact:"Contient les îles Spratleys et Paracels" },
+  { name:"Mer de Corail", type:"Mer", icon:"🪸",
+    desc:"Mer au nord-est de l'Australie, abritant la Grande Barrière de Corail, le plus grand récif corallien du monde.",
+    fact:"Théâtre d'une bataille navale décisive en 1942" },
+  { name:"Mer Noire", type:"Mer", icon:"🌑",
+    desc:"Mer intérieure entre l'Europe de l'Est et la Turquie, entourée par 6 pays. Reliée à la Méditerranée par le détroit du Bosphore.",
+    fact:"Presque dépourvue d'oxygène en profondeur" },
+  { name:"Mer Caspienne", type:"Mer", icon:"🛢️",
+    desc:"Le plus grand lac du monde, souvent appelé mer en raison de sa taille. Entourée par la Russie, le Kazakhstan, l'Azerbaïdjan, l'Iran et le Turkménistan.",
+    fact:"Riche en réserves de pétrole et de gaz" },
+  { name:"Mer Égée", type:"Mer", icon:"🏛️",
+    desc:"Mer entre la Grèce et la Turquie, parsemée de milliers d'îles. Berceau de la civilisation grecque antique.",
+    fact:"Contient plus de 2 000 îles grecques" },
+  { name:"Mer du Japon", type:"Mer", icon:"🗾",
+    desc:"Mer entre le Japon, la Corée et la Russie. Appelée 'mer de l'Est' par les Coréens.",
+    fact:"Séparée du Pacifique par les îles japonaises" },
+  { name:"Mer de Béring", type:"Mer", icon:"🦅",
+    desc:"Mer froide entre l'Alaska et la Russie, là où l'Amérique et l'Asie sont les plus proches (90 km de distance).",
+    fact:"Séparée de l'Arctique par le détroit de Béring" },
+  // GOLFES
+  { name:"Golfe du Mexique", type:"Golfe", icon:"🦞",
+    desc:"Grand golfe entre les États-Unis, le Mexique et Cuba. Important pour la pêche, le pétrole et le tourisme balnéaire.",
+    fact:"Frappé par les ouragans en été et en automne" },
+  { name:"Golfe Persique", type:"Golfe", icon:"🛢️",
+    desc:"Golfe entre l'Iran et la péninsule arabique. L'une des zones les plus riches en pétrole du monde.",
+    fact:"Aussi appelé golfe Arabique" },
+  { name:"Golfe de Guinée", type:"Golfe", icon:"🐘",
+    desc:"Grand golfe de l'océan Atlantique longeant la côte ouest de l'Afrique, du Sénégal jusqu'au Gabon.",
+    fact:"Proche de l'équateur, il borde 16 pays africains" },
+  { name:"Golfe du Bengale", type:"Golfe", icon:"🐅",
+    desc:"Le plus grand golfe du monde, à l'est de l'Inde, entre le sous-continent indien et la péninsule indochinoise.",
+    fact:"Reçoit les eaux du Gange, du Brahmapoutre et de l'Irrawaddy" },
+];
+
+// ─── État ───────────────────────────────────────────────────
+let activeTab = "revision";
+let activeFilter = "Tous";
+let gamePool = [];
+let gameIdx = 0;
+let gameScore = 0;
+let currentAnswer = "";
+let answered = false;
+
+// ─── Dark mode ──────────────────────────────────────────────
+const darkToggle = document.getElementById("darkToggle");
+let darkOn = localStorage.getItem("darkMode") === "1";
+function applyDark(){
+  document.documentElement.classList.toggle("dark", darkOn);
+  darkToggle.textContent = darkOn ? "☀️" : "🌙";
+}
+applyDark();
+darkToggle.onclick = () => {
+  darkOn = !darkOn;
+  localStorage.setItem("darkMode", darkOn ? "1" : "0");
+  applyDark();
+};
+
+// ─── Onglets ────────────────────────────────────────────────
+function switchTab(tab){
+  activeTab = tab;
+  document.getElementById("tabRevision").classList.toggle("active", tab==="revision");
+  document.getElementById("tabGame").classList.toggle("active", tab==="game");
+  document.getElementById("revisionSection").classList.toggle("visible", tab==="revision");
+  document.getElementById("gameSection").classList.toggle("visible", tab==="game");
+  document.getElementById("filterBar").style.display = tab==="revision" ? "flex" : "none";
+  if(tab==="game") startGame();
+}
+
+// ─── Filtre ─────────────────────────────────────────────────
+function setFilter(f, el){
+  activeFilter = f;
+  document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+  el.classList.add("active");
+  renderRevision();
+}
+
+function filteredData(){
+  if(activeFilter==="Tous") return SEAS;
+  return SEAS.filter(s => s.type === activeFilter);
+}
+
+// ─── RÉVISION ───────────────────────────────────────────────
+function renderRevision(){
+  const grid = document.getElementById("revGrid");
+  grid.innerHTML = "";
+  filteredData().forEach(s => {
+    const card = document.createElement("div");
+    card.className = "rev-card";
+    card.innerHTML = `
+      <div class="rev-card-top">
+        <div class="rev-icon">${s.icon}</div>
+        <div>
+          <div class="rev-name">${s.name}</div>
+          <span class="rev-type ${s.type.toLowerCase()}">${s.type}</span>
+        </div>
+      </div>
+      <div class="rev-desc">${s.desc}</div>
+      <div class="rev-fact">📌 ${s.fact}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ─── JEU ────────────────────────────────────────────────────
+function shuffle(arr){ return [...arr].sort(() => Math.random()-0.5); }
+
+function startGame(){
+  gamePool = shuffle(SEAS);
+  gameIdx = 0;
+  gameScore = 0;
+  document.getElementById("scoreEnd").style.display = "none";
+  document.getElementById("optionsGrid").style.display = "grid";
+  document.getElementById("gameProgress").style.display = "block";
+  document.getElementById("gameIcon").style.display = "block";
+  document.getElementById("gameQuestion").style.display = "block";
+  document.getElementById("gameHint").style.display = "block";
+  showQuestion();
+}
+
+function showQuestion(){
+  if(gameIdx >= gamePool.length){
+    showScore();
+    return;
+  }
+  answered = false;
+  const q = gamePool[gameIdx];
+  currentAnswer = q.name;
+
+  document.getElementById("gameProgress").textContent = `Question ${gameIdx+1} / ${gamePool.length}`;
+  document.getElementById("gameIcon").textContent = q.icon;
+  document.getElementById("gameQuestion").textContent = q.desc;
+  document.getElementById("gameHint").textContent = `Type : ${q.type}  •  Indice : ${q.fact}`;
+  document.getElementById("gameFeedback").textContent = "";
+  document.getElementById("gameFeedback").className = "game-feedback";
+  document.getElementById("nextBtn").style.display = "none";
+
+  // 4 propositions : la bonne + 3 fausses
+  const others = shuffle(SEAS.filter(s => s.name !== q.name)).slice(0, 3);
+  const options = shuffle([q, ...others]);
+
+  const grid = document.getElementById("optionsGrid");
+  grid.innerHTML = "";
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = opt.name;
+    btn.onclick = () => answer(btn, opt.name);
+    grid.appendChild(btn);
+  });
+}
+
+function answer(btn, chosen){
+  if(answered) return;
+  answered = true;
+  const correct = chosen === currentAnswer;
+  if(correct){ gameScore++; }
+
+  document.querySelectorAll(".opt-btn").forEach(b => {
+    b.disabled = true;
+    if(b.textContent === currentAnswer) b.classList.add("correct");
+    else if(b === btn && !correct) b.classList.add("wrong");
+  });
+
+  const fb = document.getElementById("gameFeedback");
+  if(correct){
+    fb.textContent = "✅ Bonne réponse !";
+    fb.className = "game-feedback feedback-good";
+  } else {
+    fb.textContent = `❌ C'était : ${currentAnswer}`;
+    fb.className = "game-feedback feedback-bad";
+  }
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestion(){
+  gameIdx++;
+  showQuestion();
+}
+
+function showScore(){
+  const pct = Math.round((gameScore / gamePool.length) * 100);
+  const icon = pct===100 ? "🏆" : pct>=75 ? "🎉" : pct>=50 ? "👍" : "💪";
+  document.getElementById("optionsGrid").style.display = "none";
+  document.getElementById("gameProgress").style.display = "none";
+  document.getElementById("gameIcon").style.display = "none";
+  document.getElementById("gameQuestion").style.display = "none";
+  document.getElementById("gameHint").style.display = "none";
+  document.getElementById("gameFeedback").textContent = "";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("scoreIcon").textContent = icon;
+  document.getElementById("scoreTxt").textContent = `${gameScore} / ${gamePool.length}`;
+  document.getElementById("scoreSub").textContent = `${pct}% de bonnes réponses`;
+  document.getElementById("scoreEnd").style.display = "block";
+}
+
+// ─── Init ────────────────────────────────────────────────────
+renderRevision();
+document.getElementById("filterBar").style.display = "flex";
+</script>
+</body>
+</html>

@@ -1778,6 +1778,7 @@ function pvpOnUpdate(room){
 }
 
 function pvpShowQuestion(room){
+  filtersEl.classList.add('locked'); // continent figé pendant la partie (les 2 joueurs)
   pvpShowSection('pvpGame');
   const q = pvpQuestions[pvpCurrentRound];
   document.getElementById('pvpRoundLbl').textContent = `Question ${pvpCurrentRound+1} / ${TOTAL_ROUNDS}`;

@@ -2216,9 +2216,6 @@ function pvpShowQuestion(room){
 async function pvpSubmit(){
   if(pvpSubmitted) return;
   pvpSubmitted = true;
-  pvpStopTimer();
-  document.getElementById('pvpTimer').style.display = 'none';
-  document.getElementById('pvpTimerText').style.display = 'none';
   const q = pvpQuestions[pvpCurrentRound];
   const ac = document.getElementById('pvpInputCountry').value.trim();
   const ak = document.getElementById('pvpInputCapital').value.trim();

@@ -1199,8 +1199,7 @@ function renderStudy(){
   // sans tenir compte du mode Facile/Difficile (qui ne sert qu'aux quiz).
   const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
   const list = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
-  document.getElementById("countNote").textContent =
-    list.length+" pays"+(activeFilter==="Tous"?" répertoriés":" — "+activeFilter);
+  document.getElementById("countNote").textContent = T().countNote(list.length, activeFilter);
   const grid=document.getElementById("grid"); grid.innerHTML="";
   list.forEach(d=>{
     const card=document.createElement("div");
@@ -1222,12 +1221,11 @@ function updateScore(){
   document.getElementById("streakStat").classList.toggle("fire", streak>=3);
   const pct=asked?Math.round((score/asked)*100):0;
   document.getElementById("progressFill").style.width=pct+"%";
-  document.getElementById("progressText").textContent=asked?`Réussite : ${pct}% (${score}/${asked})`:"Réussite : —";
+  document.getElementById("progressText").textContent=asked?T().progress(pct,score,asked):T().successNone;
   renderRecords();
 }
 function renderRecords(){
-  document.getElementById("records").textContent =
-    `🏆 Meilleure série : ${records.bestStreak}   ·   ⏱️ Record défi : ${records.bestTimed}`;
+  document.getElementById("records").textContent = T().recordLine(records.bestStreak, records.bestTimed);
 }
 
 // ---------- Question rendering ----------
@@ -1245,15 +1243,15 @@ function nextQuestion(){
   const promptEl=document.getElementById("qPrompt");
 
   if(activeMode==="flags"){
-    promptEl.textContent="Quel est ce pays ?";
+    promptEl.textContent=T().promptFlag;
     flagEl.innerHTML=flagImg(q.f, 80);
     mainEl.textContent="🌍";
   } else if(direction==="cap"){
-    promptEl.textContent="Quelle est la capitale de…";
+    promptEl.textContent=T().promptCap;
     flagEl.innerHTML=flagImg(q.f, 80);
     mainEl.textContent=q.c;
   } else {
-    promptEl.textContent="Quel pays a pour capitale…";
+    promptEl.textContent=T().promptCountry;
     flagEl.innerHTML=`<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
@@ -1326,10 +1324,10 @@ function chooseOption(btn,label){
 
   if(isCorrect){
     btn.classList.add("correct");
-    fb.textContent="Bravo, c'est exact ! 🎉"; fb.className="feedback good";
+    fb.textContent=T().correct; fb.className="feedback good";
   } else {
     btn.classList.add("wrong");
-    fb.innerHTML=`Raté — c'était <strong>${correctText}</strong>.`+revealLine();
+    fb.innerHTML=T().wrong(correctText)+revealLine();
     fb.className="feedback bad";
   }
   document.querySelectorAll(".opt").forEach(b=>{
@@ -1351,10 +1349,10 @@ function checkTyped(){
   input.disabled=true; document.getElementById("validateBtn").disabled=true;
   if(isCorrect){
     input.classList.add("correct");
-    fb.textContent="Bravo, c'est exact ! 🎉"; fb.className="feedback good";
+    fb.textContent=T().correct; fb.className="feedback good";
   } else {
     input.classList.add("wrong");
-    fb.innerHTML=`Raté — c'était <strong>${correctText}</strong>.`+revealLine();
+    fb.innerHTML=T().wrong(correctText)+revealLine();
     fb.className="feedback bad";
   }
   registerResult(isCorrect);
@@ -1400,9 +1398,9 @@ function endTimed(){
   const eg=document.getElementById("endgame");
   eg.innerHTML=`
     <div class="big">${score}</div>
-    <div class="lbl">bonnes réponses en ${TIMED_SECONDS} s</div>
-    ${isRecord?'<div class="record">🏆 Nouveau record !</div>':''}
-    <button class="next-btn show" id="replayBtn">Rejouer ⏱️</button>`;
+    <div class="lbl">${T().timedResult(score,TIMED_SECONDS)}</div>
+    ${isRecord?`<div class="record">${T().newRecord}</div>`:''}
+    <button class="next-btn show" id="replayBtn">${T().replay}</button>`;
   eg.classList.remove("hidden");
   document.getElementById("replayBtn").onclick=startPlay;
   document.getElementById("timedReady").classList.add("hidden");
@@ -1472,13 +1470,13 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
 const dirToggle=document.getElementById("dirToggle");
 dirToggle.onclick=()=>{
   direction = direction==="cap" ? "country" : "cap";
-  dirToggle.textContent = direction==="cap" ? "🏛️ Deviner la capitale" : "🌍 Deviner le pays";
+  dirToggle.textContent = direction==="cap" ? T().dirCap : T().dirCountry;
   if(activeMode!=="study") startPlay();
 };
 const diffToggle=document.getElementById("diffToggle");
 diffToggle.onclick=()=>{
   hard=!hard;
-  diffToggle.textContent = hard ? "Niveau : Difficile 🔴" : "Niveau : Facile 🟢";
+  diffToggle.textContent = hard ? T().diffHard : T().diffEasy;
   if(activeMode!=="study") startPlay();
 };
 const soundToggle=document.getElementById("soundToggle");
@@ -1555,13 +1553,13 @@ function renderFlagsAll(force=false){
   grid.innerHTML = "";
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
-  checkBtn.textContent = "Vérifier mes réponses ✅";
+  checkBtn.textContent = T().verify;
 
   list.forEach(d => {
     const row = document.createElement("div");
     row.className = "flag-row";
     row.dataset.answer = d.c;
-    row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}</div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">`;
+    row.innerHTML = `<div class="flag-img-wrap">${flagImg(d.f, 80)}</div><input class="flag-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
     const input = row.querySelector(".flag-input");
     input.addEventListener("keydown", (e) => {
       const inputs = [...document.querySelectorAll(".flag-input:not(:disabled)")];
@@ -1627,9 +1625,9 @@ function renderFlagsAll(force=false){
         <div class="score-emoji">${emoji}</div>
         <div class="score-big">${correct} / ${total}</div>
         <div class="score-pct">${pct}%</div>
-        <div class="score-lbl">de bonnes réponses</div>
+        <div class="score-lbl">${T().flagsResult}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
-        <button class="score-restart">🔄 Recommencer</button>
+        <button class="score-restart">${T().restart}</button>
       </div>`;
     document.body.appendChild(overlay);
     overlay.querySelector(".score-restart").onclick = () => {
@@ -1667,7 +1665,7 @@ document.getElementById("subAll").onclick = () => enterFlagsSubMode("all");
 const flagsAnswerToggle = document.getElementById("flagsAnswerToggle");
 flagsAnswerToggle.onclick = () => {
   flagsAnswerMode = (flagsAnswerMode==="type") ? "qcm" : "type";
-  flagsAnswerToggle.textContent = (flagsAnswerMode==="type") ? "✍️ Réponse : écrire" : "🔢 Réponse : 4 choix";
+  flagsAnswerToggle.textContent = (flagsAnswerMode==="type") ? T().flagsWrite : T().flagsQcm;
   if(activeMode==="flags" && flagsSubMode==="one") startPlay();
 };
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
@@ -1679,49 +1677,198 @@ document.getElementById("flagsStartChronoBtn").onclick = () => {
 // ---------- Langue ----------
 const LANGS = {
   fr: {
+    // Header
+    eyebrow:"Atlas de poche",
+    h1:"Les Capitales du Monde",
+    sub:"Révise, teste-toi et explore les capitales et drapeaux des cinq continents",
+    intro:`Bienvenue sur <strong>Atlas de poche</strong>, ton atlas interactif et gratuit pour apprendre la géographie en t'amusant. Découvre les <strong>195 pays du monde</strong> et leurs capitales, puis entraîne-toi grâce aux modes <strong>révision</strong>, <strong>quiz</strong>, <strong>clavier</strong>, <strong>défi chronométré</strong> et <strong>drapeaux</strong> !`,
+    // Menu
+    menuGlobe:"🌍 Globe interactif", menuSeas:"🌊 Mers & Océans", menuContact:"📬 Contact",
+    // Modes
     modeStudy:"📖 Révision", modeQuiz:"🎯 Quiz", modeType:"⌨️ Clavier",
     modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"⚔️ 1v1",
+    // Options bar
     dirCap:"🏛️ Deviner la capitale", dirCountry:"🌍 Deviner le pays",
     diffEasy:"Niveau : Facile 🟢", diffHard:"Niveau : Difficile 🔴",
+    // Filters
+    filterAll:"Tous",
+    // Flags submodes
     flagsOne:"🎯 Un par un", flagsAll:"🗺️ Tous les drapeaux",
     flagsWrite:"✍️ Réponse : écrire", flagsQcm:"🔢 Réponse : 4 choix",
-    filterAll:"Tous",
-    promptCap:"Quelle est la capitale de…", promptCountry:"Quel est le pays dont la capitale est…",
-    verify:"Vérifier mes réponses ✅", restart:"🔄 Recommencer", chrono:"🚀 Lancer le chrono",
-    placeholder:"Tape ta réponse…", flagPlaceholder:"Nom du pays…",
-    contact:"📬 Contact",
+    chrono:"🚀 Lancer le chrono", restart:"🔄 Recommencer", verify:"Vérifier mes réponses ✅",
+    flagsResult:"bonnes réponses",
+    flagPlaceholder:"Nom du pays…",
+    // Scoreboard
+    scoreLabel:"Score", questionsLabel:"Questions", streakLabel:"Série",
+    successLabel:"Réussite", successNone:"Réussite : —",
+    recordLine: (s,t) => `🏆 Meilleure série : ${s}   ·   ⏱️ Record défi : ${t}`,
+    countNote: (n, k) => n+" pays"+(k==="Tous"?" répertoriés":" — "+k),
+    // Quiz prompts
+    promptFlag:"Quel est ce pays ?",
+    promptCap:"Quelle est la capitale de…",
+    promptCountry:"Quel pays a pour capitale…",
+    placeholder:"Tape ta réponse…",
+    validateBtn:"Valider",
+    nextBtn:"Question suivante →",
+    // Feedback
+    correct:"Bravo, c'est exact ! 🎉",
+    wrong: (ans) => `Raté — c'était <strong>${ans}</strong>.`,
+    // Endgame (timed)
+    timedReady:"Prêt pour le défi ?",
+    timedDesc:`Tu as <strong>60 secondes</strong> pour répondre à un maximum de questions !`,
+    timedStart:"🚀 Lancer le chrono !",
+    timedResult: (s,t) => `bonnes réponses en ${t} s`,
+    newRecord:"🏆 Nouveau record !",
+    replay:"Rejouer ⏱️",
+    // Progress
+    progress: (pct,s,a) => `Réussite : ${pct}% (${s}/${a})`,
+    // PvP
+    pvpTitle:"⚔️ Mode 1v1",
+    pvpSubtitle:"Joue contre un ami en temps réel !",
+    pvpPseudoPlaceholder:"✏️ Ton pseudo",
+    pvpRoundsLabel:"Nombre de manches",
+    pvpCreate:"🎮 Créer une partie",
+    pvpJoin:"Rejoindre",
+    pvpShareCode:"Partage ce code à ton ami :",
+    pvpWaiting:"En attente de l'adversaire",
+    pvpStart:"🚀 Lancer la partie",
+    pvpCountryPlaceholder:"🌍 Nom du pays…",
+    pvpCapitalPlaceholder:"🏛️ Capitale…",
+    pvpSubmit:"Valider ✅",
+    pvpWin:"Tu as gagné !", pvpLose:"Tu as perdu…", pvpDraw:"Égalité !",
+    pvpReplay:"🔄 Rejouer",
+    pvpWaitAdversary:"⏳ En attente de l'adversaire…",
+    pvpQuestion: (r,t) => `Question ${r} / ${t}`,
+    pvpRevealCountry:"🌍 Pays", pvpRevealCapital:"🏛️ Capitale",
+    pvpNextIn:"Prochaine question dans 3s…",
+    // Tooltips
+    soundTitle:"Son", darkTitle:"Mode nuit",
   },
   en: {
+    eyebrow:"Atlas de poche",
+    h1:"World Capitals",
+    sub:"Study, test yourself and explore capitals and flags of all continents",
+    intro:`Welcome to <strong>Atlas de poche</strong>, your free interactive atlas to learn world geography. Discover the <strong>195 countries</strong> and their capitals, then practice with <strong>review</strong>, <strong>quiz</strong>, <strong>keyboard</strong>, <strong>timed challenge</strong> and <strong>flags</strong> modes!`,
+    menuGlobe:"🌍 Interactive Globe", menuSeas:"🌊 Seas & Oceans", menuContact:"📬 Contact",
     modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
     modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
     diffEasy:"Level: Easy 🟢", diffHard:"Level: Hard 🔴",
+    filterAll:"All",
     flagsOne:"🎯 One by one", flagsAll:"🗺️ All flags",
     flagsWrite:"✍️ Answer: type", flagsQcm:"🔢 Answer: 4 choices",
-    filterAll:"All",
-    promptCap:"What is the capital of…", promptCountry:"Which country has this capital…",
-    verify:"Check my answers ✅", restart:"🔄 Restart", chrono:"🚀 Start timer",
-    placeholder:"Type your answer…", flagPlaceholder:"Country name…",
-    contact:"📬 Contact",
+    chrono:"🚀 Start timer", restart:"🔄 Restart", verify:"Check my answers ✅",
+    flagsResult:"correct answers",
+    flagPlaceholder:"Country name…",
+    scoreLabel:"Score", questionsLabel:"Questions", streakLabel:"Streak",
+    successLabel:"Success", successNone:"Success: —",
+    recordLine: (s,t) => `🏆 Best streak: ${s}   ·   ⏱️ Challenge record: ${t}`,
+    countNote: (n, k) => n+" countries"+(k==="Tous"?"":" — "+k),
+    promptFlag:"What country is this?",
+    promptCap:"What is the capital of…",
+    promptCountry:"Which country has this capital…",
+    placeholder:"Type your answer…",
+    validateBtn:"Validate",
+    nextBtn:"Next question →",
+    correct:"Correct! 🎉",
+    wrong: (ans) => `Wrong — it was <strong>${ans}</strong>.`,
+    timedReady:"Ready for the challenge?",
+    timedDesc:`You have <strong>60 seconds</strong> to answer as many questions as possible!`,
+    timedStart:"🚀 Start timer!",
+    timedResult: (s,t) => `correct answers in ${t} s`,
+    newRecord:"🏆 New record!",
+    replay:"Play again ⏱️",
+    progress: (pct,s,a) => `Success: ${pct}% (${s}/${a})`,
+    pvpTitle:"⚔️ 1v1 Mode",
+    pvpSubtitle:"Play against a friend in real time!",
+    pvpPseudoPlaceholder:"✏️ Your nickname",
+    pvpRoundsLabel:"Number of rounds",
+    pvpCreate:"🎮 Create game",
+    pvpJoin:"Join",
+    pvpShareCode:"Share this code with your friend:",
+    pvpWaiting:"Waiting for opponent",
+    pvpStart:"🚀 Start game",
+    pvpCountryPlaceholder:"🌍 Country name…",
+    pvpCapitalPlaceholder:"🏛️ Capital…",
+    pvpSubmit:"Submit ✅",
+    pvpWin:"You won!", pvpLose:"You lost…", pvpDraw:"Draw!",
+    pvpReplay:"🔄 Play again",
+    pvpWaitAdversary:"⏳ Waiting for opponent…",
+    pvpQuestion: (r,t) => `Question ${r} / ${t}`,
+    pvpRevealCountry:"🌍 Country", pvpRevealCapital:"🏛️ Capital",
+    pvpNextIn:"Next question in 3s…",
+    soundTitle:"Sound", darkTitle:"Night mode",
   },
   es: {
+    eyebrow:"Atlas de poche",
+    h1:"Las Capitales del Mundo",
+    sub:"Repasa, ponte a prueba y explora capitales y banderas de todos los continentes",
+    intro:`Bienvenido a <strong>Atlas de poche</strong>, tu atlas interactivo y gratuito para aprender geografía. Descubre los <strong>195 países del mundo</strong> y sus capitales, luego practica con los modos <strong>repaso</strong>, <strong>quiz</strong>, <strong>teclado</strong>, <strong>desafío</strong> y <strong>banderas</strong>!`,
+    menuGlobe:"🌍 Globo interactivo", menuSeas:"🌊 Mares & Océanos", menuContact:"📬 Contacto",
     modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
     modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
     diffEasy:"Nivel: Fácil 🟢", diffHard:"Nivel: Difícil 🔴",
+    filterAll:"Todos",
     flagsOne:"🎯 Una por una", flagsAll:"🗺️ Todas las banderas",
     flagsWrite:"✍️ Respuesta: escribir", flagsQcm:"🔢 Respuesta: 4 opciones",
-    filterAll:"Todos",
-    promptCap:"¿Cuál es la capital de…", promptCountry:"¿Cuál es el país cuya capital es…",
-    verify:"Verificar respuestas ✅", restart:"🔄 Reiniciar", chrono:"🚀 Iniciar cronómetro",
-    placeholder:"Escribe tu respuesta…", flagPlaceholder:"Nombre del país…",
-    contact:"📬 Contacto",
+    chrono:"🚀 Iniciar cronómetro", restart:"🔄 Reiniciar", verify:"Verificar respuestas ✅",
+    flagsResult:"respuestas correctas",
+    flagPlaceholder:"Nombre del país…",
+    scoreLabel:"Puntos", questionsLabel:"Preguntas", streakLabel:"Racha",
+    successLabel:"Acierto", successNone:"Acierto: —",
+    recordLine: (s,t) => `🏆 Mejor racha: ${s}   ·   ⏱️ Récord desafío: ${t}`,
+    countNote: (n, k) => n+" países"+(k==="Tous"?"":" — "+k),
+    promptFlag:"¿Qué país es este?",
+    promptCap:"¿Cuál es la capital de…",
+    promptCountry:"¿Qué país tiene esta capital…",
+    placeholder:"Escribe tu respuesta…",
+    validateBtn:"Validar",
+    nextBtn:"Siguiente pregunta →",
+    correct:"¡Correcto! 🎉",
+    wrong: (ans) => `Error — era <strong>${ans}</strong>.`,
+    timedReady:"¿Listo para el desafío?",
+    timedDesc:`Tienes <strong>60 segundos</strong> para responder el máximo de preguntas!`,
+    timedStart:"🚀 ¡Iniciar cronómetro!",
+    timedResult: (s,t) => `respuestas correctas en ${t} s`,
+    newRecord:"🏆 ¡Nuevo récord!",
+    replay:"Volver a jugar ⏱️",
+    progress: (pct,s,a) => `Acierto: ${pct}% (${s}/${a})`,
+    pvpTitle:"⚔️ Modo 1v1",
+    pvpSubtitle:"¡Juega contra un amigo en tiempo real!",
+    pvpPseudoPlaceholder:"✏️ Tu apodo",
+    pvpRoundsLabel:"Número de rondas",
+    pvpCreate:"🎮 Crear partida",
+    pvpJoin:"Unirse",
+    pvpShareCode:"Comparte este código con tu amigo:",
+    pvpWaiting:"Esperando al adversario",
+    pvpStart:"🚀 Iniciar partida",
+    pvpCountryPlaceholder:"🌍 Nombre del país…",
+    pvpCapitalPlaceholder:"🏛️ Capital…",
+    pvpSubmit:"Validar ✅",
+    pvpWin:"¡Ganaste!", pvpLose:"Perdiste…", pvpDraw:"¡Empate!",
+    pvpReplay:"🔄 Jugar de nuevo",
+    pvpWaitAdversary:"⏳ Esperando al adversario…",
+    pvpQuestion: (r,t) => `Pregunta ${r} / ${t}`,
+    pvpRevealCountry:"🌍 País", pvpRevealCapital:"🏛️ Capital",
+    pvpNextIn:"Siguiente pregunta en 3s…",
+    soundTitle:"Sonido", darkTitle:"Modo noche",
   }
 };
 let currentLang = localStorage.getItem("lang") || "fr";
+function T(){ return LANGS[currentLang]; }
 
 function applyLang(){
-  const t = LANGS[currentLang];
+  const t = T();
+  // Header
+  const ey = document.querySelector(".eyebrow"); if(ey) ey.textContent = t.eyebrow;
+  const h1 = document.querySelector("h1"); if(h1){ const logo = h1.querySelector("img"); h1.innerHTML=""; if(logo) h1.appendChild(logo); h1.append(" "+t.h1); }
+  const sub = document.querySelector(".sub"); if(sub) sub.textContent = t.sub;
+  const intro = document.querySelector(".intro"); if(intro) intro.innerHTML = t.intro;
+  // Menu
+  const gl = document.querySelector('.menu-panel a[href="/globe.html"]'); if(gl) gl.textContent = t.menuGlobe;
+  const se = document.querySelector('.menu-panel a[href="/mers.html"]'); if(se) se.textContent = t.menuSeas;
+  const co = document.querySelector('.menu-panel a[href="/contact.html"]'); if(co) co.textContent = t.menuContact;
   // Modes
   document.querySelector('[data-mode="study"]').textContent = t.modeStudy;
   document.querySelector('[data-mode="quiz"]').textContent  = t.modeQuiz;
@@ -1729,7 +1876,7 @@ function applyLang(){
   document.querySelector('[data-mode="timed"]').textContent = t.modeTimed;
   document.querySelector('[data-mode="flags"]').textContent = t.modeFlags;
   document.querySelector('[data-mode="pvp"]').textContent   = t.modePvp;
-  // Toggles
+  // Options bar
   const dir = document.getElementById("dirToggle");
   if(dir) dir.textContent = direction==="cap" ? t.dirCap : t.dirCountry;
   const diff = document.getElementById("diffToggle");
@@ -1739,22 +1886,57 @@ function applyLang(){
   const s2 = document.getElementById("subAll"); if(s2) s2.textContent = t.flagsAll;
   const fat = document.getElementById("flagsAnswerToggle");
   if(fat) fat.textContent = (typeof flagsAnswerMode!=="undefined" && flagsAnswerMode==="qcm") ? t.flagsQcm : t.flagsWrite;
-  // Buttons
   const chk = document.getElementById("flagsCheckBtn"); if(chk) chk.textContent = t.verify;
   const rst = document.getElementById("flagsRestartBtn"); if(rst) rst.textContent = t.restart;
   const chr = document.getElementById("flagsStartChronoBtn"); if(chr && !chr.disabled) chr.textContent = t.chrono;
-  // Input placeholder
-  const ti = document.getElementById("typeInput"); if(ti) ti.placeholder = t.placeholder;
   // Chip "Tous"
-  document.querySelectorAll(".chip").forEach(c=>{ if(c.dataset.key==="Tous") c.textContent=t.filterAll; });
-  // Contact link
-  const contactLink = document.querySelector('.menu-panel a[href="/contact.html"]');
-  if(contactLink) contactLink.textContent = t.contact;
-  // Prompt
-  if(typeof direction!=="undefined"){
-    const qp = document.getElementById("qPrompt");
-    if(qp) qp.textContent = direction==="cap" ? t.promptCap : t.promptCountry;
+  document.querySelectorAll(".chip").forEach(c=>{ if(c.dataset.key==="Tous") c.textContent = t.filterAll; });
+  // Scoreboard labels
+  document.querySelectorAll(".stat .lbl").forEach((el,i)=>{
+    if(i===0) el.textContent = t.scoreLabel;
+    else if(i===1) el.textContent = t.questionsLabel;
+    else if(i===2) el.textContent = t.streakLabel;
+  });
+  // Inputs placeholders
+  const ti = document.getElementById("typeInput"); if(ti) ti.placeholder = t.placeholder;
+  const vb = document.getElementById("validateBtn"); if(vb) vb.textContent = t.validateBtn;
+  const nb = document.getElementById("nextBtn"); if(nb) nb.textContent = t.nextBtn;
+  // Progress text (only if no game running)
+  const pt = document.getElementById("progressText");
+  if(pt && pt.textContent.includes("—")) pt.textContent = t.successNone;
+  // Timed ready screen
+  const trEl = document.getElementById("timedReady");
+  if(trEl){
+    const divs = trEl.querySelectorAll("div");
+    if(divs[1]) divs[1].style.fontFamily="'Baloo 2',cursive", divs[1].textContent = t.timedReady;
+    if(divs[2]) divs[2].innerHTML = t.timedDesc;
+    const tsb = document.getElementById("timedStartBtn"); if(tsb) tsb.textContent = t.timedStart;
   }
+  // PvP lobby
+  const pvpH2 = document.querySelector('#pvpLobby h2'); if(pvpH2) pvpH2.textContent = t.pvpTitle;
+  const pvpP  = document.querySelector('#pvpLobby p');  if(pvpP)  pvpP.textContent  = t.pvpSubtitle;
+  const pvpPseudo = document.getElementById("pvpPseudo"); if(pvpPseudo) pvpPseudo.placeholder = t.pvpPseudoPlaceholder;
+  const pvpRL = document.querySelector(".pvp-rounds-lbl"); if(pvpRL) pvpRL.textContent = t.pvpRoundsLabel;
+  const pvpCr = document.getElementById("pvpCreateBtn"); if(pvpCr) pvpCr.textContent = t.pvpCreate;
+  const pvpJn = document.getElementById("pvpJoinBtn"); if(pvpJn) pvpJn.textContent = t.pvpJoin;
+  // PvP waiting
+  const pvpSC = document.querySelector('#pvpWaitCodeWrap p'); if(pvpSC) pvpSC.textContent = t.pvpShareCode;
+  const pvpWS = document.getElementById("pvpWaitStatus"); if(pvpWS && pvpWS.textContent.includes("ttente")) pvpWS.innerHTML = t.pvpWaiting+'<span class="pvp-dots"></span>';
+  const pvpSt = document.getElementById("pvpStartBtn"); if(pvpSt) pvpSt.textContent = t.pvpStart;
+  // PvP game inputs
+  const pvpIC = document.getElementById("pvpInputCountry"); if(pvpIC) pvpIC.placeholder = t.pvpCountryPlaceholder;
+  const pvpIK = document.getElementById("pvpInputCapital"); if(pvpIK) pvpIK.placeholder = t.pvpCapitalPlaceholder;
+  const pvpSB = document.getElementById("pvpSubmitBtn"); if(pvpSB) pvpSB.textContent = t.pvpSubmit;
+  // PvP replay
+  const pvpRp = document.getElementById("pvpReplayBtn"); if(pvpRp) pvpRp.textContent = t.pvpReplay;
+  // Tooltips
+  const snd = document.getElementById("soundToggle"); if(snd) snd.title = t.soundTitle;
+  const drk = document.getElementById("darkToggle"); if(drk) drk.title = t.darkTitle;
+  // Refresh scoreboard/records if shown
+  renderRecords();
+  if(activeMode==="study") renderStudy();
+  // Flag grid placeholders
+  document.querySelectorAll(".flag-input:not(:disabled)").forEach(i=>i.placeholder=t.flagPlaceholder);
   // Lang buttons active state
   document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active", b.dataset.lang===currentLang));
   localStorage.setItem("lang", currentLang);
@@ -1879,7 +2061,7 @@ async function pvpCreate(){
   document.getElementById('pvpCodeDisplay').textContent = code;
   document.getElementById('pvpWaitCodeWrap').classList.remove('hidden');
   document.getElementById('pvpStartBtn').classList.add('hidden');
-  document.getElementById('pvpWaitStatus').innerHTML = "En attente de l'adversaire<span class='pvp-dots'></span>";
+  document.getElementById('pvpWaitStatus').innerHTML = T().pvpWaiting+"<span class='pvp-dots'></span>";
   filtersEl.classList.add('locked'); // continent figé pour toute la partie
   pvpShowSection('pvpWaiting');
   dbListen(`rooms/${code}`, pvpOnUpdate);
@@ -1982,7 +2164,7 @@ function pvpShowQuestion(room){
   filtersEl.classList.add('locked'); // continent figé pendant la partie (les 2 joueurs)
   pvpShowSection('pvpGame');
   const q = pvpQuestions[pvpCurrentRound];
-  document.getElementById('pvpRoundLbl').textContent = `Question ${pvpCurrentRound+1} / ${pvpQuestions.length}`;
+  document.getElementById('pvpRoundLbl').textContent = T().pvpQuestion(pvpCurrentRound+1, pvpQuestions.length);
   document.getElementById('pvpFlag').innerHTML = flagImg(q.f, 80);
   document.getElementById('pvpInputCountry').value = '';
   document.getElementById('pvpInputCapital').value = '';
@@ -2025,7 +2207,7 @@ async function pvpSubmit(){
   document.getElementById('pvpInputCountry').classList.add(okC?'correct':'wrong');
   document.getElementById('pvpInputCapital').classList.add(okK?'correct':'wrong');
   document.getElementById('pvpSubmitBtn').disabled = true;
-  document.getElementById('pvpStatus').textContent = '⏳ En attente de l\'adversaire…';
+  document.getElementById('pvpStatus').textContent = T().pvpWaitAdversary;
 
   await dbPatch(`rooms/${pvpRoom}/${pvpRole}`, {
     score: prevScore + gained,
@@ -2045,9 +2227,9 @@ function pvpShowReveal(room){
   const okK = norm(them?.ak??'') === norm(q.cap);
   const revealEl = document.getElementById('pvpReveal');
   revealEl.innerHTML = `
-    <p>🌍 Pays : <strong>${q.c}</strong> — ${themName} : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
-    <p>🏛️ Capitale : <strong>${q.cap}</strong> — ${themName} : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
-    <p style="margin-top:6px;color:var(--ink-soft);font-size:0.85rem;">Prochaine question dans 3s…</p>`;
+    <p>${T().pvpRevealCountry} : <strong>${q.c}</strong> — ${themName} : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
+    <p>${T().pvpRevealCapital} : <strong>${q.cap}</strong> — ${themName} : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
+    <p style="margin-top:6px;color:var(--ink-soft);font-size:0.85rem;">${T().pvpNextIn}</p>`;
   revealEl.classList.remove('hidden');
   document.getElementById('pvpStatus').textContent = '';
 }
@@ -2063,15 +2245,15 @@ function pvpShowEnd(room){
   document.getElementById('pvpEndTheirName').textContent = pvpName(room, pvpOpponent());
   if(myScore > theirScore){
     document.getElementById('pvpTrophy').textContent = '🏆';
-    document.getElementById('pvpEndTitle').textContent = 'Tu as gagné !';
+    document.getElementById('pvpEndTitle').textContent = T().pvpWin;
     confetti(60); soundFanfare();
   } else if(theirScore > myScore){
     document.getElementById('pvpTrophy').textContent = '😅';
-    document.getElementById('pvpEndTitle').textContent = 'Tu as perdu…';
+    document.getElementById('pvpEndTitle').textContent = T().pvpLose;
     soundWrong();
   } else {
     document.getElementById('pvpTrophy').textContent = '🤝';
-    document.getElementById('pvpEndTitle').textContent = 'Égalité !';
+    document.getElementById('pvpEndTitle').textContent = T().pvpDraw;
   }
 }
 

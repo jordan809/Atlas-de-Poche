@@ -453,7 +453,7 @@
   .flag-row .flag-input:focus { border-color: var(--bg1); }
   .flag-row .flag-input.correct { border-color: var(--good); background: #e7faf0; }
   .flag-row .flag-input.wrong { border-color: var(--bad); background: #fdeaee; }
-  .flag-row .flag-input:disabled { cursor: default; opacity: 1; }
+  .flag-row .flag-input:disabled { cursor: default; opacity: 1; font-size: clamp(0.62rem, 1.8vw, 0.9rem); }
 
   .flags-check-btn {
     display: block; margin: 22px auto 0;
@@ -529,8 +529,11 @@
   html.dark .flag-row .flag-input.wrong { background: #2e1820; }
 
   /* ---------- Dark mode ---------- */
-  .dark-toggle {
+  .top-right-btns {
     position: fixed; top: 14px; right: 16px; z-index: 100;
+    display: flex; gap: 8px; align-items: center;
+  }
+  .dark-toggle, .sound-toggle {
     font-size: 1.3rem; width: 42px; height: 42px;
     border: none; border-radius: 50%; cursor: pointer;
     background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
@@ -538,7 +541,7 @@
     transition: transform 0.2s ease, background 0.2s ease;
     display: flex; align-items: center; justify-content: center;
   }
-  .dark-toggle:hover { transform: scale(1.12); background: rgba(255,255,255,0.4); }
+  .dark-toggle:hover, .sound-toggle:hover { transform: scale(1.12); background: rgba(255,255,255,0.4); }
 
   html.dark {
     background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%) no-repeat;
@@ -581,7 +584,7 @@
   html.dark .modes { background: rgba(0,0,0,0.35); }
   html.dark .mode-btn.active { background: #e8e2ff; color: #1a1530; }
   html.dark .toggle { background: rgba(30,27,46,0.95); color: #e8e2ff; }
-  html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
+  html.dark .dark-toggle, html.dark .sound-toggle { background: rgba(0,0,0,0.35); }
 
   /* ---------- Menu déroulant ---------- */
   .menu { position: fixed; top: 14px; left: 16px; z-index: 100; }
@@ -617,13 +620,27 @@
   html.dark .menu-panel a { color: #f4eefb; }
   html.dark .menu-panel a:hover { background: rgba(255,255,255,0.1); }
   html.dark .menu-divider { background: rgba(255,255,255,0.12); }
+  .menu-lang { display: flex; flex-direction: column; gap: 2px; padding: 2px 0; }
+  .lang-btn {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 14px; border-radius: 11px; border: none; cursor: pointer;
+    background: transparent; color: var(--ink);
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem;
+    text-align: left; width: 100%; transition: background 0.15s ease;
+  }
+  .lang-btn:hover { background: #f0edff; }
+  .lang-btn.active { background: #ede9ff; color: var(--bg1); }
+  html.dark .lang-btn { color: #f4eefb; }
+  html.dark .lang-btn:hover { background: rgba(255,255,255,0.1); }
+  html.dark .lang-btn.active { background: rgba(139,126,255,0.2); color: #8b7eff; }
 
   @media (max-width: 520px) {
     .options { grid-template-columns: 1fr; }
     .scoreboard { flex-wrap: wrap; }
     .wrap { padding-top: 70px; }
     .menu-btn { font-size: 0.82rem; padding: 0 14px; height: 38px; }
-    .dark-toggle { width: 38px; height: 38px; font-size: 1.1rem; top: 10px; right: 12px; }
+    .dark-toggle, .sound-toggle { width: 38px; height: 38px; font-size: 1.1rem; }
+    .top-right-btns { top: 10px; right: 12px; gap: 6px; }
     .menu { top: 10px; left: 12px; }
   }
 </style>
@@ -635,6 +652,13 @@
   <div class="menu-panel">
     <a href="/globe.html">🌍 Globe interactif</a>
     <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <div class="menu-divider"></div>
+    <div class="menu-divider"></div>
+    <div class="menu-lang" id="menuLang">
+      <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+    </div>
     <div class="menu-divider"></div>
     <a href="/contact.html">📬 Contact</a>
   </div>
@@ -656,7 +680,10 @@
     });
   })();
 </script>
-<button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
 <div class="wrap">
   <header>
     <div class="eyebrow">Atlas de poche</div>
@@ -683,7 +710,6 @@
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
     <button class="toggle" id="diffToggle">Niveau : Facile 🟢</button>
-    <button class="toggle sound" id="soundToggle">🔊</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -697,7 +723,6 @@
     <button class="submode-btn active" id="subOne">🎯 Un par un</button>
     <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
     <button class="toggle" id="flagsAnswerToggle">✍️ Réponse : écrire</button>
-    <button class="toggle sound" id="soundToggleFlags">🔊</button>
   </div>
 
   <section id="flagsAll" class="hidden">
@@ -1154,6 +1179,7 @@ const filtersEl = document.getElementById("filters");
 CONTINENTS.forEach(name=>{
   const b=document.createElement("button");
   b.className="chip"+(name==="Tous"?" active":"");
+  b.dataset.key=name;
   b.textContent=name;
   b.onclick=()=>{
     if(filtersEl.classList.contains("locked")) return; // continent verrouillé (1v1 en cours)
@@ -1414,7 +1440,7 @@ function enterMode(mode){
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
   activeFilter = "Tous";
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
-  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === "Tous"));
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
   const isStudy = (mode==="study");
   const isFlags = (mode==="flags");
@@ -1459,7 +1485,6 @@ const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
   soundOn=!soundOn;
   soundToggle.textContent = soundOn ? "🔊" : "🔇";
-  document.getElementById("soundToggleFlags").textContent = soundOn ? "🔊" : "🔇";
   if(soundOn) soundCorrect();
 };
 
@@ -1649,13 +1674,94 @@ document.getElementById("flagsStartChronoBtn").onclick = () => {
   document.getElementById("flagsStartChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());
 };
-const soundToggleFlags = document.getElementById("soundToggleFlags");
-soundToggleFlags.onclick = () => {
-  soundOn = !soundOn;
-  soundToggleFlags.textContent = soundOn ? "🔊" : "🔇";
-  document.getElementById("soundToggle").textContent = soundOn ? "🔊" : "🔇";
-  if(soundOn) soundCorrect();
+
+// ---------- Langue ----------
+const LANGS = {
+  fr: {
+    modeStudy:"📖 Révision", modeQuiz:"🎯 Quiz", modeType:"⌨️ Clavier",
+    modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"⚔️ 1v1",
+    dirCap:"🏛️ Deviner la capitale", dirCountry:"🌍 Deviner le pays",
+    diffEasy:"Niveau : Facile 🟢", diffHard:"Niveau : Difficile 🔴",
+    flagsOne:"🎯 Un par un", flagsAll:"🗺️ Tous les drapeaux",
+    flagsWrite:"✍️ Réponse : écrire", flagsQcm:"🔢 Réponse : 4 choix",
+    filterAll:"Tous",
+    promptCap:"Quelle est la capitale de…", promptCountry:"Quel est le pays dont la capitale est…",
+    verify:"Vérifier mes réponses ✅", restart:"🔄 Recommencer", chrono:"🚀 Lancer le chrono",
+    placeholder:"Tape ta réponse…", flagPlaceholder:"Nom du pays…",
+    contact:"📬 Contact",
+  },
+  en: {
+    modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
+    modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"⚔️ 1v1",
+    dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
+    diffEasy:"Level: Easy 🟢", diffHard:"Level: Hard 🔴",
+    flagsOne:"🎯 One by one", flagsAll:"🗺️ All flags",
+    flagsWrite:"✍️ Answer: type", flagsQcm:"🔢 Answer: 4 choices",
+    filterAll:"All",
+    promptCap:"What is the capital of…", promptCountry:"Which country has this capital…",
+    verify:"Check my answers ✅", restart:"🔄 Restart", chrono:"🚀 Start timer",
+    placeholder:"Type your answer…", flagPlaceholder:"Country name…",
+    contact:"📬 Contact",
+  },
+  es: {
+    modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
+    modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"⚔️ 1v1",
+    dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
+    diffEasy:"Nivel: Fácil 🟢", diffHard:"Nivel: Difícil 🔴",
+    flagsOne:"🎯 Una por una", flagsAll:"🗺️ Todas las banderas",
+    flagsWrite:"✍️ Respuesta: escribir", flagsQcm:"🔢 Respuesta: 4 opciones",
+    filterAll:"Todos",
+    promptCap:"¿Cuál es la capital de…", promptCountry:"¿Cuál es el país cuya capital es…",
+    verify:"Verificar respuestas ✅", restart:"🔄 Reiniciar", chrono:"🚀 Iniciar cronómetro",
+    placeholder:"Escribe tu respuesta…", flagPlaceholder:"Nombre del país…",
+    contact:"📬 Contacto",
+  }
 };
+let currentLang = localStorage.getItem("lang") || "fr";
+
+function applyLang(){
+  const t = LANGS[currentLang];
+  // Modes
+  document.querySelector('[data-mode="study"]').textContent = t.modeStudy;
+  document.querySelector('[data-mode="quiz"]').textContent  = t.modeQuiz;
+  document.querySelector('[data-mode="type"]').textContent  = t.modeType;
+  document.querySelector('[data-mode="timed"]').textContent = t.modeTimed;
+  document.querySelector('[data-mode="flags"]').textContent = t.modeFlags;
+  document.querySelector('[data-mode="pvp"]').textContent   = t.modePvp;
+  // Toggles
+  const dir = document.getElementById("dirToggle");
+  if(dir) dir.textContent = direction==="cap" ? t.dirCap : t.dirCountry;
+  const diff = document.getElementById("diffToggle");
+  if(diff) diff.textContent = hard ? t.diffHard : t.diffEasy;
+  // Flags submodes
+  const s1 = document.getElementById("subOne"); if(s1) s1.textContent = t.flagsOne;
+  const s2 = document.getElementById("subAll"); if(s2) s2.textContent = t.flagsAll;
+  const fat = document.getElementById("flagsAnswerToggle");
+  if(fat) fat.textContent = (typeof flagsAnswerMode!=="undefined" && flagsAnswerMode==="qcm") ? t.flagsQcm : t.flagsWrite;
+  // Buttons
+  const chk = document.getElementById("flagsCheckBtn"); if(chk) chk.textContent = t.verify;
+  const rst = document.getElementById("flagsRestartBtn"); if(rst) rst.textContent = t.restart;
+  const chr = document.getElementById("flagsStartChronoBtn"); if(chr && !chr.disabled) chr.textContent = t.chrono;
+  // Input placeholder
+  const ti = document.getElementById("typeInput"); if(ti) ti.placeholder = t.placeholder;
+  // Chip "Tous"
+  document.querySelectorAll(".chip").forEach(c=>{ if(c.dataset.key==="Tous") c.textContent=t.filterAll; });
+  // Contact link
+  const contactLink = document.querySelector('.menu-panel a[href="/contact.html"]');
+  if(contactLink) contactLink.textContent = t.contact;
+  // Prompt
+  if(typeof direction!=="undefined"){
+    const qp = document.getElementById("qPrompt");
+    if(qp) qp.textContent = direction==="cap" ? t.promptCap : t.promptCountry;
+  }
+  // Lang buttons active state
+  document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active", b.dataset.lang===currentLang));
+  localStorage.setItem("lang", currentLang);
+}
+
+document.querySelectorAll(".lang-btn").forEach(b=>{
+  b.onclick = ()=>{ currentLang = b.dataset.lang; applyLang(); };
+});
 
 // ---------- Dark mode ----------
 const darkToggle = document.getElementById("darkToggle");
@@ -1676,6 +1782,7 @@ document.querySelector("footer").innerHTML =
   document.querySelector("footer").innerHTML.replace("{nombre}", DATA.length);
 renderRecords();
 renderStudy();
+applyLang();
 
 // ---------- Mode 1v1 ----------
 const DB = "https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app";
@@ -1792,7 +1899,7 @@ async function pvpJoin(){
   // Appliquer le filtre et la difficulté de l'hôte
   if(room.filter){
     activeFilter = room.filter;
-    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.textContent === activeFilter));
+    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
   }
   filtersEl.classList.add('locked'); // le joueur 2 garde le continent choisi par l'hôte
   if(room.hard !== undefined){
@@ -1889,6 +1996,8 @@ function pvpShowQuestion(room){
   document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
   document.getElementById('pvpMyName').textContent    = pvpName(room, pvpRole);
   document.getElementById('pvpTheirName').textContent = pvpName(room, pvpOpponent());
+  document.getElementById('pvpTimer').style.display = '';
+  document.getElementById('pvpTimerText').style.display = '';
   pvpStartTimer();
   setTimeout(()=>document.getElementById('pvpInputCountry').focus({preventScroll:true}),30);
 }
@@ -1897,6 +2006,8 @@ async function pvpSubmit(){
   if(pvpSubmitted) return;
   pvpSubmitted = true;
   pvpStopTimer();
+  document.getElementById('pvpTimer').style.display = 'none';
+  document.getElementById('pvpTimerText').style.display = 'none';
   const q = pvpQuestions[pvpCurrentRound];
   const ac = document.getElementById('pvpInputCountry').value.trim();
   const ak = document.getElementById('pvpInputCapital').value.trim();

@@ -781,7 +781,6 @@
       <div id="pvpLobby" class="pvp-lobby">
         <h2>⚔️ Mode 1v1</h2>
         <p>Joue contre un ami en temps réel !</p>
-        <input class="pvp-pseudo" id="pvpPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false">
         <div class="pvp-rounds-lbl">Nombre de manches</div>
         <div class="pvp-rounds" id="pvpRounds">
           <button class="pvp-round-btn active" data-rounds="10">10</button>
@@ -813,7 +812,8 @@
           <div class="pvp-room-code" id="pvpCodeDisplay">----</div>
         </div>
         <p id="pvpWaitStatus">En attente de l'adversaire<span class="pvp-dots"></span></p>
-        <button class="pvp-big-btn create hidden" id="pvpStartBtn" style="margin-top:16px;">🚀 Lancer la partie</button>
+        <input class="pvp-pseudo hidden" id="pvpHostPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false" style="margin-top:12px;">
+        <button class="pvp-big-btn create hidden" id="pvpStartBtn" style="margin-top:12px;">🚀 Lancer la partie</button>
       </div>
 
       <!-- Game -->
@@ -1997,7 +1997,7 @@ const PVP_TIME = 20;      // secondes par question
 function pvpAvailable(){ return activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter); }
 
 // Pseudo saisi par le joueur (avec valeur de secours)
-function pvpGetPseudo(def){ const v = (document.getElementById('pvpPseudo').value||'').trim(); return v || def; }
+function pvpGetPseudo(def){ return def; }
 function pvpName(room, role){ return (role==='p1' ? room.p1name : room.p2name) || (role==='p1' ? 'Joueur 1' : 'Joueur 2'); }
 
 // Chrono de 20 s par question
@@ -2130,7 +2130,9 @@ async function pvpJoinConfirm(){
 
 // L'hôte lance la partie quand il le souhaite
 async function pvpStart(){
+  const pseudo = (document.getElementById('pvpHostPseudo').value||'').trim() || 'Joueur 1';
   await dbPatch(`rooms/${pvpRoom}`, {
+    p1name: pseudo,
     status:'playing',
     round:0,
     p1:{score:0,done:false,ac:'',ak:''},
@@ -2143,7 +2145,9 @@ function pvpOnUpdate(room){
     // L'hôte voit que le joueur 2 a rejoint → il peut lancer
     if(pvpIsHost && room.p2){
       document.getElementById('pvpWaitStatus').innerHTML = `✅ <strong>${pvpName(room,'p2')}</strong> a rejoint !`;
+      document.getElementById('pvpHostPseudo').classList.remove('hidden');
       document.getElementById('pvpStartBtn').classList.remove('hidden');
+      document.getElementById('pvpHostPseudo').focus({preventScroll:true});
     }
     return;
   }
@@ -2288,6 +2292,8 @@ function pvpReset(){
   pvpCurrentRound = -1; pvpSubmitted = false;
   document.getElementById('pvpCodeInput').value = '';
   document.getElementById('pvpJoinPseudo').value = '';
+  document.getElementById('pvpHostPseudo').value = '';
+  document.getElementById('pvpHostPseudo').classList.add('hidden');
   filtersEl.classList.remove('locked');
   pvpShowSection('pvpLobby');
 }

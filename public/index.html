@@ -1748,7 +1748,7 @@ const LANGS = {
     pvpWaitAdversary:"⏳ En attente de l'adversaire…",
     pvpQuestion: (r,t) => `Question ${r} / ${t}`,
     pvpRevealCountry:"🌍 Pays", pvpRevealCapital:"🏛️ Capitale",
-    pvpNextIn:"Prochaine question dans 3s…",
+    pvpNextRound:"➡️ Manche suivante",
     // Tooltips
     soundTitle:"Son", darkTitle:"Mode nuit",
   },
@@ -1804,7 +1804,7 @@ const LANGS = {
     pvpWaitAdversary:"⏳ Waiting for opponent…",
     pvpQuestion: (r,t) => `Question ${r} / ${t}`,
     pvpRevealCountry:"🌍 Country", pvpRevealCapital:"🏛️ Capital",
-    pvpNextIn:"Next question in 3s…",
+    pvpNextRound:"➡️ Next round",
     soundTitle:"Sound", darkTitle:"Night mode",
   },
   es: {
@@ -1859,7 +1859,7 @@ const LANGS = {
     pvpWaitAdversary:"⏳ Esperando al adversario…",
     pvpQuestion: (r,t) => `Pregunta ${r} / ${t}`,
     pvpRevealCountry:"🌍 País", pvpRevealCapital:"🏛️ Capital",
-    pvpNextIn:"Siguiente pregunta en 3s…",
+    pvpNextRound:"➡️ Siguiente ronda",
     soundTitle:"Sonido", darkTitle:"Modo noche",
   }
 };
@@ -2166,21 +2166,6 @@ function pvpOnUpdate(room){
     const me = room[pvpRole], them = room[pvpOpponent()];
     if(me?.done && them?.done && pvpCurrentRound === r){
       pvpShowReveal(room);
-      // Hôte fait avancer après 3s
-      if(pvpIsHost){
-        setTimeout(async ()=>{
-          const nextRound = r+1;
-          if(nextRound >= pvpQuestions.length){
-            await dbPatch(`rooms/${pvpRoom}`,{status:'finished'});
-          } else {
-            await dbPatch(`rooms/${pvpRoom}`,{
-              round: nextRound,
-              p1:{score:room.p1.score, done:false, ac:'', ak:''},
-              p2:{score:room.p2.score, done:false, ac:'', ak:''}
-            });
-          }
-        }, 3500);
-      }
     }
   }
   if(room.status === 'finished'){
@@ -2251,12 +2236,31 @@ function pvpShowReveal(room){
   const okC = norm(them?.ac??'') === norm(q.c);
   const okK = norm(them?.ak??'') === norm(q.cap);
   const revealEl = document.getElementById('pvpReveal');
+  const nextBtn = pvpIsHost
+    ? `<button id="pvpNextRoundBtn" style="margin-top:10px;width:100%;padding:12px;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;border:none;border-radius:14px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;cursor:pointer;">${T().pvpNextRound}</button>`
+    : `<p style="margin-top:8px;color:var(--ink-soft);font-size:0.85rem;">${T().pvpWaitingHost}<span class="pvp-dots"></span></p>`;
   revealEl.innerHTML = `
     <p>${T().pvpRevealCountry} : <strong>${q.c}</strong> — ${themName} : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
     <p>${T().pvpRevealCapital} : <strong>${q.cap}</strong> — ${themName} : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
-    <p style="margin-top:6px;color:var(--ink-soft);font-size:0.85rem;">${T().pvpNextIn}</p>`;
+    ${nextBtn}`;
   revealEl.classList.remove('hidden');
   document.getElementById('pvpStatus').textContent = '';
+  if(pvpIsHost){
+    document.getElementById('pvpNextRoundBtn').onclick = async ()=>{
+      const r = pvpCurrentRound;
+      const nextRound = r+1;
+      if(nextRound >= pvpQuestions.length){
+        await dbPatch(`rooms/${pvpRoom}`,{status:'finished'});
+      } else {
+        const roomNow = await dbGet(`rooms/${pvpRoom}`);
+        await dbPatch(`rooms/${pvpRoom}`,{
+          round: nextRound,
+          p1:{score:roomNow.p1.score, done:false, ac:'', ak:''},
+          p2:{score:roomNow.p2.score, done:false, ac:'', ak:''}
+        });
+      }
+    };
+  }
 }
 
 function pvpShowEnd(room){

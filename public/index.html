@@ -20,15 +20,26 @@
     background: linear-gradient(135deg, #6a5cff 0%, #ff5d8f 55%, #ffb84d 100%) no-repeat fixed;
     min-height: 100vh;
   }
-  body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; min-height: 100vh; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 46px 20px 50px; min-height: 100vh; }
 
-  .home-top { text-align: center; margin-bottom: 36px; }
-  .home-logo {
-    font-family: 'Baloo 2', cursive; font-size: 2.6rem; font-weight: 800;
-    color: #fff; letter-spacing: -0.5px; line-height: 1;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  .home-top { text-align: center; margin-bottom: 26px; max-width: 640px; }
+  .home-badge {
+    display: inline-block; background: rgba(255,255,255,0.18); backdrop-filter: blur(6px);
+    color: #fff; font-weight: 700; font-size: 0.78rem; letter-spacing: 0.07em;
+    padding: 6px 16px; border-radius: 30px; margin-bottom: 16px;
   }
-  .home-sub { color: rgba(255,255,255,0.72); font-size: 1rem; margin-top: 8px; }
+  .home-logo {
+    font-family: 'Baloo 2', cursive; font-size: clamp(2.6rem, 8vw, 3.8rem); font-weight: 800;
+    color: #fff; letter-spacing: -0.5px; line-height: 1;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  }
+  .home-sub { color: #fff; font-size: 1.08rem; font-weight: 600; margin-top: 12px; opacity: 0.95; }
+  .home-intro { color: rgba(255,255,255,0.8); font-size: 0.96rem; line-height: 1.65; margin-top: 16px; }
+  .home-intro b { color: #fff; font-weight: 800; }
+  .home-section-title {
+    color: #fff; font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: 1.15rem; margin-bottom: 16px; opacity: 0.95;
+  }
 
   .cards {
     display: grid;
@@ -160,9 +171,17 @@
 </script>
 
 <div class="home-top">
-  <div class="home-logo">Atlas de Poche</div>
-  <div class="home-sub">Explore le monde et apprends en t'amusant</div>
+  <div class="home-badge">🌍 La géographie en s'amusant</div>
+  <h1 class="home-logo">Atlas de Poche</h1>
+  <p class="home-sub">Explore le monde et apprends en t'amusant</p>
+  <p class="home-intro">
+    Mémorise les <b>pays</b>, <b>capitales</b> et <b>drapeaux</b> des 5 continents,
+    découvre les <b>mers &amp; océans</b>, et fais tourner un <b>globe 3D interactif</b>.
+    Quiz, mode clavier, défis chronométrés et duels <b>1v1</b> contre un ami !
+  </p>
 </div>
+
+<h2 class="home-section-title">Que veux-tu explorer ?</h2>
 
 <div class="cards">
 

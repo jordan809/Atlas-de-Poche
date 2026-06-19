@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
-  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
+  try { sessionStorage.setItem('atlasNav','1'); } catch(e) {}
 </script>
 <title>Mers & Océans — Atlas de poche</title>
 <meta name="description" content="Apprends toutes les mers et océans du monde avec Atlas de poche : révision et quiz.">
@@ -26,8 +26,20 @@
   .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 16px 80px;}
 
   header{text-align:center;margin-bottom:24px;color:#fff;}
-  .back-link{display:inline-flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);font-weight:700;font-size:0.9rem;text-decoration:none;margin-bottom:18px;background:rgba(255,255,255,0.2);backdrop-filter:blur(6px);padding:8px 18px;border-radius:30px;transition:background 0.2s;}
-  .back-link:hover{background:rgba(255,255,255,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;letter-spacing:0.03em;box-shadow:0 4px 14px rgba(0,0,0,0.2);transition:transform 0.2s ease,background 0.2s ease;display:flex;align-items:center;gap:8px;}
+  .menu-btn:hover{transform:scale(1.05);background:rgba(255,255,255,0.4);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:16px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;transition:background 0.15s ease;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  html.dark .menu-btn:hover{background:rgba(0,0,0,0.5);}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
   h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18);}
   .sub{margin-top:8px;font-size:0.95rem;font-weight:600;opacity:0.95;}
 
@@ -167,18 +179,32 @@
     text-shadow:0 2px 8px rgba(0,0,0,0.2);
   }
 
-  .dark-toggle{position:fixed;top:14px;right:16px;z-index:100;font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
-  .dark-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
-  html.dark .dark-toggle{background:rgba(0,0,0,0.35);}
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
+  .dark-toggle:hover,.sound-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
   @media(max-width:520px){.opts{grid-template-columns:1fr;}.game-card{padding:22px 14px;}.rev-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
-<button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
-<div class="wrap">
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <div class="menu-divider"></div>
+    <a href="/contact.html">📬 Contact</a>
+  </div>
+</div>
+<div class="wrap" style="padding-top:80px;">
   <header>
-    <div><a class="back-link" href="/">← Retour au quiz</a></div>
     <h1>🌊 Mers &amp; Océans</h1>
     <p class="sub">Révise et teste-toi sur toutes les eaux du monde</p>
   </header>
@@ -1071,6 +1097,7 @@ function answerQ(btn,chosen){
     if(b.textContent===currentAns) b.classList.add("correct");
     else if(b===btn&&!ok) b.classList.add("wrong");
   });
+  if(ok) soundCorrect(); else soundWrong();
   const fb=document.getElementById("gFeedback");
   if(ok){fb.textContent="✅ Bonne réponse !";fb.className="g-feedback fb-good";}
   else{fb.textContent=`❌ C'était : ${currentAns}`;fb.className="g-feedback fb-bad";}
@@ -1207,6 +1234,23 @@ function renderVocab(){
 }
 
 // ── Init ──────────────────────────────
+// Menu
+(function(){
+  var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+  btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+  document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+})();
+// Son
+let soundOn = localStorage.getItem('soundOn') !== '0';
+let audioCtx = null;
+function beep(freq,dur,type="sine",vol=0.15){ if(!soundOn) return; try{ audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(vol,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+dur); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
+function soundCorrect(){ beep(660,0.12); setTimeout(()=>beep(880,0.16),90); }
+function soundWrong(){ beep(392,0.16,"sine",0.11); setTimeout(()=>beep(294,0.26,"sine",0.11),110); }
+const soundToggle = document.getElementById('soundToggle');
+function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+applySound();
+soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
+// Contenu
 renderRevision();
 renderVocab();
 </script>

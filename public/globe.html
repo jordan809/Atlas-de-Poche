@@ -25,6 +25,14 @@
     padding:9px 15px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:7px; }
   .pill:hover{ background:rgba(255,255,255,0.24); }
   .pill.active{ background:#fff; color:#6a5cff; border-color:#fff; }
+  .menu-globe{ position:fixed; top:12px; left:14px; z-index:20; }
+  .menu-globe-btn{ font-family:system-ui,sans-serif; font-weight:700; font-size:.92rem; padding:0 18px; height:40px; border:1px solid rgba(255,255,255,0.2); border-radius:30px; cursor:pointer; background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); color:#fff; display:flex; align-items:center; gap:7px; transition:background 0.2s; }
+  .menu-globe-btn:hover{ background:rgba(255,255,255,0.28); }
+  .menu-globe-panel{ position:absolute; top:48px; left:0; min-width:215px; padding:8px; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
+  .menu-globe.open .menu-globe-panel{ display:flex; }
+  .menu-globe-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-weight:700; font-size:.95rem; transition:background 0.15s; }
+  .menu-globe-panel a:hover{ background:#f0edff; }
+  .menu-globe-divider{ height:1px; background:#e7e3f5; margin:4px 6px; }
 
   /* ---- Chargement ---- */
   #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:#0d0a1f; text-align:center; padding:20px; }
@@ -78,6 +86,9 @@
   .gp-fb .good{ color:#1fae6a; } .gp-fb .bad{ color:#ef3e5b; }
   .gp-fb .reveal{ display:block; color:#6b6396; font-weight:700; font-size:.85rem; margin-top:3px; }
   .hidden{ display:none !important; }
+  .top-right-btns{ position:fixed; top:12px; right:16px; z-index:100; display:flex; gap:8px; align-items:center; }
+  .sound-toggle,.dark-toggle-globe{ font-size:1.2rem; width:40px; height:40px; border:1px solid rgba(255,255,255,0.2); border-radius:50%; cursor:pointer; background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); color:#fff; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
+  .sound-toggle:hover,.dark-toggle-globe:hover{ background:rgba(255,255,255,0.28); }
 
   @media (max-width:600px){
     #gamePanel{ top:auto; bottom:0; right:0; left:0; width:100%; max-width:100%;
@@ -89,8 +100,29 @@
 <body>
   <div id="globeViz"></div>
 
+  <div class="menu-globe" id="menuGlobe">
+    <button class="menu-globe-btn" id="menuGlobeBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
+    <div class="menu-globe-panel">
+      <a href="/">🏠 Accueil</a>
+      <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+      <a href="/mers.html">🌊 Mers &amp; Océans</a>
+      <div class="menu-globe-divider"></div>
+      <a href="/contact.html">📬 Contact</a>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var m=document.getElementById('menuGlobe'),b=document.getElementById('menuGlobeBtn');
+    b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+  })();
+  </script>
+  <div class="top-right-btns">
+    <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+    <button class="dark-toggle-globe" id="darkToggleGlobe" title="Mode nuit">🌙</button>
+  </div>
   <div class="topbar">
-    <a class="pill" href="/index.html">← Retour</a>
+    <div style="width:110px"></div>
     <button class="pill active" id="btnDiscover">🔍 Découverte</button>
     <button class="pill" id="btnGame">🎮 Lancer le jeu</button>
   </div>
@@ -259,9 +291,9 @@
       .polygonCapColor(f => f===target ? 'rgba(25,211,107,0.95)' : capColor(lookup(f.properties), 0.85))
       .polygonSideColor(f => f===target ? 'rgba(25,211,107,0.6)' : 'rgba(157,123,255,0.25)')
       .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.55)')
-      .pointColor(p => isTarget(p) ? GREEN : 'rgba(0,0,0,0)')
-      .pointRadius(p => isTarget(p) ? 1.1 : 0)
-      .pointAltitude(p => isTarget(p) ? 0.04 : 0);
+      .pointColor(p => isTarget(p) ? GREEN : (mode==='discover' ? '#f5c518' : 'rgba(0,0,0,0)'))
+      .pointRadius(p => isTarget(p) ? 1.1 : (mode==='discover' ? 0.5 : 0))
+      .pointAltitude(p => isTarget(p) ? 0.04 : (mode==='discover' ? 0.015 : 0));
   }
   refresh();
 
@@ -331,6 +363,7 @@
     inK.className = 'gp-input ' + (okK?'ok':'no');
     gAsked++; if(okC && okK) gScore++;
     $('gScore').textContent=gScore; $('gAsked').textContent=gAsked;
+    if(okC && okK) soundCorrect(); else soundWrong();
     let fb = '';
     if(okC && okK){ fb = '<span class="good">Bravo, tout est exact ! 🎉</span>'; }
     else {
@@ -371,6 +404,24 @@
   $('gStart').onclick = startRound;
   $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('inCapital').focus(); } });
   $('inCapital').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); checkAnswer(); } });
+
+  // Son
+  let soundOn = localStorage.getItem('soundOn') !== '0';
+  let audioCtx = null;
+  function beep(freq,dur,type="sine",vol=0.15){ if(!soundOn) return; try{ audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type=type; o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(vol,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+dur); o.start(); o.stop(audioCtx.currentTime+dur); }catch(e){} }
+  function soundCorrect(){ beep(660,0.12); setTimeout(()=>beep(880,0.16),90); }
+  function soundWrong(){ beep(392,0.16,"sine",0.11); setTimeout(()=>beep(294,0.26,"sine",0.11),110); }
+  const soundToggle = $('soundToggle');
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
+
+  // Mode nuit (globe a son propre fond sombre, on bascule juste la luminosité)
+  let darkOnGlobe = localStorage.getItem('darkMode') === '1';
+  const darkBtnGlobe = $('darkToggleGlobe');
+  function applyDarkGlobe(){ darkBtnGlobe.textContent = darkOnGlobe ? '☀️' : '🌙'; document.documentElement.classList.toggle('dark', darkOnGlobe); }
+  applyDarkGlobe();
+  darkBtnGlobe.onclick = () => { darkOnGlobe = !darkOnGlobe; localStorage.setItem('darkMode', darkOnGlobe?'1':'0'); applyDarkGlobe(); };
 
   $('loading').style.display='none';
 

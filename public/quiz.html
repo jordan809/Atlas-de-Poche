@@ -711,7 +711,6 @@
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
-    <button class="toggle" id="diffToggle">Niveau : Facile 🟢</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -743,6 +742,7 @@
       <div class="stat streak" id="streakStat"><div class="num" id="sStreak">0</div><div class="lbl">Série</div></div>
     </div>
     <div class="records" id="records"></div>
+    <div class="records hidden" id="poolProgress"></div>
 
     <div id="timerWrap" class="hidden">
       <div class="timer-rail"><div class="timer-fill" id="timerFill"></div></div>
@@ -1122,10 +1122,7 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 
 // ---------- Helpers ----------
 function pool(){
-  let p = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
-  // Filtre difficulté uniquement sur "Tous" — sur un continent précis, tous les pays apparaissent
-  if(!hard && activeFilter==="Tous") p = p.filter(d=>d.e);
-  return p;
+  return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -1135,7 +1132,7 @@ function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const
 function drawNext(){
   const p = pool();
   if(p.length === 0) return null;
-  const key = activeFilter + "|" + (hard ? "H" : "E");
+  const key = activeFilter;
   if(bagKey !== key || bag.length === 0){
     bagKey = key;
     bag = shuffle(p);
@@ -1288,6 +1285,18 @@ function nextQuestion(){
 
   const fb=document.getElementById("feedback"); fb.textContent=""; fb.className="feedback";
   document.getElementById("nextBtn").classList.remove("show");
+  updatePoolProgress();
+}
+
+function updatePoolProgress(){
+  const el = document.getElementById("poolProgress");
+  if(!el) return;
+  const show = (activeMode==="quiz" || activeMode==="type");
+  el.classList.toggle("hidden", !show);
+  if(!show) return;
+  const total = pool().length;
+  const done = Math.min(total, total - bag.length);
+  el.textContent = T().poolProgress(done, total);
 }
 
 function buildOptions(q){
@@ -1367,7 +1376,7 @@ function checkTyped(){
     fb.className="feedback bad";
   }
   registerResult(isCorrect);
-  afterAnswer();
+  afterAnswer(activeMode==="type" && isCorrect);
 }
 
 function revealLine(){
@@ -1375,9 +1384,12 @@ function revealLine(){
   return `<span class="reveal">${currentItem.f} ${currentItem.cap}</span>`;
 }
 
-function afterAnswer(){
+function afterAnswer(autoAdvance){
   if(activeMode==="timed"){
     if(timeLeft>0) setTimeout(()=>{ if(activeMode==="timed" && timeLeft>0) nextQuestion(); }, 650);
+  } else if(autoAdvance){
+    const mode = activeMode;
+    setTimeout(()=>{ if(activeMode===mode && answered) nextQuestion(); }, 650);
   } else {
     document.getElementById("nextBtn").classList.add("show");
   }
@@ -1428,6 +1440,7 @@ function startPlay(){
     document.getElementById("questionCard").classList.add("hidden");
     document.getElementById("timerWrap").classList.add("hidden");
     document.getElementById("timedReady").classList.remove("hidden");
+    updatePoolProgress();
   } else {
     document.getElementById("questionCard").classList.remove("hidden");
     document.getElementById("timerWrap").classList.add("hidden");
@@ -1484,12 +1497,6 @@ dirToggle.onclick=()=>{
   dirToggle.textContent = direction==="cap" ? T().dirCap : T().dirCountry;
   if(activeMode!=="study") startPlay();
 };
-const diffToggle=document.getElementById("diffToggle");
-diffToggle.onclick=()=>{
-  hard=!hard;
-  diffToggle.textContent = hard ? T().diffHard : T().diffEasy;
-  if(activeMode!=="study") startPlay();
-};
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
   soundOn=!soundOn;
@@ -1502,6 +1509,12 @@ document.getElementById("timedStartBtn").onclick=launchTimed;
 document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }
+});
+// Entrée passe à la question suivante une fois la réponse donnée, quel que soit le mode (QCM, drapeaux, etc.)
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter") return;
+  if(e.target && e.target.id==="typeInput") return;
+  if(document.getElementById("nextBtn").classList.contains("show")) nextQuestion();
 });
 
 // ---------- Flags All mode ----------
@@ -1700,7 +1713,6 @@ const LANGS = {
     modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"⚔️ 1v1",
     // Options bar
     dirCap:"🏛️ Deviner la capitale", dirCountry:"🌍 Deviner le pays",
-    diffEasy:"Niveau : Facile 🟢", diffHard:"Niveau : Difficile 🔴",
     // Filters
     filterAll:"Tous",
     // Flags submodes
@@ -1714,6 +1726,7 @@ const LANGS = {
     successLabel:"Réussite", successNone:"Réussite : —",
     recordLine: (s,t) => `🏆 Meilleure série : ${s}   ·   ⏱️ Record défi : ${t}`,
     countNote: (n, k) => n+" pays"+(k==="Tous"?" répertoriés":" — "+k),
+    poolProgress: (n, total) => `Progression : ${n}/${total}`,
     // Quiz prompts
     promptFlag:"Quel est ce pays ?",
     promptCap:"Quelle est la capitale de…",
@@ -1764,7 +1777,6 @@ const LANGS = {
     modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
     modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
-    diffEasy:"Level: Easy 🟢", diffHard:"Level: Hard 🔴",
     filterAll:"All",
     flagsOne:"🎯 One by one", flagsAll:"🗺️ All flags",
     flagsWrite:"✍️ Answer: type", flagsQcm:"🔢 Answer: 4 choices",
@@ -1775,6 +1787,7 @@ const LANGS = {
     successLabel:"Success", successNone:"Success: —",
     recordLine: (s,t) => `🏆 Best streak: ${s}   ·   ⏱️ Challenge record: ${t}`,
     countNote: (n, k) => n+" countries"+(k==="Tous"?"":" — "+k),
+    poolProgress: (n, total) => `Progress: ${n}/${total}`,
     promptFlag:"What country is this?",
     promptCap:"What is the capital of…",
     promptCountry:"Which country has this capital…",
@@ -1819,7 +1832,6 @@ const LANGS = {
     modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
     modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
-    diffEasy:"Nivel: Fácil 🟢", diffHard:"Nivel: Difícil 🔴",
     filterAll:"Todos",
     flagsOne:"🎯 Una por una", flagsAll:"🗺️ Todas las banderas",
     flagsWrite:"✍️ Respuesta: escribir", flagsQcm:"🔢 Respuesta: 4 opciones",
@@ -1830,6 +1842,7 @@ const LANGS = {
     successLabel:"Acierto", successNone:"Acierto: —",
     recordLine: (s,t) => `🏆 Mejor racha: ${s}   ·   ⏱️ Récord desafío: ${t}`,
     countNote: (n, k) => n+" países"+(k==="Tous"?"":" — "+k),
+    poolProgress: (n, total) => `Progreso: ${n}/${total}`,
     promptFlag:"¿Qué país es este?",
     promptCap:"¿Cuál es la capital de…",
     promptCountry:"¿Qué país tiene esta capital…",
@@ -1890,8 +1903,6 @@ function applyLang(){
   // Options bar
   const dir = document.getElementById("dirToggle");
   if(dir) dir.textContent = direction==="cap" ? t.dirCap : t.dirCountry;
-  const diff = document.getElementById("diffToggle");
-  if(diff) diff.textContent = hard ? t.diffHard : t.diffEasy;
   // Flags submodes
   const s1 = document.getElementById("subOne"); if(s1) s1.textContent = t.flagsOne;
   const s2 = document.getElementById("subAll"); if(s2) s2.textContent = t.flagsAll;
@@ -1915,6 +1926,7 @@ function applyLang(){
   // Progress text (only if no game running)
   const pt = document.getElementById("progressText");
   if(pt && pt.textContent.includes("—")) pt.textContent = t.successNone;
+  updatePoolProgress();
   // Timed ready screen
   const trEl = document.getElementById("timedReady");
   if(trEl){

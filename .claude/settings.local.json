@@ -1,19 +1,4 @@
 {
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cd \"C:/Users/amole/Desktop/Atlas-de-Poche\" && git add -A && git diff --cached --quiet || git commit -m \"Auto-save: modifications Atlas de Poche\" && git push origin main",
-            "shell": "bash",
-            "timeout": 60,
-            "statusMessage": "Envoi sur GitHub..."
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "mcp__Claude_Preview__preview_start",
@@ -42,7 +27,23 @@
       "Bash(npx firebase-tools *)",
       "Bash(node -e ' *)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "Bash(git fetch *)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"C:/Users/amole/Desktop/Atlas-de-Poche\" && git add -A && git diff --cached --quiet || git commit -m \"Auto-save: modifications Atlas de Poche\" && git push origin main",
+            "shell": "bash",
+            "timeout": 60,
+            "statusMessage": "Envoi sur GitHub..."
+          }
+        ]
+      }
     ]
   }
 }

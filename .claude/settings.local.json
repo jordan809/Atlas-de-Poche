@@ -28,7 +28,8 @@
       "Bash(node -e ' *)",
       "Skill(update-config)",
       "Skill(update-config:*)",
-      "Bash(git fetch *)"
+      "Bash(git fetch *)",
+      "Bash(git remote *)"
     ]
   },
   "hooks": {

@@ -43,10 +43,10 @@
 
   .cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
     width: 100%;
-    max-width: 860px;
+    max-width: 1080px;
   }
 
   .card {
@@ -153,15 +153,34 @@
     padding: 4px 9px; border-radius: 20px; text-transform: uppercase;
   }
 
+  /* ---- CARD 4 : Régions & Départements ---- */
+  .card-regions .card-visual { background: linear-gradient(145deg, #1e3a8a 0%, #7c2d3f 55%, #b91c3c 100%); }
+  .dept-scatter {
+    position: absolute; inset: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 10px;
+  }
+  .dept-scatter span {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem; font-weight: 800; color: rgba(255,255,255,0.45);
+    transition: transform 0.2s;
+  }
+  .card:hover .dept-scatter span:nth-child(odd) { transform: scale(1.15) rotate(-3deg); }
+  .card:hover .dept-scatter span:nth-child(even) { transform: scale(1.12) rotate(3deg); }
+  .dept-center-emoji {
+    position: relative; z-index: 2; font-size: 3.2rem;
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.5));
+  }
+
   @media (max-width: 640px) {
     .cards { grid-template-columns: 1fr; max-width: 400px; }
     .home-logo { font-size: 2rem; }
     .card { min-height: 200px; }
     .card-visual { min-height: 120px; }
   }
-  @media (min-width: 641px) and (max-width: 800px) {
-    .cards { grid-template-columns: repeat(2, 1fr); }
-    .card:last-child { grid-column: span 2; }
+  @media (min-width: 641px) and (max-width: 1000px) {
+    .cards { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
   }
 </style>
 </head>
@@ -176,8 +195,8 @@
   <p class="home-sub">Explore le monde et apprends en t'amusant</p>
   <p class="home-intro">
     Mémorise les <b>pays</b>, <b>capitales</b> et <b>drapeaux</b> des 5 continents,
-    découvre les <b>mers &amp; océans</b>, et fais tourner un <b>globe 3D interactif</b>.
-    Quiz, mode clavier, défis chronométrés et duels <b>1v1</b> contre un ami !
+    découvre les <b>régions et départements de France</b>, les <b>mers &amp; océans</b>,
+    et explore des cartes interactives. Quiz, mode clavier, défis chronométrés et duels <b>1v1</b> contre un ami !
   </p>
 </div>
 
@@ -233,14 +252,32 @@
       <div class="globe-circle gc2"></div>
       <div class="globe-circle gc3"></div>
       <div class="globe-icon">🌍</div>
-      <div class="globe-badge">3D interactif</div>
+      <div class="globe-badge">Carte interactive</div>
     </div>
     <div class="card-foot">
       <div>
         <div class="card-title">Globe interactif</div>
-        <div class="card-desc">Explore &amp; devine les pays en 3D</div>
+        <div class="card-desc">Explore &amp; devine les pays du monde</div>
       </div>
       <div class="card-cta">Découvrir →</div>
+    </div>
+  </a>
+
+  <a class="card card-regions" href="/regions.html">
+    <div class="card-visual">
+      <div class="dept-scatter">
+        <span>75</span><span>13</span><span>69</span><span>33</span>
+        <span>59</span><span>44</span><span>31</span><span>06</span>
+        <span>67</span><span>35</span><span>63</span><span>29</span>
+      </div>
+      <div class="dept-center-emoji"><img src="https://flagcdn.com/w80/fr.png" alt="France" style="width:64px;height:auto;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.5);display:block;"></div>
+    </div>
+    <div class="card-foot">
+      <div>
+        <div class="card-title">Régions &amp; Départements</div>
+        <div class="card-desc">Quiz, révision, chrono, carte de France</div>
+      </div>
+      <div class="card-cta">Jouer →</div>
     </div>
   </a>
 

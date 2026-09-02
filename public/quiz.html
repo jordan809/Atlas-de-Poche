@@ -138,6 +138,7 @@
   }
   .toggle:hover { transform: translateY(-2px); }
   .toggle.sound { width: 46px; padding: 8px 0; text-align: center; }
+  .toggle.active { background: linear-gradient(135deg, var(--bg1), var(--bg2)); color: #fff; }
 
   /* ---------- Filters ---------- */
   .filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 28px; }
@@ -270,6 +271,10 @@
   .endgame .big { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 3rem; color: var(--bg1); line-height: 1; }
   .endgame .lbl { font-weight: 700; color: var(--ink-soft); margin-top: 6px; }
   .endgame .record { color: var(--good); font-weight: 800; margin-top: 10px; }
+  .recap-list { text-align: left; max-height: 320px; overflow-y: auto; margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
+  .recap-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.04); border-radius: 12px; padding: 8px 14px; font-weight: 700; color: var(--ink); }
+  .recap-item .country { flex: 1; }
+  .recap-item .cap { color: var(--ink-soft); font-weight: 700; }
 
   /* ---------- Confetti ---------- */
   .confetti {
@@ -464,6 +469,31 @@
     transition: transform 0.15s ease;
   }
   .flags-check-btn:hover { transform: translateY(-2px); }
+
+  /* ---------- Grille tableau (mode Clavier) ---------- */
+  .tbl-row {
+    background: #fff; border-radius: 14px; padding: 14px 12px 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  .tbl-row .tbl-img-wrap { display: flex; align-items: center; justify-content: center; height: 44px; }
+  .tbl-row img { width: auto; height: 40px; object-fit: contain; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .tbl-row .tbl-given {
+    width: 100%; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.85rem;
+    padding: 8px 10px; border-radius: 10px; text-align: center;
+    background: #f0eefc; color: var(--ink);
+  }
+  .tbl-row .tbl-input {
+    width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
+    padding: 8px 10px; border: 2px solid #ece9ff; background: #f7f6ff;
+    color: var(--ink); border-radius: 10px; outline: none; text-align: center;
+    transition: border-color 0.15s ease;
+  }
+  .tbl-row .tbl-input:focus { border-color: var(--bg1); }
+  .tbl-row .tbl-input.correct { border-color: var(--good); background: #e7faf0; }
+  .tbl-row .tbl-input.wrong { border-color: var(--bad); background: #fdeaee; }
+  .tbl-row .tbl-input:disabled { cursor: default; opacity: 1; font-size: clamp(0.62rem, 1.8vw, 0.9rem); }
+
   /* ---------- Countdown ---------- */
   .countdown-overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -527,6 +557,11 @@
   html.dark .flag-row .flag-input { background: #2a2545; border-color: #3d3568; color: #e8e2ff; }
   html.dark .flag-row .flag-input.correct { background: #1a3028; }
   html.dark .flag-row .flag-input.wrong { background: #2e1820; }
+  html.dark .tbl-row { background: #1e1b2e; }
+  html.dark .tbl-row .tbl-given { background: #2a2545; color: #e8e2ff; }
+  html.dark .tbl-row .tbl-input { background: #2a2545; border-color: #3d3568; color: #e8e2ff; }
+  html.dark .tbl-row .tbl-input.correct { background: #1a3028; }
+  html.dark .tbl-row .tbl-input.wrong { background: #2e1820; }
 
   /* ---------- Dark mode ---------- */
   .top-right-btns {
@@ -579,6 +614,8 @@
   }
   html.dark .endgame .big { color: #8b7eff; }
   html.dark .endgame .lbl { color: #a89fd8; }
+  html.dark .recap-item { background: rgba(255,255,255,0.06); color: #e8e2ff; }
+  html.dark .recap-item .cap { color: #a89fd8; }
   html.dark .feedback.bad { color: #ff6b85; }
   html.dark .feedback .reveal { color: #a89fd8; }
   html.dark .modes { background: rgba(0,0,0,0.35); }
@@ -652,6 +689,8 @@
   <div class="menu-panel">
     <a href="/">🏠 Accueil</a>
     <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/regions.html#map">🐓 Carte de France</a>
     <a href="/globe.html">🌍 Globe interactif</a>
     <a href="/mers.html">🌊 Mers &amp; Océans</a>
     <div class="menu-divider"></div>
@@ -711,7 +750,7 @@
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
-    <button class="toggle" id="diffToggle">Niveau : Facile 🟢</button>
+    <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -743,6 +782,7 @@
       <div class="stat streak" id="streakStat"><div class="num" id="sStreak">0</div><div class="lbl">Série</div></div>
     </div>
     <div class="records" id="records"></div>
+    <div class="records hidden" id="poolProgress"></div>
 
     <div id="timerWrap" class="hidden">
       <div class="timer-rail"><div class="timer-fill" id="timerFill"></div></div>
@@ -774,6 +814,16 @@
 
     <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-text" id="progressText">Réussite : —</div>
+  </section>
+
+  <section id="typeTable" class="hidden">
+    <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+      <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
+      <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
+      <button class="toggle" id="typeTableRestartBtn">🔄 Recommencer</button>
+    </div>
+    <div class="flags-grid" id="typeTableGrid"></div>
+    <button class="flags-check-btn hidden" id="typeTableCheckBtn">Vérifier mes réponses ✅</button>
   </section>
 
   <section id="pvp" class="hidden">
@@ -1109,7 +1159,13 @@ let hard = false;                  // difficulté
 let soundOn = true;
 let score = 0, asked = 0, streak = 0, currentItem = null, answered = false;
 let bag = [], bagKey = "";          // "sac mélangé" : tire chaque pays une fois avant de recommencer
+let mistakes = [];                  // erreurs du tour en cours (mode Clavier)
+let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain "suivant" affiche le récap
 let timerId = null, timeLeft = TIMED_SECONDS;
+let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
+let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
+let typeTableInProgress = false;
+let typeTablePool = null;           // clé "continent|direction" du tableau affiché
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1121,11 +1177,10 @@ function loadRecords(){
 function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(records)); } catch(e){} }
 
 // ---------- Helpers ----------
+let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
 function pool(){
-  let p = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
-  // Filtre difficulté uniquement sur "Tous" — sur un continent précis, tous les pays apparaissent
-  if(!hard && activeFilter==="Tous") p = p.filter(d=>d.e);
-  return p;
+  if(reviewPool) return reviewPool;
+  return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -1135,7 +1190,7 @@ function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const
 function drawNext(){
   const p = pool();
   if(p.length === 0) return null;
-  const key = activeFilter + "|" + (hard ? "H" : "E");
+  const key = activeFilter;
   if(bagKey !== key || bag.length === 0){
     bagKey = key;
     bag = shuffle(p);
@@ -1199,6 +1254,7 @@ CONTINENTS.forEach(name=>{
     b.classList.add("active");
     if(activeMode==="study") renderStudy();
     else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
+    else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
     else startPlay();
   };
   filtersEl.appendChild(b);
@@ -1224,7 +1280,7 @@ function renderStudy(){
 }
 
 // ---------- Scoreboard / records ----------
-function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; updateScore(); }
+function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; updateScore(); }
 function updateScore(){
   document.getElementById("sScore").textContent=score;
   document.getElementById("sAsked").textContent=asked;
@@ -1241,6 +1297,11 @@ function renderRecords(){
 
 // ---------- Question rendering ----------
 function nextQuestion(){
+  if(activeMode==="type" && pendingTypeRecap){
+    pendingTypeRecap=false;
+    showTypeRecap();
+    return;
+  }
   answered=false;
   document.getElementById("endgame").classList.add("hidden");
   document.getElementById("questionCard").classList.remove("hidden");
@@ -1288,6 +1349,18 @@ function nextQuestion(){
 
   const fb=document.getElementById("feedback"); fb.textContent=""; fb.className="feedback";
   document.getElementById("nextBtn").classList.remove("show");
+  updatePoolProgress();
+}
+
+function updatePoolProgress(){
+  const el = document.getElementById("poolProgress");
+  if(!el) return;
+  const show = (activeMode==="quiz" || activeMode==="type");
+  el.classList.toggle("hidden", !show);
+  if(!show) return;
+  const total = pool().length;
+  const done = Math.min(total, total - bag.length);
+  el.textContent = T().poolProgress(done, total);
 }
 
 function buildOptions(q){
@@ -1365,9 +1438,11 @@ function checkTyped(){
     input.classList.add("wrong");
     fb.innerHTML=T().wrong(correctText)+revealLine();
     fb.className="feedback bad";
+    if(activeMode==="type") mistakes.push(currentItem);
   }
   registerResult(isCorrect);
-  afterAnswer();
+  if(activeMode==="type" && bag.length===0) pendingTypeRecap=true;
+  afterAnswer(activeMode==="type" && isCorrect);
 }
 
 function revealLine(){
@@ -1375,12 +1450,35 @@ function revealLine(){
   return `<span class="reveal">${currentItem.f} ${currentItem.cap}</span>`;
 }
 
-function afterAnswer(){
+function afterAnswer(autoAdvance){
   if(activeMode==="timed"){
     if(timeLeft>0) setTimeout(()=>{ if(activeMode==="timed" && timeLeft>0) nextQuestion(); }, 650);
+  } else if(autoAdvance){
+    const mode = activeMode;
+    setTimeout(()=>{ if(activeMode===mode && answered) nextQuestion(); }, 650);
   } else {
     document.getElementById("nextBtn").classList.add("show");
   }
+}
+
+// ---------- Récap de fin de tour (mode Clavier) ----------
+function showTypeRecap(){
+  document.getElementById("questionCard").classList.add("hidden");
+  document.getElementById("nextBtn").classList.remove("show");
+  const total = pool().length;
+  const errCount = mistakes.length;
+  const errItems = mistakes.slice();
+  const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
+  const eg = document.getElementById("endgame");
+  eg.innerHTML = `
+    <div class="big">${total-errCount}/${total}</div>
+    <div class="lbl">${T().typeRecapTitle(errCount)}</div>
+    ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
+    ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
+    <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>`;
+  eg.classList.remove("hidden");
+  document.getElementById("typeRecapReplayBtn").onclick = startPlay;
+  if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
 }
 
 // ---------- Timer (Défi) ----------
@@ -1418,7 +1516,8 @@ function endTimed(){
 }
 
 // ---------- Mode orchestration ----------
-function startPlay(){
+function startPlay(overridePool){
+  reviewPool = overridePool || null;
   stopTimer();
   resetQuiz();
   document.getElementById("endgame").classList.add("hidden");
@@ -1428,12 +1527,15 @@ function startPlay(){
     document.getElementById("questionCard").classList.add("hidden");
     document.getElementById("timerWrap").classList.add("hidden");
     document.getElementById("timedReady").classList.remove("hidden");
+    updatePoolProgress();
   } else {
     document.getElementById("questionCard").classList.remove("hidden");
     document.getElementById("timerWrap").classList.add("hidden");
     nextQuestion();
   }
 }
+
+function startReviewSession(items){ startPlay(items); }
 
 function launchTimed(){
   document.getElementById("timedReady").classList.add("hidden");
@@ -1454,14 +1556,18 @@ function enterMode(mode){
   const isStudy = (mode==="study");
   const isFlags = (mode==="flags");
   const isPvp   = (mode==="pvp");
+  const isType  = (mode==="type");
+  const showTypeTable = isType && typeTableMode;
   document.getElementById("study").classList.toggle("hidden", !isStudy);
   document.getElementById("flagsAll").classList.toggle("hidden", !isFlags || flagsSubMode!=="all");
-  document.getElementById("play").classList.toggle("hidden", isStudy || isPvp || (isFlags && flagsSubMode==="all"));
+  document.getElementById("play").classList.toggle("hidden", isStudy || isPvp || (isFlags && flagsSubMode==="all") || showTypeTable);
+  document.getElementById("typeTable").classList.toggle("hidden", !showTypeTable);
   document.getElementById("pvp").classList.toggle("hidden", !isPvp);
   document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isFlags || isPvp);
   document.getElementById("submodesBar").classList.toggle("hidden", !isFlags);
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
+  document.getElementById("tableToggle").classList.toggle("hidden", !isType);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1469,6 +1575,7 @@ function enterMode(mode){
     enterFlagsSubMode(flagsSubMode);
   }
   else if(isPvp){ pvpShowSection('pvpLobby'); }
+  else if(showTypeTable){ typeTableInProgress = false; renderTypeTable(); }
   else { startPlay(); }
 
 }
@@ -1482,13 +1589,17 @@ const dirToggle=document.getElementById("dirToggle");
 dirToggle.onclick=()=>{
   direction = direction==="cap" ? "country" : "cap";
   dirToggle.textContent = direction==="cap" ? T().dirCap : T().dirCountry;
-  if(activeMode!=="study") startPlay();
+  if(activeMode==="type" && typeTableMode) renderTypeTable(true);
+  else if(activeMode!=="study") startPlay();
 };
-const diffToggle=document.getElementById("diffToggle");
-diffToggle.onclick=()=>{
-  hard=!hard;
-  diffToggle.textContent = hard ? T().diffHard : T().diffEasy;
-  if(activeMode!=="study") startPlay();
+const tableToggle=document.getElementById("tableToggle");
+tableToggle.onclick=()=>{
+  typeTableMode=!typeTableMode;
+  tableToggle.classList.toggle("active", typeTableMode);
+  document.getElementById("play").classList.toggle("hidden", typeTableMode);
+  document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
+  if(typeTableMode) renderTypeTable(true);
+  else startPlay();
 };
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
@@ -1502,6 +1613,18 @@ document.getElementById("timedStartBtn").onclick=launchTimed;
 document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }
+});
+// Mode Clavier : valide automatiquement dès que la réponse tapée est correcte, sans attendre Entrée/Valider.
+document.getElementById("typeInput").addEventListener("input",e=>{
+  if(activeMode!=="type" || answered) return;
+  const val = e.target.value;
+  if(val.trim()!=="" && norm(val)===norm(currentAnswer())) checkTyped();
+});
+// Entrée passe à la question suivante une fois la réponse donnée, quel que soit le mode (QCM, drapeaux, etc.)
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Enter") return;
+  if(e.target && e.target.id==="typeInput") return;
+  if(document.getElementById("nextBtn").classList.contains("show")) nextQuestion();
 });
 
 // ---------- Flags All mode ----------
@@ -1650,6 +1773,138 @@ function renderFlagsAll(force=false){
   };
 }
 
+// ---------- Tableau (mode Clavier) ----------
+function renderTypeTable(force=false, overridePool=null){
+  if(!overridePool) reviewPool = null; // ne pas hériter d'une session de révision du mode normal
+  const key = overridePool ? "review" : activeFilter + "|" + direction;
+  if(typeTableInProgress && !force && typeTablePool === key) return;
+  typeTableInProgress = true;
+  typeTablePool = key;
+  stopStopwatch();
+  stopwatchSecs = 0;
+  const chronoBtn = document.getElementById("typeTableChronoBtn");
+  if(chronoBtn){ chronoBtn.textContent = T().chrono; chronoBtn.disabled = false; }
+
+  const list = shuffle(overridePool || pool());
+  const grid = document.getElementById("typeTableGrid");
+  const checkBtn = document.getElementById("typeTableCheckBtn");
+  grid.innerHTML = "";
+  checkBtn.classList.remove("hidden");
+  checkBtn.disabled = false;
+  checkBtn.textContent = T().verify;
+
+  list.forEach(d => {
+    const answer = direction==="cap" ? d.cap : d.c;
+    const row = document.createElement("div");
+    row.className = "tbl-row";
+    row.dataset.answer = answer;
+    row._item = d;
+    const flagHtml = `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>`;
+    const countryHtml = direction==="cap"
+      ? `<div class="tbl-given">${d.c}</div>`
+      : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
+    const capitalHtml = direction==="cap"
+      ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
+      : `<div class="tbl-given">${d.cap}</div>`;
+    // Le drapeau (si affiché) se place toujours au-dessus de la case pays, qu'elle soit donnée ou à deviner.
+    row.innerHTML = (showTableFlag ? flagHtml : "") + countryHtml + capitalHtml;
+    const input = row.querySelector(".tbl-input");
+    input.addEventListener("keydown", (e) => {
+      const inputs = [...document.querySelectorAll("#typeTableGrid .tbl-input:not(:disabled)")];
+      const idx = inputs.indexOf(e.target);
+      if(e.key === "ArrowDown" || e.key === "ArrowRight"){
+        e.preventDefault();
+        if(idx < inputs.length - 1) inputs[idx + 1].focus({ preventScroll: false });
+      } else if(e.key === "ArrowUp" || e.key === "ArrowLeft"){
+        e.preventDefault();
+        if(idx > 0) inputs[idx - 1].focus({ preventScroll: false });
+      }
+    });
+    input.addEventListener("input", () => {
+      if(norm(input.value) === norm(answer) && input.value.trim() !== ""){
+        input.classList.add("correct");
+        input.disabled = true;
+        soundCorrect();
+        const allInputs = [...document.querySelectorAll("#typeTableGrid .tbl-input")];
+        const currentIdx = allInputs.indexOf(input);
+        const next = allInputs.slice(currentIdx + 1).find(i => !i.disabled)
+                  || allInputs.slice(0, currentIdx).find(i => !i.disabled);
+        if(next) next.focus({ preventScroll: false });
+        if(allInputs.every(i => i.disabled)){ stopStopwatch(); document.getElementById("typeTableCheckBtn").click(); }
+      }
+    });
+    grid.appendChild(row);
+  });
+
+  checkBtn.onclick = () => {
+    stopStopwatch();
+    let correct = 0, total = 0;
+    const wrongItems = [];
+    document.querySelectorAll("#typeTableGrid .tbl-row").forEach(row => {
+      const input = row.querySelector(".tbl-input");
+      const rowAnswer = row.dataset.answer;
+      input.disabled = true;
+      total++;
+      if(norm(input.value) === norm(rowAnswer) && input.value.trim() !== ""){
+        input.classList.add("correct"); correct++;
+      } else {
+        input.classList.add("wrong");
+        input.value = rowAnswer;
+        input.title = rowAnswer;
+        wrongItems.push(row._item);
+      }
+    });
+    checkBtn.classList.add("hidden");
+    const pct = Math.round((correct/total)*100);
+    const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
+    const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
+    const s = String(stopwatchSecs % 60).padStart(2, "0");
+    const timeStr = `⏱️ ${m}:${s}`;
+
+    if(pct === 100){ confetti(60); soundFanfare(); }
+    else if(pct >= 50){ soundCorrect(); }
+    else { soundWrong(); }
+
+    const overlay = document.createElement("div");
+    overlay.className = "score-overlay";
+    overlay.innerHTML = `
+      <div class="score-modal">
+        <div class="score-emoji">${emoji}</div>
+        <div class="score-big">${correct} / ${total}</div>
+        <div class="score-pct">${pct}%</div>
+        <div class="score-lbl">${T().flagsResult}</div>
+        <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
+        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">${T().reviewErrors(wrongItems.length)}</button>` : ""}
+        <button class="score-restart" id="tblRestartBtn">${T().restart}</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    document.getElementById("tblRestartBtn").onclick = () => {
+      overlay.remove();
+      renderTypeTable(true);
+      setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    };
+    if(wrongItems.length>0){
+      document.getElementById("tblReviewBtn").onclick = () => {
+        overlay.remove();
+        renderTypeTable(true, wrongItems);
+        setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+      };
+    }
+    overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+  };
+}
+
+document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
+document.getElementById("typeTableChronoBtn").onclick = () => {
+  document.getElementById("typeTableChronoBtn").disabled = true;
+  startCountdown(() => startStopwatch());
+};
+document.getElementById("typeTableFlagPosToggle").onclick = () => {
+  showTableFlag = !showTableFlag;
+  document.getElementById("typeTableFlagPosToggle").textContent = showTableFlag ? T().flagShow : T().flagHide;
+  renderTypeTable(true);
+};
+
 function enterFlagsSubMode(sub){
   flagsSubMode = sub;
   document.getElementById("subOne").classList.toggle("active", sub==="one");
@@ -1700,7 +1955,8 @@ const LANGS = {
     modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"⚔️ 1v1",
     // Options bar
     dirCap:"🏛️ Deviner la capitale", dirCountry:"🌍 Deviner le pays",
-    diffEasy:"Niveau : Facile 🟢", diffHard:"Niveau : Difficile 🔴",
+    tableMode:"📋 Mode tableau",
+    flagShow:"🚩 Avec drapeau", flagHide:"🚫 Sans drapeau",
     // Filters
     filterAll:"Tous",
     // Flags submodes
@@ -1714,6 +1970,7 @@ const LANGS = {
     successLabel:"Réussite", successNone:"Réussite : —",
     recordLine: (s,t) => `🏆 Meilleure série : ${s}   ·   ⏱️ Record défi : ${t}`,
     countNote: (n, k) => n+" pays"+(k==="Tous"?" répertoriés":" — "+k),
+    poolProgress: (n, total) => `Progression : ${n}/${total}`,
     // Quiz prompts
     promptFlag:"Quel est ce pays ?",
     promptCap:"Quelle est la capitale de…",
@@ -1731,6 +1988,8 @@ const LANGS = {
     timedResult: (s,t) => `bonnes réponses en ${t} s`,
     newRecord:"🏆 Nouveau record !",
     replay:"Rejouer ⏱️",
+    typeRecapTitle: (n) => n===0 ? "Aucune erreur, bravo ! 🎉" : `Tour terminé — ${n} erreur${n>1?"s":""} à revoir :`,
+    reviewErrors: (n) => `🎯 Refaire mes ${n} erreur${n>1?"s":""}`,
     // Progress
     progress: (pct,s,a) => `Réussite : ${pct}% (${s}/${a})`,
     // PvP
@@ -1764,7 +2023,8 @@ const LANGS = {
     modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
     modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
-    diffEasy:"Level: Easy 🟢", diffHard:"Level: Hard 🔴",
+    tableMode:"📋 Table mode",
+    flagShow:"🚩 With flag", flagHide:"🚫 Without flag",
     filterAll:"All",
     flagsOne:"🎯 One by one", flagsAll:"🗺️ All flags",
     flagsWrite:"✍️ Answer: type", flagsQcm:"🔢 Answer: 4 choices",
@@ -1775,6 +2035,7 @@ const LANGS = {
     successLabel:"Success", successNone:"Success: —",
     recordLine: (s,t) => `🏆 Best streak: ${s}   ·   ⏱️ Challenge record: ${t}`,
     countNote: (n, k) => n+" countries"+(k==="Tous"?"":" — "+k),
+    poolProgress: (n, total) => `Progress: ${n}/${total}`,
     promptFlag:"What country is this?",
     promptCap:"What is the capital of…",
     promptCountry:"Which country has this capital…",
@@ -1789,6 +2050,8 @@ const LANGS = {
     timedResult: (s,t) => `correct answers in ${t} s`,
     newRecord:"🏆 New record!",
     replay:"Play again ⏱️",
+    typeRecapTitle: (n) => n===0 ? "No mistakes, well done! 🎉" : `Round complete — ${n} mistake${n>1?"s":""} to review:`,
+    reviewErrors: (n) => `🎯 Redo my ${n} mistake${n>1?"s":""}`,
     progress: (pct,s,a) => `Success: ${pct}% (${s}/${a})`,
     pvpTitle:"⚔️ 1v1 Mode",
     pvpSubtitle:"Play against a friend in real time!",
@@ -1819,7 +2082,8 @@ const LANGS = {
     modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
     modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"⚔️ 1v1",
     dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
-    diffEasy:"Nivel: Fácil 🟢", diffHard:"Nivel: Difícil 🔴",
+    tableMode:"📋 Modo tabla",
+    flagShow:"🚩 Con bandera", flagHide:"🚫 Sin bandera",
     filterAll:"Todos",
     flagsOne:"🎯 Una por una", flagsAll:"🗺️ Todas las banderas",
     flagsWrite:"✍️ Respuesta: escribir", flagsQcm:"🔢 Respuesta: 4 opciones",
@@ -1830,6 +2094,7 @@ const LANGS = {
     successLabel:"Acierto", successNone:"Acierto: —",
     recordLine: (s,t) => `🏆 Mejor racha: ${s}   ·   ⏱️ Récord desafío: ${t}`,
     countNote: (n, k) => n+" países"+(k==="Tous"?"":" — "+k),
+    poolProgress: (n, total) => `Progreso: ${n}/${total}`,
     promptFlag:"¿Qué país es este?",
     promptCap:"¿Cuál es la capital de…",
     promptCountry:"¿Qué país tiene esta capital…",
@@ -1844,6 +2109,8 @@ const LANGS = {
     timedResult: (s,t) => `respuestas correctas en ${t} s`,
     newRecord:"🏆 ¡Nuevo récord!",
     replay:"Volver a jugar ⏱️",
+    typeRecapTitle: (n) => n===0 ? "¡Sin errores, genial! 🎉" : `Ronda terminada — ${n} error${n>1?"es":""} para repasar:`,
+    reviewErrors: (n) => `🎯 Repetir mis ${n} error${n>1?"es":""}`,
     progress: (pct,s,a) => `Acierto: ${pct}% (${s}/${a})`,
     pvpTitle:"⚔️ Modo 1v1",
     pvpSubtitle:"¡Juega contra un amigo en tiempo real!",
@@ -1890,8 +2157,12 @@ function applyLang(){
   // Options bar
   const dir = document.getElementById("dirToggle");
   if(dir) dir.textContent = direction==="cap" ? t.dirCap : t.dirCountry;
-  const diff = document.getElementById("diffToggle");
-  if(diff) diff.textContent = hard ? t.diffHard : t.diffEasy;
+  const tbl = document.getElementById("tableToggle"); if(tbl) tbl.textContent = t.tableMode;
+  const flagPos = document.getElementById("typeTableFlagPosToggle");
+  if(flagPos) flagPos.textContent = showTableFlag ? t.flagShow : t.flagHide;
+  const ttRestart = document.getElementById("typeTableRestartBtn"); if(ttRestart) ttRestart.textContent = t.restart;
+  const ttChrono = document.getElementById("typeTableChronoBtn"); if(ttChrono && !ttChrono.disabled) ttChrono.textContent = t.chrono;
+  const ttCheck = document.getElementById("typeTableCheckBtn"); if(ttCheck && !ttCheck.classList.contains("hidden")) ttCheck.textContent = t.verify;
   // Flags submodes
   const s1 = document.getElementById("subOne"); if(s1) s1.textContent = t.flagsOne;
   const s2 = document.getElementById("subAll"); if(s2) s2.textContent = t.flagsAll;
@@ -1915,6 +2186,7 @@ function applyLang(){
   // Progress text (only if no game running)
   const pt = document.getElementById("progressText");
   if(pt && pt.textContent.includes("—")) pt.textContent = t.successNone;
+  updatePoolProgress();
   // Timed ready screen
   const trEl = document.getElementById("timedReady");
   if(trEl){
@@ -1952,6 +2224,7 @@ function applyLang(){
   if(activeMode==="study") renderStudy();
   // Flag grid placeholders
   document.querySelectorAll(".flag-input:not(:disabled)").forEach(i=>i.placeholder=t.flagPlaceholder);
+  document.querySelectorAll(".tbl-input:not(:disabled)").forEach(i=>i.placeholder = direction==="cap" ? t.placeholder : t.flagPlaceholder);
   // Lang buttons active state
   document.querySelectorAll(".lang-btn").forEach(b=>b.classList.toggle("active", b.dataset.lang===currentLang));
   localStorage.setItem("lang", currentLang);

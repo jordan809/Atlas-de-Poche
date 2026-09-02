@@ -8,47 +8,68 @@
   try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
 </script>
 <title>Globe interactif — Atlas de poche</title>
-<meta name="description" content="Globe terrestre 3D interactif : découvre les pays ou joue à les deviner.">
+<meta name="description" content="Carte du monde interactive : découvre les pays ou joue à les deviner.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <style>
-  :root{ --eu:#5b8def; --as:#ff8f3f; --af:#2fc4a8; --na:#e8554e; --sa:#9b5de5; --oc:#00b8d4; --green:#19d36b; }
+  :root{
+    --eu:#5b8def; --as:#ff8f3f; --af:#2fc4a8; --na:#e8554e; --sa:#9b5de5; --oc:#00b8d4; --green:#19d36b;
+    --page-bg:#eef1fb; --map-bg:#ffffff; --map-fill:#ffffff; --map-stroke:#3b6fe0; --map-hover:#eaf1ff;
+    --chrome-bg:rgba(255,255,255,0.92); --chrome-text:#2b2350; --chrome-border:rgba(43,35,80,0.12);
+    --hint-bg:rgba(43,35,80,0.85); --hint-text:#fff; --loading-bg:#eef1fb;
+  }
+  html.dark{
+    --page-bg:#0d0a1f; --map-bg:#100c26; --map-fill:#171233; --map-stroke:#7fb0ff; --map-hover:#241d47;
+    --chrome-bg:rgba(255,255,255,0.14); --chrome-text:#fff; --chrome-border:rgba(255,255,255,0.2);
+    --hint-bg:rgba(0,0,0,.35); --hint-text:#fff; --loading-bg:#0d0a1f;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{ font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:#fff; background:#0d0a1f; overflow:hidden; }
-  #globeViz{ position:fixed; inset:0; }
+  body{ font-family:system-ui,-apple-system,"Segoe UI",sans-serif; color:var(--chrome-text); background:var(--page-bg); overflow:hidden; transition:background .3s ease,color .3s ease; }
+  #mapSvg{ position:fixed; inset:0; background:var(--map-bg); cursor:grab; transition:background .3s ease; touch-action:none; }
+  #mapSvg:active{ cursor:grabbing; }
+  .country{ fill:var(--map-fill); stroke:var(--map-stroke); stroke-width:1.1; filter:url(#mapGlow); vector-effect:non-scaling-stroke; transition:fill .25s ease; }
+  .map-discover .country{ cursor:pointer; }
+  .map-discover .country:hover{ fill:var(--map-hover); }
+  .country.target{ fill:var(--green) !important; stroke:#0a8f4c !important; stroke-width:2.2 !important; }
+  .dot-marker{ fill:#f5c518; stroke:#fff; stroke-width:1.2; vector-effect:non-scaling-stroke; }
+  .map-discover .dot-marker{ cursor:pointer; }
+  .dot-marker.target{ fill:var(--green); stroke:#0a8f4c; }
+  body:not(.map-discover) .dot-marker:not(.target){ display:none; }
+  #mapTip{ position:fixed; z-index:6; pointer-events:none; transform:translate(-50%,-135%);
+    font-weight:700; color:#fff; background:rgba(0,0,0,.72); padding:4px 11px; border-radius:8px; font-size:.88rem; white-space:nowrap; display:none; }
 
   /* ---- Barre du haut ---- */
   .topbar{ position:fixed; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:12px 14px; pointer-events:none; }
   .topbar > *{ pointer-events:auto; }
-  .pill{ text-decoration:none; color:#fff; font-weight:800; font-size:.92rem;
-    background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.2);
-    padding:9px 15px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:7px; }
-  .pill:hover{ background:rgba(255,255,255,0.24); }
-  .pill.active{ background:#fff; color:#6a5cff; border-color:#fff; }
+  .pill{ text-decoration:none; color:var(--chrome-text); font-weight:800; font-size:.92rem;
+    background:var(--chrome-bg); backdrop-filter:blur(6px); border:1px solid var(--chrome-border);
+    padding:9px 15px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:7px; box-shadow:0 6px 16px rgba(43,35,80,0.08); }
+  .pill:hover{ filter:brightness(0.97); }
+  .pill.active{ background:#6a5cff; color:#fff; border-color:#6a5cff; }
   .menu-globe{ position:fixed; top:12px; left:14px; z-index:20; }
-  .menu-globe-btn{ font-family:system-ui,sans-serif; font-weight:700; font-size:.92rem; padding:0 18px; height:40px; border:1px solid rgba(255,255,255,0.2); border-radius:30px; cursor:pointer; background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); color:#fff; display:flex; align-items:center; gap:7px; transition:background 0.2s; }
-  .menu-globe-btn:hover{ background:rgba(255,255,255,0.28); }
-  .menu-globe-panel{ position:absolute; top:48px; left:0; min-width:215px; padding:8px; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
+  .menu-globe-btn{ font-family:system-ui,sans-serif; font-weight:700; font-size:.92rem; padding:0 18px; height:40px; border:1px solid var(--chrome-border); border-radius:30px; cursor:pointer; background:var(--chrome-bg); backdrop-filter:blur(6px); color:var(--chrome-text); display:flex; align-items:center; gap:7px; transition:background 0.2s; box-shadow:0 6px 16px rgba(43,35,80,0.08); }
+  .menu-globe-btn:hover{ filter:brightness(0.97); }
+  .menu-globe-panel{ position:absolute; top:48px; left:0; min-width:215px; padding:8px; background:rgba(255,255,255,0.98); backdrop-filter:blur(10px); border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
   .menu-globe.open .menu-globe-panel{ display:flex; }
   .menu-globe-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-weight:700; font-size:.95rem; transition:background 0.15s; }
   .menu-globe-panel a:hover{ background:#f0edff; }
   .menu-globe-divider{ height:1px; background:#e7e3f5; margin:4px 6px; }
 
   /* ---- Chargement ---- */
-  #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:#0d0a1f; text-align:center; padding:20px; }
-  .spinner{ width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.2); border-top-color:#9d7bff; animation:spin 1s linear infinite; }
+  #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:var(--loading-bg); text-align:center; padding:20px; color:var(--chrome-text); }
+  .spinner{ width:46px;height:46px;border-radius:50%;border:4px solid rgba(106,92,255,.18); border-top-color:#6a5cff; animation:spin 1s linear infinite; }
   @keyframes spin{to{transform:rotate(360deg)}}
 
   .hint{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:5;
-    color:#fff; font-weight:700; font-size:.9rem; text-shadow:0 2px 8px rgba(0,0,0,.6);
-    background:rgba(0,0,0,.28); padding:9px 18px; border-radius:30px; backdrop-filter:blur(4px); text-align:center; }
+    color:var(--hint-text); font-weight:700; font-size:.9rem; text-shadow:0 2px 8px rgba(0,0,0,.25);
+    background:var(--hint-bg); padding:9px 18px; border-radius:30px; backdrop-filter:blur(4px); text-align:center; max-width:88vw; }
   .hint.hide{ display:none; }
 
   /* ---- Carte info (mode Découverte) ---- */
   #info{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(150%);
     z-index:10; width:min(92vw,420px);
     background:rgba(255,255,255,0.97); color:#2b2350; border-radius:20px;
-    box-shadow:0 18px 50px rgba(0,0,0,.55); padding:16px 18px;
+    box-shadow:0 18px 50px rgba(0,0,0,.3); padding:16px 18px;
     transition:transform .35s cubic-bezier(.2,.8,.2,1); display:flex; align-items:center; gap:15px; }
   #info.show{ transform:translateX(-50%) translateY(0); }
   #info .flag img{ width:56px; height:auto; border-radius:5px; box-shadow:0 2px 7px rgba(0,0,0,.3); display:block; }
@@ -64,7 +85,7 @@
   #gamePanel{ position:fixed; top:50%; right:20px; transform:translateY(-50%) translateX(130%);
     z-index:12; width:300px; max-width:92vw;
     background:rgba(255,255,255,0.97); color:#2b2350; border-radius:22px;
-    box-shadow:0 18px 50px rgba(0,0,0,.55); padding:20px;
+    box-shadow:0 18px 50px rgba(0,0,0,.3); padding:20px;
     transition:transform .4s cubic-bezier(.2,.8,.2,1); }
   #gamePanel.show{ transform:translateY(-50%) translateX(0); }
   .gp-head{ font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:8px; }
@@ -87,8 +108,8 @@
   .gp-fb .reveal{ display:block; color:#6b6396; font-weight:700; font-size:.85rem; margin-top:3px; }
   .hidden{ display:none !important; }
   .top-right-btns{ position:fixed; top:12px; right:16px; z-index:100; display:flex; gap:8px; align-items:center; }
-  .sound-toggle,.dark-toggle-globe{ font-size:1.2rem; width:40px; height:40px; border:1px solid rgba(255,255,255,0.2); border-radius:50%; cursor:pointer; background:rgba(255,255,255,0.14); backdrop-filter:blur(6px); color:#fff; display:flex; align-items:center; justify-content:center; transition:background 0.2s; }
-  .sound-toggle:hover,.dark-toggle-globe:hover{ background:rgba(255,255,255,0.28); }
+  .sound-toggle,.dark-toggle-globe{ font-size:1.2rem; width:40px; height:40px; border:1px solid var(--chrome-border); border-radius:50%; cursor:pointer; background:var(--chrome-bg); backdrop-filter:blur(6px); color:var(--chrome-text); display:flex; align-items:center; justify-content:center; transition:background 0.2s; box-shadow:0 6px 16px rgba(43,35,80,0.08); }
+  .sound-toggle:hover,.dark-toggle-globe:hover{ filter:brightness(0.97); }
 
   @media (max-width:600px){
     #gamePanel{ top:auto; bottom:0; right:0; left:0; width:100%; max-width:100%;
@@ -98,13 +119,27 @@
 </style>
 </head>
 <body>
-  <div id="globeViz"></div>
+  <svg id="mapSvg">
+    <defs>
+      <filter id="mapGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="1.6" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <g id="mapG"></g>
+  </svg>
+  <div id="mapTip"></div>
 
   <div class="menu-globe" id="menuGlobe">
     <button class="menu-globe-btn" id="menuGlobeBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
     <div class="menu-globe-panel">
       <a href="/">🏠 Accueil</a>
       <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+      <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+      <a href="/regions.html#map">🐓 Carte de France</a>
       <a href="/globe.html">🌍 Globe interactif</a>
       <a href="/mers.html">🌊 Mers &amp; Océans</a>
       <div class="menu-globe-divider"></div>
@@ -128,7 +163,7 @@
     <button class="pill" id="btnGame">🎮 Lancer le jeu</button>
   </div>
 
-  <div class="hint" id="hint">Fais tourner le globe 🌍 et clique sur un pays</div>
+  <div class="hint" id="hint">Clique sur un pays pour le découvrir 🗺️ — glisse pour te déplacer, molette pour zoomer</div>
 
   <div id="info">
     <span class="flag" id="iFlag"></span>
@@ -154,21 +189,19 @@
     </div>
     <button class="gp-btn sec hidden" id="gNext">Pays suivant ➡️</button>
     <button class="gp-btn hidden" id="gStart">🚀 Lancer un pays</button>
+    <button class="gp-btn sec" id="gStop">⏹️ Arrêter le jeu</button>
   </div>
 
   <div id="loading">
     <div class="spinner"></div>
-    <div>Chargement du globe…</div>
+    <div>Chargement de la carte…</div>
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/globe.gl"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script>
 (async function(){
   const COLORS = { "Europe":"#5b8def","Asie":"#ff8f3f","Afrique":"#2fc4a8","Amérique du Nord":"#e8554e","Amérique du Sud":"#9b5de5","Océanie":"#00b8d4" };
-  // Mêmes couleurs en RGB (Three.js ne lit pas l'hexadécimal à 8 chiffres avec transparence)
-  const RGB = { "Europe":"91,141,239","Asie":"255,143,63","Afrique":"47,196,168","Amérique du Nord":"232,85,78","Amérique du Sud":"155,93,229","Océanie":"0,184,212" };
   const GREEN = "#19d36b";
-  function capColor(d, a){ return 'rgba('+(d&&RGB[d.k]?RGB[d.k]:'120,120,140')+','+a+')'; }
 
   function flagToISO(flag){
     const cp = Array.from(flag).map(c=>c.codePointAt(0));
@@ -181,10 +214,10 @@
   }
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'’\s.]/g,'').trim(); }
 
-  // Base DATA depuis index.html (source unique)
+  // Base DATA depuis quiz.html (source unique des pays/capitales)
   let DATA = [];
   try{
-    const html = await (await fetch('/index.html')).text();
+    const html = await (await fetch('/quiz.html')).text();
     const m = html.match(/const DATA = (\[[\s\S]*?\]);/);
     DATA = eval(m[1]);
   }catch(e){ console.warn('DATA introuvable :', e); }
@@ -210,97 +243,134 @@
     return;
   }
 
-  // Bbox d'un pays (pour choisir le plus grand morceau + régler le zoom)
+  // Bbox géographique d'un pays (pour repérer les tout petits pays)
   function eachCoord(geom, cb){
     const c = geom && geom.coordinates; if(!c) return;
     if(geom.type==='Polygon') c.forEach(r=>r.forEach(cb));
     else if(geom.type==='MultiPolygon') c.forEach(poly=>poly.forEach(r=>r.forEach(cb)));
   }
-  function bbox(f){
+  function geoBbox(f){
     let mnLa=90,mxLa=-90,mnLo=180,mxLo=-180;
     eachCoord(f.geometry, p=>{ if(p[0]<mnLo)mnLo=p[0]; if(p[0]>mxLo)mxLo=p[0]; if(p[1]<mnLa)mnLa=p[1]; if(p[1]>mxLa)mxLa=p[1]; });
     return {mnLa,mxLa,mnLo,mxLo, latSpan:mxLa-mnLa, lngSpan:mxLo-mnLo};
   }
 
-  // Un seul morceau par pays : on garde le plus grand (= le pays principal)
+  // Un seul morceau par pays : on garde le plus grand (= le pays principal), pour le mode jeu.
   const bestByCountry = {};
   countries.features.forEach(f=>{
     const d = lookup(f.properties); if(!d) return;
-    const b = bbox(f);
+    const b = geoBbox(f);
     const area = b.latSpan * Math.min(b.lngSpan, 180);
     if(!bestByCountry[d.c] || area > bestByCountry[d.c].area){
       const p = f.properties;
       const lat = (p.LABEL_Y!=null && !isNaN(+p.LABEL_Y)) ? +p.LABEL_Y : (b.mnLa+b.mxLa)/2;
       const lng = (p.LABEL_X!=null && !isNaN(+p.LABEL_X)) ? +p.LABEL_X : (b.mnLo+b.mxLo)/2;
-      const alt = Math.max(0.4, Math.min(1.6, b.latSpan/38 + 0.45));
       const size = Math.max(b.latSpan, Math.min(b.lngSpan, 180));
-      bestByCountry[d.c] = { f, d, area, lat, lng, alt, size };
+      bestByCountry[d.c] = { f, d, area, lat, lng, size };
     }
   });
   const gameItems = Object.values(bestByCountry);
-  // Petits pays (à peine visibles sur le globe) : on leur ajoute une pastille cliquable.
-  const dotItems = gameItems.filter(i => i.size < 2.5);
+  // Très petits pays : on leur ajoute un point cliquable (sinon minuscules sur la carte).
+  const dotItems = gameItems.filter(i => i.size < 1.4);
 
   // ---------- État ----------
   let mode = "discover";     // "discover" | "game"
-  let hovered = null;        // survol (mode découverte)
-  let target = null;         // pays en vert (mode jeu)
-  let current = null;        // données du pays à deviner
+  let target = null;         // feature GeoJSON en vert (mode jeu)
+  let current = null;        // pays à deviner (données)
   let gScore = 0, gAsked = 0;
-  let spinning = false;
 
   // ---------- Éléments ----------
   const $ = id => document.getElementById(id);
-  const infoEl = $('info'), hintEl = $('hint'), panel = $('gamePanel');
+  const infoEl = $('info'), hintEl = $('hint'), panel = $('gamePanel'), tipEl = $('mapTip');
 
-  // ---------- Globe ----------
-  const world = Globe()($('globeViz'))
-    .backgroundColor('#0d0a1f')
-    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
-    .polygonsData(countries.features)
-    .polygonsTransitionDuration(300)
-    .polygonLabel(f => {
-      if(mode!=='discover') return '';
-      const d = lookup(f.properties);
-      return '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+(d?d.c:(f.properties.ADMIN||''))+'</div>';
-    })
-    .onPolygonClick(f => {
-      if(mode!=='discover') return;
-      showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
-      if(f.properties.LABEL_X!=null) world.pointOfView({lat:+f.properties.LABEL_Y, lng:+f.properties.LABEL_X, altitude:1.8}, 800);
-    })
-    // Pastilles pour les petits pays (sinon invisibles/incliquables)
-    .pointsData(dotItems)
-    .pointLat('lat').pointLng('lng')
-    .pointAltitude(0.015)
-    .pointResolution(6)
-    .pointLabel(p => mode==='discover'
-      ? '<div style="font-family:sans-serif;font-weight:700;color:#fff;background:rgba(0,0,0,.65);padding:3px 9px;border-radius:7px">'+p.d.c+'</div>'
-      : '')
-    .onPointClick(p => {
-      if(mode!=='discover') return;
-      showCountry(p.d);
-      world.pointOfView({lat:p.lat, lng:p.lng, altitude:1.0}, 800);
-    });
+  // ---------- Carte plate (D3) ----------
+  const svg = d3.select('#mapSvg');
+  const g = d3.select('#mapG');
+  const projection = d3.geoNaturalEarth1();
+  const path = d3.geoPath(projection);
+  let W = window.innerWidth, H = window.innerHeight;
 
-  // Rafraîchit les couleurs/altitudes (nouvelles fonctions = re-calcul garanti par globe.gl).
-  // Le pays cible (mode jeu) est rempli en VERT et surélevé.
-  function refresh(){
-    const isTarget = p => (mode==='game' && current && p.d && p.d.c===current.c);
-    world
-      .polygonAltitude(f => f===target ? 0.14 : 0.02)
-      .polygonCapColor(f => f===target ? 'rgba(25,211,107,0.95)' : capColor(lookup(f.properties), 0.85))
-      .polygonSideColor(f => f===target ? 'rgba(25,211,107,0.6)' : 'rgba(157,123,255,0.25)')
-      .polygonStrokeColor(f => f===target ? '#0a3' : 'rgba(255,255,255,0.55)')
-      .pointColor(p => isTarget(p) ? GREEN : (mode==='discover' ? '#f5c518' : 'rgba(0,0,0,0)'))
-      .pointRadius(p => isTarget(p) ? 1.1 : (mode==='discover' ? 0.5 : 0))
-      .pointAltitude(p => isTarget(p) ? 0.04 : (mode==='discover' ? 0.015 : 0));
+  const zoom = d3.zoom().scaleExtent([1, 14]).on('zoom', (ev)=>{ g.attr('transform', ev.transform); });
+  svg.call(zoom);
+
+  let countryPaths, dotEls;
+
+  function fitProjection(){
+    W = window.innerWidth; H = window.innerHeight;
+    svg.attr('width', W).attr('height', H);
+    projection.fitSize([W, H], { type:'FeatureCollection', features: countries.features });
   }
-  refresh();
 
-  function resize(){ world.width(window.innerWidth); world.height(window.innerHeight); }
-  window.addEventListener('resize', resize); resize();
-  world.controls().autoRotate = false; // pas de rotation auto par défaut
+  function drawMap(){
+    fitProjection();
+    countryPaths = g.selectAll('path.country')
+      .data(countries.features)
+      .join('path')
+      .attr('class','country')
+      .attr('d', path)
+      .on('mousemove', (ev,f)=>{
+        if(mode!=='discover') return;
+        const d = lookup(f.properties);
+        tipEl.textContent = d ? d.c : (f.properties.ADMIN || f.properties.NAME || '');
+        tipEl.style.left = ev.clientX+'px'; tipEl.style.top = ev.clientY+'px'; tipEl.style.display='block';
+      })
+      .on('mouseleave', ()=> tipEl.style.display='none')
+      .on('click', (ev,f)=>{
+        if(mode!=='discover') return;
+        showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
+        zoomToFeature(f, 3.4);
+      });
+
+    dotEls = g.selectAll('circle.dot-marker')
+      .data(dotItems)
+      .join('circle')
+      .attr('class','dot-marker')
+      .attr('cx', it => projection([it.lng, it.lat])[0])
+      .attr('cy', it => projection([it.lng, it.lat])[1])
+      .attr('r', 3.2)
+      .on('mousemove', (ev,it)=>{
+        if(mode!=='discover') return;
+        tipEl.textContent = it.d.c;
+        tipEl.style.left = ev.clientX+'px'; tipEl.style.top = ev.clientY+'px'; tipEl.style.display='block';
+      })
+      .on('mouseleave', ()=> tipEl.style.display='none')
+      .on('click', (ev,it)=>{
+        if(mode!=='discover') return;
+        ev.stopPropagation();
+        showCountry(it.d);
+        zoomToFeature(it.f, 3.4);
+      });
+
+    refreshColors();
+  }
+
+  function refreshColors(){
+    if(countryPaths) countryPaths.classed('target', f => mode==='game' && f===target);
+    if(dotEls) dotEls.classed('target', it => mode==='game' && it.f===target);
+  }
+
+  // Zoom centré sur un pays, avec assez de marge pour voir les voisins.
+  function zoomToFeature(feature, padding){
+    padding = padding || 3.2;
+    const b = path.bounds(feature);
+    const dx = Math.max(b[1][0]-b[0][0], 1), dy = Math.max(b[1][1]-b[0][1], 1);
+    const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
+    let scale = Math.min(W/(dx*padding), H/(dy*padding));
+    scale = Math.max(1.3, Math.min(scale, 9));
+    const t = d3.zoomIdentity.translate(W/2, H/2).scale(scale).translate(-cx, -cy);
+    svg.transition().duration(1100).call(zoom.transform, t);
+  }
+  function resetView(){
+    svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
+  }
+
+  function resize(){
+    drawMap();
+    if(mode==='game' && target) zoomToFeature(target); else resetView();
+  }
+  window.addEventListener('resize', resize);
+
+  drawMap();
 
   // ---------- Mode Découverte ----------
   function showCountry(d, fallbackName){
@@ -321,27 +391,21 @@
 
   // ---------- Mode Jeu ----------
   function startRound(){
-    if(spinning || !gameItems.length) return;
-    spinning = true;
-    target = null; current = null; refresh();
+    if(!gameItems.length) return;
+    target = null; current = null; refreshColors();
     infoEl.classList.remove('show');
     $('gpForm').classList.add('hidden');
     $('gNext').classList.add('hidden');
     $('gStart').classList.add('hidden');
-    $('gpQ').textContent = '🌍 Le globe tourne…';
-    // Animation : rotation rapide
-    world.controls().autoRotate = true;
-    world.controls().autoRotateSpeed = 16;
+    $('gpQ').textContent = '🔎 Choix d’un pays…';
+    resetView();
     setTimeout(()=>{
-      world.controls().autoRotate = false;
-      // Choisir un pays au hasard (un seul morceau par pays, le plus grand)
       const item = gameItems[Math.floor(Math.random()*gameItems.length)];
       target = item.f;
       current = item.d;
-      refresh(); // frontière + remplissage verts
-      // Zoom adapté à la taille du pays
-      world.pointOfView({lat:item.lat, lng:item.lng, altitude:item.alt}, 1200);
-      // Afficher le formulaire
+      refreshColors();
+      zoomToFeature(item.f, 3.4);
+      gAsked += 2; $('gAsked').textContent = gAsked;
       $('gpQ').textContent = 'Quel est ce pays (en vert) et sa capitale ?';
       $('inCountry').value=''; $('inCapital').value='';
       $('inCountry').className='gp-input'; $('inCapital').className='gp-input';
@@ -350,8 +414,7 @@
       $('gpForm').classList.remove('hidden');
       $('gValidate').classList.remove('hidden');
       setTimeout(()=>$('inCountry').focus({preventScroll:true}), 50);
-      spinning = false;
-    }, 1700);
+    }, 550);
   }
 
   function checkAnswer(){
@@ -362,8 +425,8 @@
     inC.disabled=true; inK.disabled=true;
     inC.className = 'gp-input ' + (okC?'ok':'no');
     inK.className = 'gp-input ' + (okK?'ok':'no');
-    gAsked++; if(okC && okK) gScore++;
-    $('gScore').textContent=gScore; $('gAsked').textContent=gAsked;
+    gScore += (okC?1:0) + (okK?1:0);
+    $('gScore').textContent=gScore;
     if(okC && okK) soundCorrect(); else soundWrong();
     let fb = '';
     if(okC && okK){ fb = '<span class="good">Bravo, tout est exact ! 🎉</span>'; }
@@ -381,13 +444,14 @@
     mode = m;
     $('btnDiscover').classList.toggle('active', m==='discover');
     $('btnGame').classList.toggle('active', m==='game');
-    target=null; hovered=null; current=null; refresh();
+    document.body.classList.toggle('map-discover', m==='discover');
+    target=null; current=null; refreshColors();
     infoEl.classList.remove('show');
-    world.controls().autoRotate = false;
+    tipEl.style.display='none';
     if(m==='discover'){
       panel.classList.remove('show');
       hintEl.classList.remove('hide');
-      world.pointOfView({altitude:2.4}, 800);
+      resetView();
     } else {
       hintEl.classList.add('hide');
       panel.classList.add('show');
@@ -403,8 +467,15 @@
   $('gValidate').onclick = checkAnswer;
   $('gNext').onclick = startRound;
   $('gStart').onclick = startRound;
+  $('gStop').onclick = () => {
+    gScore = 0; gAsked = 0;
+    $('gScore').textContent = gScore; $('gAsked').textContent = gAsked;
+    setMode('discover');
+  };
   $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('inCapital').focus(); } });
   $('inCapital').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); checkAnswer(); } });
+
+  document.body.classList.add('map-discover'); // découverte = mode par défaut
 
   // Son
   let soundOn = localStorage.getItem('soundOn') !== '0';
@@ -417,7 +488,7 @@
   applySound();
   soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
 
-  // Mode nuit (globe a son propre fond sombre, on bascule juste la luminosité)
+  // Mode nuit
   let darkOnGlobe = localStorage.getItem('darkMode') === '1';
   const darkBtnGlobe = $('darkToggleGlobe');
   function applyDarkGlobe(){ darkBtnGlobe.textContent = darkOnGlobe ? '☀️' : '🌙'; document.documentElement.classList.toggle('dark', darkOnGlobe); }
@@ -428,8 +499,7 @@
 
   // Hooks de test
   window.__gameItems = gameItems.length;
-  window.__dots = dotItems.length;
-  window.__scene = () => world.scene();
+  window.__dotCount = dotItems.length;
   window.__nbPolygons = countries.features.length;
   window.__byISO = Object.keys(byISO).length;
   window.__startRound = startRound;

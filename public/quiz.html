@@ -1974,6 +1974,7 @@ function renderTypeTable(force=false, overridePool=null){
     else if(pct >= 50){ soundCorrect(); }
     else { soundWrong(); }
 
+    const _capturedPool = lastTablePool ? lastTablePool.slice() : null;
     const overlay = document.createElement("div");
     overlay.className = "score-overlay";
     overlay.innerHTML = `
@@ -1984,22 +1985,17 @@ function renderTypeTable(force=false, overridePool=null){
         <div class="score-lbl">${T().flagsResult}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
         ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">${T().reviewErrors(wrongItems.length)}</button>` : ""}
+        <button class="score-restart" id="tblSameBtn">🔁 Refaire la même série</button>
         <button class="score-restart" id="tblRestartBtn">${T().restart}</button>
       </div>`;
     document.body.appendChild(overlay);
-    document.getElementById("tblRestartBtn").onclick = () => {
-      overlay.remove();
-      renderTypeTable(true);
-      setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-    };
+    const _scrollTable = () => setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true); _scrollTable(); };
+    overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); if(_capturedPool) renderTypeTable(true, _capturedPool); else renderTypeTable(true); _scrollTable(); };
     if(wrongItems.length>0){
-      document.getElementById("tblReviewBtn").onclick = () => {
-        overlay.remove();
-        renderTypeTable(true, wrongItems);
-        setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-      };
+      overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, wrongItems); _scrollTable(); };
     }
-    overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+    overlay.onclick = (e) => { if(e.target === overlay) { overlay.remove(); renderTypeTable(true); _scrollTable(); } };
   };
 }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -211,7 +211,7 @@
     const iso = flagToISO(flag).toLowerCase();
     return iso ? '<img alt="" src="https://flagcdn.com/h'+(h||40)+'/'+iso+'.png">' : flag;
   }
-  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-'’\s.]/g,'').trim(); }
+  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[-''\s.]/g,'').trim(); }
 
   // Base DATA depuis quiz.html (source unique des pays/capitales)
   let DATA = [];
@@ -405,11 +405,11 @@
   function startRound(){
     if(!gameItems.length) return;
     target = null; current = null; refreshColors();
-    infoEl.classList.remove(‘show’);
-    $(‘gpForm’).classList.add(‘hidden’);
-    $(‘gNext’).classList.add(‘hidden’);
-    $(‘gStart’).classList.add(‘hidden’);
-    $(‘gpQ’).textContent = ‘🔎 Choix d’un pays…’;
+    infoEl.classList.remove('show');
+    $('gpForm').classList.add('hidden');
+    $('gNext').classList.add('hidden');
+    $('gStart').classList.add('hidden');
+    $('gpQ').textContent = "🔎 Choix d'un pays…";
     resetView();
     setTimeout(()=>{
       const item = drawGameItem();

@@ -1183,6 +1183,8 @@ let typeTablePool = null;           // clé "continent|direction" du tableau aff
 let lastTableErrors = [];           // erreurs de la dernière session tableau
 let savedTableErrors = [];          // erreurs accumulées toutes sessions (stockées en localStorage)
 try { const se = localStorage.getItem("atlasTableErrors"); if(se) savedTableErrors = JSON.parse(se).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
+let savedTypeErrors = [];           // erreurs accumulées mode clavier (stockées en localStorage)
+try { const ste = localStorage.getItem("atlasTypeErrors"); if(ste) savedTypeErrors = JSON.parse(ste).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1507,6 +1509,12 @@ function showTypeRecap(){
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
+  // Sauvegarder les erreurs
+  if(errCount>0){
+    const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
+    savedTypeErrors = [...savedTypeErrors, ...newSaved];
+    try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
+  }
   const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
   eg.innerHTML = `
@@ -1514,10 +1522,12 @@ function showTypeRecap(){
     <div class="lbl">${T().typeRecapTitle(errCount)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
-    <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>`;
+    <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>
+    ${savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
   document.getElementById("typeRecapReplayBtn").onclick = startPlay;
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
+  if(savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
 }
 
 // ---------- Timer (Défi) ----------
@@ -1559,6 +1569,11 @@ function startPlay(overridePool){
   reviewPool = overridePool || null;
   stopTimer();
   resetQuiz();
+  answered = false;
+  // Nettoyer l'état visuel avant d'afficher la nouvelle question
+  const ti = document.getElementById("typeInput"); if(ti){ ti.value=""; ti.disabled=false; ti.className="type-input"; }
+  const fb = document.getElementById("feedback"); if(fb){ fb.textContent=""; fb.className="feedback"; }
+  document.getElementById("nextBtn").classList.remove("show");
   document.getElementById("endgame").classList.add("hidden");
   document.getElementById("timedReady").classList.add("hidden");
 

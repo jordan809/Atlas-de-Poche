@@ -1527,7 +1527,7 @@ function showTypeRecap(){
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
     <button class="next-btn show" id="typeRecapSameBtn">🔁 Refaire la même série</button>
     <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>
-    ${savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
+    ${errCount===0 && savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
   const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
   document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);

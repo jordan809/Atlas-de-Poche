@@ -211,7 +211,8 @@
   .menu { position: fixed; top: 14px; left: 16px; z-index: 510; }
   .menu-btn { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem; padding: 0 20px; height: 42px; border: none; border-radius: 30px; cursor: pointer; background: rgba(255,255,255,0.25); backdrop-filter: blur(6px); color: #fff; letter-spacing: 0.03em; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transition: transform 0.2s ease, background 0.2s ease; display: flex; align-items: center; gap: 8px; }
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
-  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh; overflow-y: auto; overscroll-behavior: contain; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  body.map-active .menu-btn { background: rgba(43,35,80,0.88); color: #fff; }
   .menu.open .menu-panel { display: flex; }
   .menu-panel a { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 11px; text-decoration: none; color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem; transition: background 0.15s ease; }
   .menu-panel a:hover { background: #f0edff; }
@@ -272,13 +273,15 @@
   .gp-score b { color: #6a5cff; font-size: 1.05rem; }
   .gp-q { margin: 14px 0 10px; font-weight: 700; font-size: .95rem; min-height: 20px; }
   .gp-field { display: block; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #9088ad; margin: 10px 0 4px; }
-  .gp-input { width: 100%; font-family: inherit; font-weight: 700; font-size: 1rem; padding: 11px 12px; border: 2.5px solid #ece9ff; background: #f7f6ff; color: #2b2350; border-radius: 12px; outline: none; }
-  .gp-input:focus { border-color: #6a5cff; }
+  .gp-input { width: 100%; font-family: inherit; font-weight: 700; font-size: 1rem; padding: 11px 12px; border: 2.5px solid #b8b2e8; background: #edeaff; color: #2b2350; border-radius: 12px; outline: none; transition: border-color .15s ease; }
+  .gp-input:hover { background: #edeaff; border-color: #b8b2e8; }
+  .gp-input:focus { border-color: #6a5cff; background: #edeaff; }
   .gp-input.ok { border-color: var(--good); background: #e7faf0; }
   .gp-input.no { border-color: #ef3e5b; background: #fdeaee; }
   .gp-btn { width: 100%; margin-top: 14px; font-family: inherit; font-weight: 800; font-size: 1rem; padding: 13px; border: none; border-radius: 14px; cursor: pointer; color: #fff; background: linear-gradient(100deg,#6a5cff,#ff5d8f); box-shadow: 0 8px 20px rgba(106,92,255,.4); }
-  .gp-btn:hover { filter: brightness(1.05); }
-  .gp-btn.sec { background: #efedfb; color: #6a5cff; box-shadow: none; }
+  .gp-btn:hover { filter: brightness(0.96); }
+  .gp-btn.sec { background: #dddaf7; color: #5a4ee0; box-shadow: none; }
+  .gp-btn.sec:hover { filter: none; background: #ccc7f0; }
   .gp-fb { margin-top: 12px; font-weight: 800; font-size: .92rem; min-height: 18px; }
   .gp-fb .good { color: #1fae6a; } .gp-fb .bad { color: #ef3e5b; }
   .gp-fb .reveal { display: flex; align-items: center; gap: 6px; color: #6b6396; font-weight: 700; font-size: .85rem; margin-top: 3px; }
@@ -1024,6 +1027,7 @@ function enterMode(mode){
   document.querySelector(".intro").classList.toggle("hidden", isMap);
   document.querySelector("footer").classList.toggle("hidden", !isStudy || isMap);
   document.getElementById("mapMode").classList.toggle("hidden", !isMap);
+  document.body.classList.toggle("map-active", isMap);
 
   if(isMap){ initMap(); }
   else if(isStudy){ renderStudy(); }

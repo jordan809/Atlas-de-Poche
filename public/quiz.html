@@ -637,7 +637,8 @@
   }
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
   .menu-panel {
-    position: absolute; top: 50px; left: 0; min-width: 215px; padding: 8px;
+    position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh;
+    overflow-y: auto; overscroll-behavior: contain; padding: 8px;
     background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
     border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3);
     display: none; flex-direction: column; gap: 3px;
@@ -1568,6 +1569,10 @@ function enterMode(mode){
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
   activeFilter = "Tous";
   activeFilters = new Set(["Tous"]);
+  // Réactiver le drapeau à chaque changement de mode
+  showFlag = true;
+  const ftgl = document.getElementById("typeFlagToggle");
+  if(ftgl){ ftgl.textContent = "🏳️ Drapeau visible"; ftgl.classList.add("active"); }
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
@@ -1586,7 +1591,7 @@ function enterMode(mode){
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
-  document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || showTypeTable);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){

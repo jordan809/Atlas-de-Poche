@@ -233,12 +233,12 @@
     return null;
   }
 
-  // Carte des pays (50m = beaucoup plus de pays)
+  // Carte des pays (fichier local pour éviter dépendance CDN)
   let countries;
   try{
-    countries = await (await fetch('https://cdn.jsdelivr.net/gh/nvkelso/natural-earth-vector@master/geojson/ne_50m_admin_0_countries.geojson')).json();
+    countries = await (await fetch('/countries.geojson')).json();
   }catch(e){
-    document.getElementById('loading').innerHTML = '<div style="max-width:280px">😕 Impossible de charger la carte du monde.<br><br>Vérifie ta connexion Internet, puis recharge la page.</div>';
+    document.getElementById('loading').innerHTML = '<div style="max-width:280px">😕 Impossible de charger la carte du monde.<br><br>Recharge la page.</div>';
     return;
   }
 

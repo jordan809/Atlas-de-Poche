@@ -1877,6 +1877,11 @@ function renderTypeTable(force=false, overridePool=null){
   const chronoBtn = document.getElementById("typeTableChronoBtn");
   if(chronoBtn){ chronoBtn.textContent = T().chrono; chronoBtn.disabled = false; }
 
+  // Réinitialiser les boutons résultats
+  document.getElementById("typeTableSameBtn").classList.add("hidden");
+  document.getElementById("typeTableLastErrBtn").classList.add("hidden");
+  document.getElementById("typeTableSavedErrBtn").classList.add("hidden");
+
   lastTablePool = (overridePool || pool()).slice();
   const list = shuffle(lastTablePool.slice());
   const grid = document.getElementById("typeTableGrid");
@@ -1885,6 +1890,7 @@ function renderTypeTable(force=false, overridePool=null){
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
   checkBtn.textContent = T().verify;
+  setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80);
 
   list.forEach(d => {
     const answer = direction==="cap" ? d.cap : d.c;

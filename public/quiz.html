@@ -170,6 +170,9 @@
   .card .country { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
   .card .capital { color: var(--accent, var(--ink-soft)); font-weight: 700; font-size: 0.95rem; margin-top: 1px; }
   .count-note { text-align: center; color: #fff; font-weight: 700; font-size: 0.95rem; margin-bottom: 16px; opacity: 0.95; }
+  .study-search-wrap { max-width: 560px; margin: 0 auto 18px; }
+  .study-search { width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 1rem; padding: 13px 18px; border: none; border-radius: 40px; background: rgba(255,255,255,0.96); color: var(--ink); box-shadow: 0 8px 22px rgba(0,0,0,0.14); outline: none; }
+  .study-search::placeholder { color: #a89dc8; font-weight: 600; }
 
   /* ---------- Quiz ---------- */
   .quiz { max-width: 560px; margin: 0 auto; }
@@ -758,6 +761,9 @@
   <div class="filters" id="filters"></div>
 
   <section id="study">
+    <div class="study-search-wrap">
+      <input class="study-search" id="studySearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="🔍 Rechercher un pays ou une capitale…">
+    </div>
     <p class="count-note" id="countNote"></p>
     <div class="grid" id="grid"></div>
   </section>
@@ -1281,10 +1287,14 @@ CONTINENTS.forEach(name=>{
 
 // ---------- Study ----------
 function renderStudy(){
-  // La Révision affiche TOUJOURS tous les pays du continent choisi (les 195 au total),
-  // sans tenir compte du mode Facile/Difficile (qui ne sert qu'aux quiz).
   const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
-  const list = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  const allSorted = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  const searchEl = document.getElementById("studySearch");
+  if(searchEl) searchEl.value = "";
+  renderStudyCards(allSorted);
+}
+
+function renderStudyCards(list){
   document.getElementById("countNote").textContent = T().countNote(list.length, activeFilter);
   const grid=document.getElementById("grid"); grid.innerHTML="";
   list.forEach(d=>{
@@ -1297,6 +1307,15 @@ function renderStudy(){
     grid.appendChild(card);
   });
 }
+
+document.getElementById("studySearch").addEventListener("input", e=>{
+  if(activeMode!=="study") return;
+  const q = norm(e.target.value.trim());
+  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const filtered = q ? studyList.filter(d=> norm(d.c).includes(q) || norm(d.cap).includes(q)) : studyList;
+  const sorted = filtered.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  renderStudyCards(sorted);
+});
 
 // ---------- Scoreboard / records ----------
 function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; updateScore(); }

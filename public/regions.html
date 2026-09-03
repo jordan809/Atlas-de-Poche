@@ -246,9 +246,8 @@
   .mapfeat.target { fill: var(--good) !important; stroke: #0a8f4c !important; stroke-width: 2.4 !important; }
   #mapTip { position: fixed; z-index: 506; pointer-events: none; transform: translate(-50%,-135%); font-weight: 700; color: #fff; background: rgba(0,0,0,.72); padding: 4px 11px; border-radius: 8px; font-size: .88rem; white-space: nowrap; display: none; }
 
-  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: nowrap; gap: 6px; padding: 10px 10px 10px 150px; overflow-x: auto; scrollbar-width: none; }
-  .map-topbar::-webkit-scrollbar { display: none; }
-  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 8px 13px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; white-space: nowrap; flex-shrink: 0; }
+  .map-topbar { position: fixed; top: 66px; left: 16px; z-index: 502; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 8px 13px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; white-space: nowrap; }
   .map-pill:hover { filter: brightness(0.97); }
   .map-pill.active { background: var(--bg1); color: #fff; }
   html.dark .map-pill { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.2); }
@@ -294,7 +293,8 @@
   @media (max-width: 600px) {
     #mapGamePanel { top: auto; bottom: 0; right: 0; left: 0; width: 100%; max-width: 100%; transform: translateY(120%); border-radius: 22px 22px 0 0; }
     #mapGamePanel.show { transform: translateY(0); }
-    .map-topbar { padding-left: 60px; }
+    .map-topbar { top: 58px; left: 12px; }
+    .map-pill { font-size: .78rem; padding: 7px 10px; }
   }
 </style>
 </head>

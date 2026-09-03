@@ -753,6 +753,7 @@
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
     <button class="toggle hidden active" id="typeFlagToggle">🏳️ Drapeau visible</button>
+    <button class="toggle hidden" id="autoAdvanceToggle">⚡ Auto-avance</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -1170,6 +1171,7 @@ let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
 let showFlag = true;               // afficher le drapeau (tous modes — toggle pour le cacher)
+let autoAdvanceOn = false;         // avancer automatiquement si la réponse est correcte (quiz/clavier)
 let typeTableInProgress = false;
 let typeTablePool = null;           // clé "continent|direction" du tableau affiché
 let lastTableErrors = [];           // erreurs de la dernière session tableau
@@ -1438,7 +1440,7 @@ function chooseOption(btn,label){
     else if(b!==btn) b.classList.add("dim");
   });
   registerResult(isCorrect);
-  afterAnswer();
+  afterAnswer(isCorrect && autoAdvanceOn);
 }
 
 function checkTyped(){
@@ -1460,7 +1462,7 @@ function checkTyped(){
   }
   registerResult(isCorrect);
   if(activeMode==="type" && bag.length===0) pendingTypeRecap=true;
-  afterAnswer(activeMode==="type" && isCorrect);
+  afterAnswer((activeMode==="type" || autoAdvanceOn) && isCorrect);
 }
 
 function revealLine(){
@@ -1573,6 +1575,9 @@ function enterMode(mode){
   showFlag = true;
   const ftgl = document.getElementById("typeFlagToggle");
   if(ftgl){ ftgl.textContent = "🏳️ Drapeau visible"; ftgl.classList.add("active"); }
+  autoAdvanceOn = false;
+  const aat = document.getElementById("autoAdvanceToggle");
+  if(aat) aat.classList.remove("active");
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
@@ -1592,6 +1597,7 @@ function enterMode(mode){
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
+  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1623,6 +1629,7 @@ tableToggle.onclick=()=>{
   document.getElementById("play").classList.toggle("hidden", typeTableMode);
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode); // mode tableau = pas de toggle drapeau (géré par typeTableFlagPosToggle)
+  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", typeTableMode);
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
 };
@@ -1632,6 +1639,11 @@ typeFlagToggle.onclick=()=>{
   typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
   typeFlagToggle.classList.toggle("active", showFlag);
   if(activeMode!=="study" && !typeTableMode) nextQuestion();
+};
+const autoAdvanceToggle=document.getElementById("autoAdvanceToggle");
+autoAdvanceToggle.onclick=()=>{
+  autoAdvanceOn=!autoAdvanceOn;
+  autoAdvanceToggle.classList.toggle("active", autoAdvanceOn);
 };
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{

@@ -211,7 +211,8 @@
   .menu { position: fixed; top: 14px; left: 16px; z-index: 510; }
   .menu-btn { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem; padding: 0 20px; height: 42px; border: none; border-radius: 30px; cursor: pointer; background: rgba(255,255,255,0.25); backdrop-filter: blur(6px); color: #fff; letter-spacing: 0.03em; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transition: transform 0.2s ease, background 0.2s ease; display: flex; align-items: center; gap: 8px; }
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
-  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh; overflow-y: auto; overscroll-behavior: contain; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  .menu-panel::-webkit-scrollbar { display: none; }
   body.map-active .menu-btn { background: rgba(43,35,80,0.88); color: #fff; }
   .menu.open .menu-panel { display: flex; }
   .menu-panel a { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 11px; text-decoration: none; color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem; transition: background 0.15s ease; }

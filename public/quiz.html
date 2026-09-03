@@ -641,11 +641,12 @@
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
   .menu-panel {
     position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh;
-    overflow-y: auto; overscroll-behavior: contain; padding: 8px;
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 8px;
     background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
     border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.3);
     display: none; flex-direction: column; gap: 3px;
   }
+  .menu-panel::-webkit-scrollbar { display: none; }
   .menu.open .menu-panel { display: flex; }
   .menu-panel a {
     display: flex; align-items: center; gap: 11px;

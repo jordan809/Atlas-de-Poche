@@ -829,8 +829,9 @@
     <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
       <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
+      <button class="toggle hidden" id="typeTableSameBtn">🔁 Même série</button>
       <button class="toggle" id="typeTableRestartBtn">🔄 Recommencer</button>
-      <button class="toggle hidden" id="typeTableLastErrBtn">🔁 Dernières erreurs</button>
+      <button class="toggle hidden" id="typeTableLastErrBtn">⚠️ Dernières erreurs</button>
       <button class="toggle hidden" id="typeTableSavedErrBtn">📚 Mes erreurs</button>
     </div>
     <div class="flags-grid" id="typeTableGrid"></div>
@@ -1185,6 +1186,8 @@ let savedTableErrors = [];          // erreurs accumulées toutes sessions (stoc
 try { const se = localStorage.getItem("atlasTableErrors"); if(se) savedTableErrors = JSON.parse(se).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
 let savedTypeErrors = [];           // erreurs accumulées mode clavier (stockées en localStorage)
 try { const ste = localStorage.getItem("atlasTypeErrors"); if(ste) savedTypeErrors = JSON.parse(ste).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
+let lastRoundPool = null;           // série jouée au dernier tour (clavier)
+let lastTablePool = null;           // série jouée au dernier tableau
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1522,9 +1525,12 @@ function showTypeRecap(){
     <div class="lbl">${T().typeRecapTitle(errCount)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
+    <button class="next-btn show" id="typeRecapSameBtn">🔁 Refaire la même série</button>
     <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>
     ${savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
+  const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
+  document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);
   document.getElementById("typeRecapReplayBtn").onclick = startPlay;
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
   if(savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
@@ -1567,6 +1573,7 @@ function endTimed(){
 // ---------- Mode orchestration ----------
 function startPlay(overridePool){
   reviewPool = overridePool || null;
+  lastRoundPool = pool().slice(); // capture la série avant resetQuiz
   stopTimer();
   resetQuiz();
   answered = false;
@@ -1870,7 +1877,8 @@ function renderTypeTable(force=false, overridePool=null){
   const chronoBtn = document.getElementById("typeTableChronoBtn");
   if(chronoBtn){ chronoBtn.textContent = T().chrono; chronoBtn.disabled = false; }
 
-  const list = shuffle(overridePool || pool());
+  lastTablePool = (overridePool || pool()).slice();
+  const list = shuffle(lastTablePool.slice());
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
@@ -1940,6 +1948,7 @@ function renderTypeTable(force=false, overridePool=null){
       }
     });
     checkBtn.classList.add("hidden");
+    document.getElementById("typeTableSameBtn").classList.remove("hidden");
     // Sauvegarder les erreurs
     if(wrongItems.length>0){
       lastTableErrors = wrongItems.slice();
@@ -1988,6 +1997,9 @@ function renderTypeTable(force=false, overridePool=null){
   };
 }
 
+document.getElementById("typeTableSameBtn").onclick = () => {
+  if(lastTablePool && lastTablePool.length>0){ renderTypeTable(true, lastTablePool); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+};
 document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
 document.getElementById("typeTableLastErrBtn").onclick = () => {
   if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }

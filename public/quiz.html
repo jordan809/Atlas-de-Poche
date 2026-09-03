@@ -1531,7 +1531,7 @@ function showTypeRecap(){
   eg.classList.remove("hidden");
   const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
   document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);
-  document.getElementById("typeRecapReplayBtn").onclick = startPlay;
+  document.getElementById("typeRecapReplayBtn").onclick = () => startPlay();
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
   if(savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
 }
@@ -1566,7 +1566,7 @@ function endTimed(){
     ${isRecord?`<div class="record">${T().newRecord}</div>`:''}
     <button class="next-btn show" id="replayBtn">${T().replay}</button>`;
   eg.classList.remove("hidden");
-  document.getElementById("replayBtn").onclick=startPlay;
+  document.getElementById("replayBtn").onclick=()=>startPlay();
   document.getElementById("timedReady").classList.add("hidden");
 }
 

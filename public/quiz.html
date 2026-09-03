@@ -751,7 +751,7 @@
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
-    <button class="toggle hidden" id="typeFlagToggle">🏳️ Voir le drapeau</button>
+    <button class="toggle hidden active" id="typeFlagToggle">🏳️ Drapeau visible</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -1168,7 +1168,7 @@ let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
-let showTypeFlagHint = false;       // afficher le drapeau comme aide en mode clavier (question par question)
+let showFlag = true;               // afficher le drapeau (tous modes — toggle pour le cacher)
 let typeTableInProgress = false;
 let typeTablePool = null;           // clé "continent|direction" du tableau affiché
 let lastTableErrors = [];           // erreurs de la dernière session tableau
@@ -1188,11 +1188,8 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
 function pool(){
   if(reviewPool) return reviewPool;
-  if(activeMode==="type"){
-    if(activeFilters.has("Tous") || activeFilters.size===0) return DATA;
-    return DATA.filter(d=>activeFilters.has(d.k));
-  }
-  return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  if(activeFilters.has("Tous") || activeFilters.size===0) return DATA;
+  return DATA.filter(d=>activeFilters.has(d.k));
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -1261,29 +1258,21 @@ CONTINENTS.forEach(name=>{
   b.textContent=name;
   b.onclick=()=>{
     if(filtersEl.classList.contains("locked")) return;
-    if(activeMode==="type"){
-      // Multi-sélection pour le mode clavier/tableau
-      if(name==="Tous"){
-        activeFilters=new Set(["Tous"]);
-        document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
-        b.classList.add("active");
-      } else {
-        activeFilters.delete("Tous");
-        if(activeFilters.has(name)) activeFilters.delete(name); else activeFilters.add(name);
-        if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
-        document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
-      }
-      activeFilter=[...activeFilters][0]||"Tous";
-      if(typeTableMode) renderTypeTable(true); else startPlay();
-    } else {
-      activeFilter=name;
-      activeFilters=new Set([name]);
+    if(name==="Tous"){
+      activeFilters=new Set(["Tous"]);
       document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
       b.classList.add("active");
-      if(activeMode==="study") renderStudy();
-      else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
-      else startPlay();
+    } else {
+      activeFilters.delete("Tous");
+      if(activeFilters.has(name)) activeFilters.delete(name); else activeFilters.add(name);
+      if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
+      document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
     }
+    activeFilter=[...activeFilters][0]||"Tous";
+    if(activeMode==="study") renderStudy();
+    else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
+    else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
+    else startPlay();
   };
   filtersEl.appendChild(b);
 });
@@ -1344,15 +1333,15 @@ function nextQuestion(){
 
   if(activeMode==="flags"){
     promptEl.textContent=T().promptFlag;
-    flagEl.innerHTML=flagImg(q.f, 80);
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">🌍</span>`;
     mainEl.textContent="🌍";
   } else if(direction==="cap"){
     promptEl.textContent=T().promptCap;
-    flagEl.innerHTML=flagImg(q.f, 80);
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.c;
   } else {
     promptEl.textContent=T().promptCountry;
-    flagEl.innerHTML=(activeMode==="type" && showTypeFlagHint) ? flagImg(q.f,80) : `<span class="pin">📍</span>`;
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
   // restart flag pop animation
@@ -1597,7 +1586,7 @@ function enterMode(mode){
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
-  document.getElementById("typeFlagToggle").classList.toggle("hidden", !isType || typeTableMode);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || showTypeTable);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1628,15 +1617,16 @@ tableToggle.onclick=()=>{
   tableToggle.classList.toggle("active", typeTableMode);
   document.getElementById("play").classList.toggle("hidden", typeTableMode);
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
-  document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode); // mode tableau = pas de toggle drapeau (géré par typeTableFlagPosToggle)
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
 };
 const typeFlagToggle=document.getElementById("typeFlagToggle");
 typeFlagToggle.onclick=()=>{
-  showTypeFlagHint=!showTypeFlagHint;
-  typeFlagToggle.classList.toggle("active", showTypeFlagHint);
-  if(activeMode==="type" && !typeTableMode) startPlay();
+  showFlag=!showFlag;
+  typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
+  typeFlagToggle.classList.toggle("active", showFlag);
+  if(activeMode!=="study" && !typeTableMode) nextQuestion();
 };
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
@@ -1650,6 +1640,13 @@ document.getElementById("timedStartBtn").onclick=launchTimed;
 document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }
+});
+// Touche Entrée globale → question suivante (quiz, timed, flags)
+document.addEventListener("keydown", e=>{
+  if(e.key!=="Enter") return;
+  if(e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA") return;
+  const nb = document.getElementById("nextBtn");
+  if(nb && nb.classList.contains("show")) nextQuestion();
 });
 // Mode Clavier : valide automatiquement dès que la réponse tapée est correcte, sans attendre Entrée/Valider.
 document.getElementById("typeInput").addEventListener("input",e=>{

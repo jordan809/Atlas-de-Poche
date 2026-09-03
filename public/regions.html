@@ -245,7 +245,7 @@
   .mapfeat.target { fill: var(--good) !important; stroke: #0a8f4c !important; stroke-width: 2.4 !important; }
   #mapTip { position: fixed; z-index: 506; pointer-events: none; transform: translate(-50%,-135%); font-weight: 700; color: #fff; background: rgba(0,0,0,.72); padding: 4px 11px; border-radius: 8px; font-size: .88rem; white-space: nowrap; display: none; }
 
-  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: nowrap; gap: 6px; padding: 10px 10px 10px 70px; overflow-x: auto; scrollbar-width: none; }
+  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: nowrap; gap: 6px; padding: 10px 10px 10px 108px; overflow-x: auto; scrollbar-width: none; }
   .map-topbar::-webkit-scrollbar { display: none; }
   .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 8px 13px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; white-space: nowrap; flex-shrink: 0; }
   .map-pill:hover { filter: brightness(0.97); }
@@ -434,7 +434,7 @@
     <button class="map-pill" id="btnExitMap">✕ Quitter la carte</button>
   </div>
 
-  <div class="map-hint" id="mapHint">Clique sur un département pour le découvrir 🐓 — glisse pour te déplacer, molette pour zoomer</div>
+  <div class="map-hint hidden" id="mapHint"></div>
 
   <div id="mapInfo">
     <span id="iBadge"></span>
@@ -1205,6 +1205,7 @@ let deptGeo = null, regionGeo = null;
 let svgSel, gSel, mapProjection, mapPath, mapZoom, mapW, mapH, mapFeatSel;
 let deptByNum = {}, deptByName = {}, regionByName = {};
 let mapGameItems = [];
+let mapGameBag = []; // sac mélangé pour un vrai tirage sans répétition
 
 function loadScript(src){
   return new Promise((resolve, reject) => {
@@ -1356,10 +1357,8 @@ function switchLevel(level){
   if(level!==mapLevel) zoomedRegion=null;
   mapLevel = level;
   document.getElementById("btnLevel").textContent = level==="dept" ? "🗾 Voir les régions" : "📍 Voir les départements";
-  document.getElementById("mapHint").textContent = level==="dept"
-    ? "Clique sur un département pour le découvrir 🐓 — glisse pour te déplacer, molette pour zoomer"
-    : "Clique sur une région pour la découvrir 🐓 — glisse pour te déplacer, molette pour zoomer";
-  mapGameItems = [];
+  document.getElementById("mapHint").classList.add("hidden");
+  mapGameItems = []; mapGameBag = [];
   currentGeo().features.forEach(f=>{
     const d = lookupFeat(f.properties); if(!d) return;
     mapGameItems.push({f,d});
@@ -1388,6 +1387,18 @@ function showMapInfo(d, fallbackName){
 }
 document.getElementById("iClose").onclick = ()=> document.getElementById("mapInfo").classList.remove("show");
 
+function drawMapItem(){
+  if(!mapGameBag.length){
+    mapGameBag = mapGameItems.slice();
+    for(let i=mapGameBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [mapGameBag[i],mapGameBag[j]]=[mapGameBag[j],mapGameBag[i]]; }
+    // éviter que le 1er élément du nouveau sac soit le même que le dernier joué
+    if(mapGameBag.length>1 && mapCurrent && mapGameBag[mapGameBag.length-1].d.c===mapCurrent.c){
+      [mapGameBag[mapGameBag.length-1],mapGameBag[0]]=[mapGameBag[0],mapGameBag[mapGameBag.length-1]];
+    }
+  }
+  return mapGameBag.pop();
+}
+
 function startMapRound(){
   if(!mapGameItems.length) return;
   mapTarget=null; mapCurrent=null; refreshMapColors();
@@ -1397,7 +1408,7 @@ function startMapRound(){
   document.getElementById("gpQ").textContent = "🔎 Choix en cours…";
   resetMapView();
   setTimeout(()=>{
-    const item = mapGameItems[Math.floor(Math.random()*mapGameItems.length)];
+    const item = drawMapItem();
     mapTarget = item.f; mapCurrent = item.d;
     refreshMapColors();
     zoomToMapFeature(item.f, 3.2);

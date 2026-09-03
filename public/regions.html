@@ -245,8 +245,9 @@
   .mapfeat.target { fill: var(--good) !important; stroke: #0a8f4c !important; stroke-width: 2.4 !important; }
   #mapTip { position: fixed; z-index: 506; pointer-events: none; transform: translate(-50%,-135%); font-weight: 700; color: #fff; background: rgba(0,0,0,.72); padding: 4px 11px; border-radius: 8px; font-size: .88rem; white-space: nowrap; display: none; }
 
-  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 14px 12px 70px; }
-  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .92rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 9px 15px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 7px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; }
+  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: nowrap; gap: 6px; padding: 10px 10px 10px 70px; overflow-x: auto; scrollbar-width: none; }
+  .map-topbar::-webkit-scrollbar { display: none; }
+  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 8px 13px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; white-space: nowrap; flex-shrink: 0; }
   .map-pill:hover { filter: brightness(0.97); }
   .map-pill.active { background: var(--bg1); color: #fff; }
   html.dark .map-pill { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.2); }
@@ -1198,6 +1199,7 @@ let mapInited = false;
 let mapLevel = "dept";
 let mapUiMode = "discover";
 let mapTarget = null, mapCurrent = null;
+let zoomedRegion = null; // quand on zoome sur une région depuis la vue régions
 let gScore = 0, gAsked = 0;
 let deptGeo = null, regionGeo = null;
 let svgSel, gSel, mapProjection, mapPath, mapZoom, mapW, mapH, mapFeatSel;
@@ -1280,14 +1282,56 @@ function drawMap(){
     .on("mouseleave", ()=> tip.style.display="none")
     .on("click", (ev,f)=>{
       if(mapUiMode!=="discover") return;
-      showMapInfo(lookupFeat(f.properties), f.properties.nom);
-      zoomToMapFeature(f, 3.2);
+      if(mapLevel==="region"){
+        showMapInfo(lookupFeat(f.properties), f.properties.nom);
+        zoomToRegionDepts(f.properties.nom);
+      } else {
+        showMapInfo(lookupFeat(f.properties), f.properties.nom);
+        zoomToMapFeature(f, 3.2);
+      }
     });
   refreshMapColors();
 }
 
 function refreshMapColors(){
-  if(mapFeatSel) mapFeatSel.classed("target", f => mapUiMode==="game" && f===mapTarget);
+  if(!mapFeatSel) return;
+  mapFeatSel.classed("target", f => mapUiMode==="game" && f===mapTarget);
+  if(mapLevel==="dept"){
+    mapFeatSel.style("fill", f => {
+      if(mapUiMode==="game" && f===mapTarget) return null;
+      const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+      if(!d) return null;
+      const col = COLORS[d.k] || null;
+      if(zoomedRegion) return d.k===zoomedRegion ? col : null;
+      return col;
+    })
+    .style("opacity", f => {
+      if(!zoomedRegion) return null;
+      const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+      return (!d || d.k!==zoomedRegion) ? "0.25" : "1";
+    });
+  } else {
+    mapFeatSel.style("fill", null).style("opacity", null);
+  }
+}
+
+function zoomToRegionDepts(regionName){
+  zoomedRegion = regionName;
+  switchLevel("dept");
+  drawMap();
+  const feats = deptGeo.features.filter(f=>{
+    const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+    return d && d.k===regionName;
+  });
+  if(!feats.length){ resetMapView(); return; }
+  let x0=Infinity, y0=Infinity, x1=-Infinity, y1=-Infinity;
+  feats.forEach(f=>{ const b=mapPath.bounds(f); x0=Math.min(x0,b[0][0]); y0=Math.min(y0,b[0][1]); x1=Math.max(x1,b[1][0]); y1=Math.max(y1,b[1][1]); });
+  const dx=Math.max(x1-x0,1), dy=Math.max(y1-y0,1), cx=(x0+x1)/2, cy=(y0+y1)/2;
+  let scale=Math.min(mapW/(dx*2.2), mapH/(dy*2.2));
+  scale=Math.max(1,Math.min(scale,16));
+  svgSel.transition().duration(700).call(mapZoom.transform, d3.zoomIdentity.translate(mapW/2,mapH/2).scale(scale).translate(-cx,-cy));
+  document.getElementById("mapHint").textContent=`${regionName} — ${feats.length} département${feats.length>1?"s":""} 🐓 — clique pour découvrir`;
+  document.getElementById("mapHint").classList.remove("hidden");
 }
 
 function zoomToMapFeature(feature, padding){
@@ -1309,6 +1353,7 @@ function mapResize(){
 }
 
 function switchLevel(level){
+  if(level!==mapLevel) zoomedRegion=null;
   mapLevel = level;
   document.getElementById("btnLevel").textContent = level==="dept" ? "🗾 Voir les régions" : "📍 Voir les départements";
   document.getElementById("mapHint").textContent = level==="dept"
@@ -1399,6 +1444,7 @@ function setMapUiMode(m){
   document.getElementById("btnDiscover").classList.toggle("active", m==="discover");
   document.getElementById("btnGame").classList.toggle("active", m==="game");
   document.body.classList.toggle("map-discover", m==="discover");
+  zoomedRegion=null;
   mapTarget=null; mapCurrent=null; refreshMapColors();
   document.getElementById("mapInfo").classList.remove("show");
   document.getElementById("mapTip").style.display="none";

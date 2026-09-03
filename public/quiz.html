@@ -751,6 +751,7 @@
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
+    <button class="toggle hidden" id="typeFlagToggle">🏳️ Voir le drapeau</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -821,6 +822,8 @@
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
       <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
       <button class="toggle" id="typeTableRestartBtn">🔄 Recommencer</button>
+      <button class="toggle hidden" id="typeTableLastErrBtn">🔁 Dernières erreurs</button>
+      <button class="toggle hidden" id="typeTableSavedErrBtn">📚 Mes erreurs</button>
     </div>
     <div class="flags-grid" id="typeTableGrid"></div>
     <button class="flags-check-btn hidden" id="typeTableCheckBtn">Vérifier mes réponses ✅</button>
@@ -1153,6 +1156,7 @@ const TIMED_SECONDS = 60;
 
 // ---------- State ----------
 let activeFilter = "Tous";
+let activeFilters = new Set(["Tous"]); // multi-sélection continents en mode clavier
 let activeMode = "study";          // study | quiz | type | timed
 let direction = "cap";             // "cap" = deviner la capitale ; "country" = deviner le pays
 let hard = false;                  // difficulté
@@ -1164,8 +1168,12 @@ let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
+let showTypeFlagHint = false;       // afficher le drapeau comme aide en mode clavier (question par question)
 let typeTableInProgress = false;
 let typeTablePool = null;           // clé "continent|direction" du tableau affiché
+let lastTableErrors = [];           // erreurs de la dernière session tableau
+let savedTableErrors = [];          // erreurs accumulées toutes sessions (stockées en localStorage)
+try { const se = localStorage.getItem("atlasTableErrors"); if(se) savedTableErrors = JSON.parse(se).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1180,6 +1188,10 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
 function pool(){
   if(reviewPool) return reviewPool;
+  if(activeMode==="type"){
+    if(activeFilters.has("Tous") || activeFilters.size===0) return DATA;
+    return DATA.filter(d=>activeFilters.has(d.k));
+  }
   return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -1248,14 +1260,30 @@ CONTINENTS.forEach(name=>{
   b.dataset.key=name;
   b.textContent=name;
   b.onclick=()=>{
-    if(filtersEl.classList.contains("locked")) return; // continent verrouillé (1v1 en cours)
-    activeFilter=name;
-    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
-    b.classList.add("active");
-    if(activeMode==="study") renderStudy();
-    else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
-    else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
-    else startPlay();
+    if(filtersEl.classList.contains("locked")) return;
+    if(activeMode==="type"){
+      // Multi-sélection pour le mode clavier/tableau
+      if(name==="Tous"){
+        activeFilters=new Set(["Tous"]);
+        document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+        b.classList.add("active");
+      } else {
+        activeFilters.delete("Tous");
+        if(activeFilters.has(name)) activeFilters.delete(name); else activeFilters.add(name);
+        if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
+        document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
+      }
+      activeFilter=[...activeFilters][0]||"Tous";
+      if(typeTableMode) renderTypeTable(true); else startPlay();
+    } else {
+      activeFilter=name;
+      activeFilters=new Set([name]);
+      document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      b.classList.add("active");
+      if(activeMode==="study") renderStudy();
+      else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
+      else startPlay();
+    }
   };
   filtersEl.appendChild(b);
 });
@@ -1324,7 +1352,7 @@ function nextQuestion(){
     mainEl.textContent=q.c;
   } else {
     promptEl.textContent=T().promptCountry;
-    flagEl.innerHTML=`<span class="pin">📍</span>`;
+    flagEl.innerHTML=(activeMode==="type" && showTypeFlagHint) ? flagImg(q.f,80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
   // restart flag pop animation
@@ -1550,6 +1578,7 @@ function enterMode(mode){
   stopTimer();
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
   activeFilter = "Tous";
+  activeFilters = new Set(["Tous"]);
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
@@ -1568,6 +1597,7 @@ function enterMode(mode){
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", !isType || typeTableMode);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1598,8 +1628,15 @@ tableToggle.onclick=()=>{
   tableToggle.classList.toggle("active", typeTableMode);
   document.getElementById("play").classList.toggle("hidden", typeTableMode);
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode);
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
+};
+const typeFlagToggle=document.getElementById("typeFlagToggle");
+typeFlagToggle.onclick=()=>{
+  showTypeFlagHint=!showTypeFlagHint;
+  typeFlagToggle.classList.toggle("active", showTypeFlagHint);
+  if(activeMode==="type" && !typeTableMode) startPlay();
 };
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
@@ -1855,6 +1892,15 @@ function renderTypeTable(force=false, overridePool=null){
       }
     });
     checkBtn.classList.add("hidden");
+    // Sauvegarder les erreurs
+    if(wrongItems.length>0){
+      lastTableErrors = wrongItems.slice();
+      const newSaved = wrongItems.filter(e => !savedTableErrors.some(s=>s.c===e.c));
+      savedTableErrors = [...savedTableErrors, ...newSaved];
+      try { localStorage.setItem("atlasTableErrors", JSON.stringify(savedTableErrors)); } catch(e){}
+      document.getElementById("typeTableLastErrBtn").classList.remove("hidden");
+    }
+    if(savedTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
     const pct = Math.round((correct/total)*100);
     const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
     const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
@@ -1895,6 +1941,14 @@ function renderTypeTable(force=false, overridePool=null){
 }
 
 document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
+document.getElementById("typeTableLastErrBtn").onclick = () => {
+  if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+};
+document.getElementById("typeTableSavedErrBtn").onclick = () => {
+  if(savedTableErrors.length>0){ renderTypeTable(true, savedTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+};
+// Afficher les boutons d'erreur si des erreurs sont déjà sauvegardées
+if(savedTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
 document.getElementById("typeTableChronoBtn").onclick = () => {
   document.getElementById("typeTableChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());

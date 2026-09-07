@@ -829,6 +829,7 @@
     <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
       <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
+      <button class="toggle" id="typeTableLockPosBtn">📌 Position fixe</button>
       <button class="toggle" id="typeTableRestartBtn">🎲 Nouvelle série</button>
       <button class="toggle hidden" id="typeTableSameBtn">🔁 Même série</button>
       <button class="toggle hidden" id="typeTableLastErrBtn">⚠️ Refaire mes erreurs</button>
@@ -1177,6 +1178,7 @@ let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
+let lockFlagPos = false;            // garder les drapeaux à la même position (pas de mélange)
 let showFlag = true;               // afficher le drapeau (tous modes — toggle pour le cacher)
 let autoAdvanceOn = true;          // avancer automatiquement si la réponse est correcte (quiz/clavier)
 let typeTableInProgress = false;
@@ -1886,7 +1888,7 @@ function renderTypeTable(force=false, overridePool=null){
   document.getElementById("typeTableLastErrBtn").classList.add("hidden");
 
   lastTablePool = (overridePool || pool()).slice();
-  const list = shuffle(lastTablePool.slice());
+  const list = lockFlagPos ? lastTablePool.slice() : shuffle(lastTablePool.slice());
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
@@ -2025,6 +2027,13 @@ document.getElementById("typeTableFlagPosToggle").onclick = () => {
   showTableFlag = !showTableFlag;
   document.getElementById("typeTableFlagPosToggle").textContent = showTableFlag ? T().flagShow : T().flagHide;
   renderTypeTable(true);
+};
+document.getElementById("typeTableLockPosBtn").onclick = () => {
+  lockFlagPos = !lockFlagPos;
+  const btn = document.getElementById("typeTableLockPosBtn");
+  btn.textContent = lockFlagPos ? "📌 Position fixe ✓" : "📌 Position fixe";
+  btn.style.opacity = lockFlagPos ? "1" : "";
+  btn.style.fontWeight = lockFlagPos ? "700" : "";
 };
 
 function enterFlagsSubMode(sub){

@@ -2271,7 +2271,9 @@ function applyLang(){
   const tbl = document.getElementById("tableToggle"); if(tbl) tbl.textContent = t.tableMode;
   const flagPos = document.getElementById("typeTableFlagPosToggle");
   if(flagPos) flagPos.textContent = showTableFlag ? t.flagShow : t.flagHide;
-  const ttRestart = document.getElementById("typeTableRestartBtn"); if(ttRestart) ttRestart.textContent = t.restart;
+  const ttRestart = document.getElementById("typeTableRestartBtn"); if(ttRestart) ttRestart.textContent = "🎲 Nouvelle série";
+  const ttSame = document.getElementById("typeTableSameBtn"); if(ttSame) ttSame.textContent = "🔁 Même série";
+  const ttLastErr = document.getElementById("typeTableLastErrBtn"); if(ttLastErr) ttLastErr.textContent = "⚠️ Refaire mes erreurs";
   const ttChrono = document.getElementById("typeTableChronoBtn"); if(ttChrono && !ttChrono.disabled) ttChrono.textContent = t.chrono;
   const ttCheck = document.getElementById("typeTableCheckBtn"); if(ttCheck && !ttCheck.classList.contains("hidden")) ttCheck.textContent = t.verify;
   // Flags submodes

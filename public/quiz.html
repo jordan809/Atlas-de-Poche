@@ -1887,7 +1887,8 @@ function renderTypeTable(force=false, overridePool=null){
   document.getElementById("typeTableSameBtn").classList.add("hidden");
   document.getElementById("typeTableLastErrBtn").classList.add("hidden");
 
-  lastTablePool = (overridePool || pool()).slice();
+  const _basePool = overridePool || (lockFlagPos && lastTablePool && lastTablePool.length > 0 ? lastTablePool : pool());
+  lastTablePool = _basePool.slice();
   const list = lockFlagPos ? lastTablePool.slice() : shuffle(lastTablePool.slice());
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");

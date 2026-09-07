@@ -1915,7 +1915,7 @@ function renderTypeTable(force=false, overridePool=null){
     row.innerHTML = (showTableFlag ? flagHtml : "") + countryHtml + capitalHtml;
     const input = row.querySelector(".tbl-input");
     input.addEventListener("focus", () => {
-      if(!_firstFocusDone){ _firstFocusDone=true; document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}); }
+      if(!_firstFocusDone){ _firstFocusDone=true; input.scrollIntoView({behavior:"smooth",block:"center"}); }
     });
     input.addEventListener("keydown", (e) => {
       const inputs = [...document.querySelectorAll("#typeTableGrid .tbl-input:not(:disabled)")];

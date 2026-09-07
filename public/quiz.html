@@ -1966,7 +1966,7 @@ function renderTypeTable(force=false, overridePool=null){
       try { localStorage.setItem("atlasTableErrors", JSON.stringify(savedTableErrors)); } catch(e){}
       document.getElementById("typeTableLastErrBtn").classList.remove("hidden");
     }
-    if(savedTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
+    if(lastTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
     const pct = Math.round((correct/total)*100);
     const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
     const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
@@ -2012,8 +2012,6 @@ document.getElementById("typeTableLastErrBtn").onclick = () => {
 document.getElementById("typeTableSavedErrBtn").onclick = () => {
   if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
-// Afficher les boutons d'erreur si des erreurs sont déjà sauvegardées
-if(savedTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
 document.getElementById("typeTableChronoBtn").onclick = () => {
   document.getElementById("typeTableChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());

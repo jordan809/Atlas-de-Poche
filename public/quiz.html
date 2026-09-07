@@ -1890,8 +1890,8 @@ function renderTypeTable(force=false, overridePool=null){
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
   checkBtn.textContent = T().verify;
-  setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80);
 
+  let _firstFocusDone = false;
   list.forEach(d => {
     const answer = direction==="cap" ? d.cap : d.c;
     const row = document.createElement("div");
@@ -1908,6 +1908,9 @@ function renderTypeTable(force=false, overridePool=null){
     // Le drapeau (si affiché) se place toujours au-dessus de la case pays, qu'elle soit donnée ou à deviner.
     row.innerHTML = (showTableFlag ? flagHtml : "") + countryHtml + capitalHtml;
     const input = row.querySelector(".tbl-input");
+    input.addEventListener("focus", () => {
+      if(!_firstFocusDone){ _firstFocusDone=true; document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}); }
+    });
     input.addEventListener("keydown", (e) => {
       const inputs = [...document.querySelectorAll("#typeTableGrid .tbl-input:not(:disabled)")];
       const idx = inputs.indexOf(e.target);

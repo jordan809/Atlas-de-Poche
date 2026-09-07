@@ -1978,6 +1978,7 @@ function renderTypeTable(force=false, overridePool=null){
     else { soundWrong(); }
 
     const _capturedPool = lastTablePool ? lastTablePool.slice() : null;
+    const _savedErrSnapshot = savedTableErrors.slice();
     const overlay = document.createElement("div");
     overlay.className = "score-overlay";
     overlay.innerHTML = `
@@ -1987,7 +1988,8 @@ function renderTypeTable(force=false, overridePool=null){
         <div class="score-pct">${pct}%</div>
         <div class="score-lbl">${T().flagsResult}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
-        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">${T().reviewErrors(wrongItems.length)}</button>` : ""}
+        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">⚠️ Dernières erreurs (${wrongItems.length})</button>` : ""}
+        ${_savedErrSnapshot.length>0 ? `<button class="score-restart" id="tblSavedErrBtn">📚 Mes erreurs (${_savedErrSnapshot.length})</button>` : ""}
         <button class="score-restart" id="tblSameBtn">🔁 Refaire la même série</button>
         <button class="score-restart" id="tblRestartBtn">${T().restart}</button>
       </div>`;
@@ -1997,6 +1999,9 @@ function renderTypeTable(force=false, overridePool=null){
     overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); if(_capturedPool) renderTypeTable(true, _capturedPool); else renderTypeTable(true); _scrollTable(); };
     if(wrongItems.length>0){
       overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, wrongItems); _scrollTable(); };
+    }
+    if(_savedErrSnapshot.length>0){
+      overlay.querySelector("#tblSavedErrBtn").onclick = () => { overlay.remove(); renderTypeTable(true, _savedErrSnapshot); _scrollTable(); };
     }
     overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };

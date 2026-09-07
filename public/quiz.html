@@ -1980,6 +1980,9 @@ function renderTypeTable(force=false, overridePool=null){
     else { soundWrong(); }
 
     const _capturedPool = lastTablePool ? lastTablePool.slice() : null;
+    const _continentLabel = (activeFilters.has("Tous") || activeFilters.size===0)
+      ? "🌍 Tous les pays"
+      : [...activeFilters].join(" · ");
     const overlay = document.createElement("div");
     overlay.className = "score-overlay";
     overlay.innerHTML = `
@@ -1988,6 +1991,7 @@ function renderTypeTable(force=false, overridePool=null){
         <div class="score-big">${correct} / ${total}</div>
         <div class="score-pct">${pct}%</div>
         <div class="score-lbl">${T().flagsResult}</div>
+        <div class="score-lbl" style="margin-top:4px; font-size:0.85rem; opacity:0.75;">${_continentLabel}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
         ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">⚠️ Refaire mes erreurs (${wrongItems.length})</button>` : ""}
         <button class="score-restart" id="tblSameBtn">🔁 Même série</button>

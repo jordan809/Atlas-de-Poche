@@ -1287,7 +1287,7 @@ CONTINENTS.forEach(name=>{
     activeFilter=[...activeFilters][0]||"Tous";
     if(activeMode==="study") renderStudy();
     else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
-    else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
+    else if(activeMode==="type" && typeTableMode){ lastTablePool = null; renderTypeTable(true); }
     else startPlay();
   };
   filtersEl.appendChild(b);

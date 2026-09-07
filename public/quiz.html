@@ -2010,7 +2010,7 @@ document.getElementById("typeTableLastErrBtn").onclick = () => {
   if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
 document.getElementById("typeTableSavedErrBtn").onclick = () => {
-  if(savedTableErrors.length>0){ renderTypeTable(true, savedTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+  if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
 // Afficher les boutons d'erreur si des erreurs sont déjà sauvegardées
 if(savedTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");

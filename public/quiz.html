@@ -1879,7 +1879,6 @@ function renderTypeTable(force=false, overridePool=null){
   // Réinitialiser les boutons résultats
   document.getElementById("typeTableSameBtn").classList.add("hidden");
   document.getElementById("typeTableLastErrBtn").classList.add("hidden");
-  document.getElementById("typeTableSavedErrBtn").classList.add("hidden");
 
   lastTablePool = (overridePool || pool()).slice();
   const list = shuffle(lastTablePool.slice());
@@ -1965,7 +1964,6 @@ function renderTypeTable(force=false, overridePool=null){
       try { localStorage.setItem("atlasTableErrors", JSON.stringify(savedTableErrors)); } catch(e){}
       document.getElementById("typeTableLastErrBtn").classList.remove("hidden");
     }
-    if(lastTableErrors.length>0) document.getElementById("typeTableSavedErrBtn").classList.remove("hidden");
     const pct = Math.round((correct/total)*100);
     const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
     const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
@@ -2006,9 +2004,6 @@ document.getElementById("typeTableSameBtn").onclick = () => {
 };
 document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
 document.getElementById("typeTableLastErrBtn").onclick = () => {
-  if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
-};
-document.getElementById("typeTableSavedErrBtn").onclick = () => {
   if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
 document.getElementById("typeTableChronoBtn").onclick = () => {

@@ -2007,6 +2007,8 @@ document.getElementById("typeTableLastErrBtn").onclick = () => {
   if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
 document.getElementById("typeTableChronoBtn").onclick = () => {
+  const _pool = lastTablePool ? lastTablePool.slice() : null;
+  renderTypeTable(true, _pool);
   document.getElementById("typeTableChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());
 };

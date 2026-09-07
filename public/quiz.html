@@ -829,10 +829,9 @@
     <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
       <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
-      <button class="toggle hidden" id="typeTableSameBtn">🔁 Même série</button>
-      <button class="toggle" id="typeTableRestartBtn">🔄 Recommencer</button>
-      <button class="toggle hidden" id="typeTableLastErrBtn">⚠️ Dernières erreurs</button>
-      <button class="toggle hidden" id="typeTableSavedErrBtn">📚 Mes erreurs</button>
+      <button class="toggle hidden" id="typeTableSameBtn">🔄 Même série</button>
+      <button class="toggle" id="typeTableRestartBtn">🆕 Nouvelle série</button>
+      <button class="toggle hidden" id="typeTableLastErrBtn">🔁 Refaire mes erreurs</button>
     </div>
     <div class="flags-grid" id="typeTableGrid"></div>
     <button class="flags-check-btn hidden" id="typeTableCheckBtn">Vérifier mes réponses ✅</button>
@@ -1987,9 +1986,9 @@ function renderTypeTable(force=false, overridePool=null){
         <div class="score-pct">${pct}%</div>
         <div class="score-lbl">${T().flagsResult}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
-        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">📚 Mes erreurs (${wrongItems.length})</button>` : ""}
-        <button class="score-restart" id="tblSameBtn">⚠️ Dernières erreurs</button>
-        <button class="score-restart" id="tblRestartBtn">${T().restart}</button>
+        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">🔁 Refaire mes erreurs (${wrongItems.length})</button>` : ""}
+        <button class="score-restart" id="tblSameBtn">🔄 Même série</button>
+        <button class="score-restart" id="tblRestartBtn">🆕 Nouvelle série</button>
       </div>`;
     document.body.appendChild(overlay);
     const _scrollTable = () => setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);

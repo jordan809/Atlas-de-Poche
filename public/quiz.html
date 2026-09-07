@@ -1995,7 +1995,7 @@ function renderTypeTable(force=false, overridePool=null){
     if(wrongItems.length>0){
       overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, wrongItems); _scrollTable(); };
     }
-    overlay.onclick = (e) => { if(e.target === overlay) { overlay.remove(); renderTypeTable(true); _scrollTable(); } };
+    overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };
 }
 

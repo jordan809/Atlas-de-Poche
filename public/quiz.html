@@ -1685,6 +1685,7 @@ dirToggle.onclick=()=>{
   hintBtn.classList.toggle("hidden", direction !== "flag");
   hintBtn.classList.remove("active");
   hintBtn.textContent = "💡 Aide";
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", direction === "flag");
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
 };

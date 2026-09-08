@@ -170,6 +170,9 @@
   .card .country { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
   .card .capital { color: var(--accent, var(--ink-soft)); font-weight: 700; font-size: 0.95rem; margin-top: 1px; }
   .count-note { text-align: center; color: #fff; font-weight: 700; font-size: 0.95rem; margin-bottom: 16px; opacity: 0.95; }
+  .study-search-wrap { max-width: 560px; margin: 0 auto 18px; }
+  .study-search { width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 1rem; padding: 13px 18px; border: none; border-radius: 40px; background: rgba(255,255,255,0.96); color: var(--ink); box-shadow: 0 8px 22px rgba(0,0,0,0.14); outline: none; }
+  .study-search::placeholder { color: #a89dc8; font-weight: 600; }
 
   /* ---------- Quiz ---------- */
   .quiz { max-width: 560px; margin: 0 auto; }
@@ -637,11 +640,13 @@
   }
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
   .menu-panel {
-    position: absolute; top: 50px; left: 0; min-width: 215px; padding: 8px;
+    position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh;
+    overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 8px;
     background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
-    border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3);
+    border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.3);
     display: none; flex-direction: column; gap: 3px;
   }
+  .menu-panel::-webkit-scrollbar { display: none; }
   .menu.open .menu-panel { display: flex; }
   .menu-panel a {
     display: flex; align-items: center; gap: 11px;
@@ -650,6 +655,7 @@
     transition: background 0.15s ease;
   }
   .menu-panel a:hover { background: #f0edff; }
+  .menu-panel a.active { background: #ede9ff; color: var(--bg1); }
   .menu-divider { height: 1px; background: #e7e3f5; margin: 4px 6px; }
   html.dark .menu-btn { background: rgba(0,0,0,0.35); }
   html.dark .menu-btn:hover { background: rgba(0,0,0,0.5); }
@@ -688,11 +694,11 @@
   <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
   <div class="menu-panel">
     <a href="/">🏠 Accueil</a>
-    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/quiz.html" class="active">🗺️ Drapeaux &amp; Capitales</a>
     <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
-    <a href="/regions.html#map">🐓 Carte de France</a>
     <a href="/globe.html">🌍 Globe interactif</a>
     <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛 Monuments du Monde</a>
     <div class="menu-divider"></div>
     <div class="menu-divider"></div>
     <div class="menu-lang" id="menuLang">
@@ -744,18 +750,23 @@
     <button class="mode-btn" data-mode="quiz">🎯 Quiz</button>
     <button class="mode-btn" data-mode="type">⌨️ Clavier</button>
     <button class="mode-btn" data-mode="timed">⏱️ Défi</button>
-    <button class="mode-btn" data-mode="flags">🚩 Drapeaux</button>
     <button class="mode-btn" data-mode="pvp">⚔️ 1v1</button>
   </div>
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la capitale</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
+    <button class="toggle hidden active" id="typeFlagToggle">🏳️ Drapeau visible</button>
+    <button class="toggle hidden active" id="autoAdvanceToggle">⚡ Auto-avance</button>
+    <button class="toggle hidden" id="hintBtn">💡 Aide</button>
   </div>
 
   <div class="filters" id="filters"></div>
 
   <section id="study">
+    <div class="study-search-wrap">
+      <input class="study-search" id="studySearch" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="🔍 Rechercher un pays ou une capitale…">
+    </div>
     <p class="count-note" id="countNote"></p>
     <div class="grid" id="grid"></div>
   </section>
@@ -764,6 +775,8 @@
     <button class="submode-btn active" id="subOne">🎯 Un par un</button>
     <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
     <button class="toggle" id="flagsAnswerToggle">✍️ Réponse : écrire</button>
+    <button class="toggle active" id="flagsAutoAdvanceBtn">⚡ Auto-avance</button>
+    <button class="toggle active" id="flagsShowContinentBtn">🌍 Continent visible</button>
   </div>
 
   <section id="flagsAll" class="hidden">
@@ -820,8 +833,12 @@
     <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
       <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
-      <button class="toggle" id="typeTableRestartBtn">🔄 Recommencer</button>
+      <button class="toggle" id="typeTableLockPosBtn">📌 Position fixe</button>
+      <button class="toggle" id="typeTableRestartBtn">🎲 Nouvelle série</button>
+      <button class="toggle hidden" id="typeTableSameBtn">🔁 Même série</button>
+      <button class="toggle hidden" id="typeTableLastErrBtn">⚠️ Refaire mes erreurs</button>
     </div>
+    <div id="typeTableTimer" style="display:none; text-align:center; font-size:2rem; font-weight:700; letter-spacing:2px; margin-bottom:10px; color:var(--accent, #e040fb);">⏱️ 00:00</div>
     <div class="flags-grid" id="typeTableGrid"></div>
     <button class="flags-check-btn hidden" id="typeTableCheckBtn">Vérifier mes réponses ✅</button>
   </section>
@@ -1153,6 +1170,7 @@ const TIMED_SECONDS = 60;
 
 // ---------- State ----------
 let activeFilter = "Tous";
+let activeFilters = new Set(["Tous"]); // multi-sélection continents en mode clavier
 let activeMode = "study";          // study | quiz | type | timed
 let direction = "cap";             // "cap" = deviner la capitale ; "country" = deviner le pays
 let hard = false;                  // difficulté
@@ -1164,8 +1182,21 @@ let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
+let lockFlagPos = false;            // garder les drapeaux à la même position (pas de mélange)
+let showFlag = true;               // afficher le drapeau (tous modes — toggle pour le cacher)
+let autoAdvanceOn = true;          // avancer automatiquement si la réponse est correcte (quiz/clavier)
 let typeTableInProgress = false;
 let typeTablePool = null;           // clé "continent|direction" du tableau affiché
+let lastTableErrors = [];           // erreurs de la dernière session tableau
+let savedTableErrors = [];          // erreurs accumulées toutes sessions (stockées en localStorage)
+try { const se = localStorage.getItem("atlasTableErrors"); if(se) savedTableErrors = JSON.parse(se).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
+let savedTypeErrors = [];           // erreurs accumulées mode clavier (stockées en localStorage)
+try { const ste = localStorage.getItem("atlasTypeErrors"); if(ste) savedTypeErrors = JSON.parse(ste).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
+let lastRoundPool = null;           // série jouée au dernier tour (clavier)
+let lastTablePool = null;           // série jouée au dernier tableau
+let lastTableList = null;           // ordre affiché (après mélange) au dernier tableau
+let originalTablePool = null;       // pool d'origine (avant erreurs)
+let originalTableList = null;       // ordre affiché d'origine
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1180,7 +1211,8 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
 function pool(){
   if(reviewPool) return reviewPool;
-  return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  if(activeFilters.has("Tous") || activeFilters.size===0) return DATA;
+  return DATA.filter(d=>activeFilters.has(d.k));
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -1203,6 +1235,7 @@ function drawNext(){
 }
 function questionLabel(d){ return direction==="cap" ? d.c : d.cap; }
 function answerLabel(d){ return direction==="cap" ? d.cap : d.c; }
+// direction="flag" → deviner le nom du pays depuis le drapeau
 // Texte des propositions QCM : en mode Drapeau on devine le PAYS, sinon selon le sens choisi.
 function optLabel(d){ return activeMode==="flags" ? d.c : answerLabel(d); }
 function currentAnswer(){ return activeMode==="flags" ? currentItem.c : answerLabel(currentItem); }
@@ -1248,13 +1281,21 @@ CONTINENTS.forEach(name=>{
   b.dataset.key=name;
   b.textContent=name;
   b.onclick=()=>{
-    if(filtersEl.classList.contains("locked")) return; // continent verrouillé (1v1 en cours)
-    activeFilter=name;
-    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
-    b.classList.add("active");
+    if(filtersEl.classList.contains("locked")) return;
+    if(name==="Tous"){
+      activeFilters=new Set(["Tous"]);
+      document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
+      b.classList.add("active");
+    } else {
+      activeFilters.delete("Tous");
+      if(activeFilters.has(name)) activeFilters.delete(name); else activeFilters.add(name);
+      if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
+      document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
+    }
+    activeFilter=[...activeFilters][0]||"Tous";
     if(activeMode==="study") renderStudy();
     else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
-    else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
+    else if(activeMode==="type" && typeTableMode){ lastTablePool = null; lastTableList = null; originalTablePool = null; originalTableList = null; renderTypeTable(true); }
     else startPlay();
   };
   filtersEl.appendChild(b);
@@ -1262,10 +1303,14 @@ CONTINENTS.forEach(name=>{
 
 // ---------- Study ----------
 function renderStudy(){
-  // La Révision affiche TOUJOURS tous les pays du continent choisi (les 195 au total),
-  // sans tenir compte du mode Facile/Difficile (qui ne sert qu'aux quiz).
   const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
-  const list = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  const allSorted = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  const searchEl = document.getElementById("studySearch");
+  if(searchEl) searchEl.value = "";
+  renderStudyCards(allSorted);
+}
+
+function renderStudyCards(list){
   document.getElementById("countNote").textContent = T().countNote(list.length, activeFilter);
   const grid=document.getElementById("grid"); grid.innerHTML="";
   list.forEach(d=>{
@@ -1278,6 +1323,15 @@ function renderStudy(){
     grid.appendChild(card);
   });
 }
+
+document.getElementById("studySearch").addEventListener("input", e=>{
+  if(activeMode!=="study") return;
+  const q = norm(e.target.value.trim());
+  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const filtered = q ? studyList.filter(d=> norm(d.c).includes(q) || norm(d.cap).includes(q)) : studyList;
+  const sorted = filtered.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
+  renderStudyCards(sorted);
+});
 
 // ---------- Scoreboard / records ----------
 function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; updateScore(); }
@@ -1316,17 +1370,23 @@ function nextQuestion(){
 
   if(activeMode==="flags"){
     promptEl.textContent=T().promptFlag;
-    flagEl.innerHTML=flagImg(q.f, 80);
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">🌍</span>`;
     mainEl.textContent="🌍";
   } else if(direction==="cap"){
     promptEl.textContent=T().promptCap;
-    flagEl.innerHTML=flagImg(q.f, 80);
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.c;
+  } else if(direction==="flag"){
+    promptEl.textContent="🚩 Quel est ce pays ?";
+    flagEl.innerHTML=flagImg(q.f, 80);
+    mainEl.textContent="";
   } else {
     promptEl.textContent=T().promptCountry;
-    flagEl.innerHTML=`<span class="pin">📍</span>`;
+    flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
+  const hintBtn = document.getElementById("hintBtn");
+  if(hintBtn){ hintBtn.classList.remove("active"); hintBtn.textContent = "💡 Aide"; }
   // restart flag pop animation
   flagEl.style.animation="none"; void flagEl.offsetWidth; flagEl.style.animation="";
 
@@ -1420,7 +1480,7 @@ function chooseOption(btn,label){
     else if(b!==btn) b.classList.add("dim");
   });
   registerResult(isCorrect);
-  afterAnswer();
+  afterAnswer(isCorrect && autoAdvanceOn);
 }
 
 function checkTyped(){
@@ -1442,7 +1502,7 @@ function checkTyped(){
   }
   registerResult(isCorrect);
   if(activeMode==="type" && bag.length===0) pendingTypeRecap=true;
-  afterAnswer(activeMode==="type" && isCorrect);
+  afterAnswer((activeMode==="type" || autoAdvanceOn) && isCorrect);
 }
 
 function revealLine(){
@@ -1468,6 +1528,12 @@ function showTypeRecap(){
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
+  // Sauvegarder les erreurs
+  if(errCount>0){
+    const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
+    savedTypeErrors = [...savedTypeErrors, ...newSaved];
+    try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
+  }
   const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
   eg.innerHTML = `
@@ -1475,10 +1541,15 @@ function showTypeRecap(){
     <div class="lbl">${T().typeRecapTitle(errCount)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
-    <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>`;
+    <button class="next-btn show" id="typeRecapSameBtn">🔁 Refaire la même série</button>
+    <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>
+    ${errCount===0 && savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
-  document.getElementById("typeRecapReplayBtn").onclick = startPlay;
+  const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
+  document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);
+  document.getElementById("typeRecapReplayBtn").onclick = () => startPlay();
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
+  if(savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
 }
 
 // ---------- Timer (Défi) ----------
@@ -1511,15 +1582,21 @@ function endTimed(){
     ${isRecord?`<div class="record">${T().newRecord}</div>`:''}
     <button class="next-btn show" id="replayBtn">${T().replay}</button>`;
   eg.classList.remove("hidden");
-  document.getElementById("replayBtn").onclick=startPlay;
+  document.getElementById("replayBtn").onclick=()=>startPlay();
   document.getElementById("timedReady").classList.add("hidden");
 }
 
 // ---------- Mode orchestration ----------
 function startPlay(overridePool){
   reviewPool = overridePool || null;
+  lastRoundPool = pool().slice(); // capture la série avant resetQuiz
   stopTimer();
   resetQuiz();
+  answered = false;
+  // Nettoyer l'état visuel avant d'afficher la nouvelle question
+  const ti = document.getElementById("typeInput"); if(ti){ ti.value=""; ti.disabled=false; ti.className="type-input"; }
+  const fb = document.getElementById("feedback"); if(fb){ fb.textContent=""; fb.className="feedback"; }
+  document.getElementById("nextBtn").classList.remove("show");
   document.getElementById("endgame").classList.add("hidden");
   document.getElementById("timedReady").classList.add("hidden");
 
@@ -1550,6 +1627,17 @@ function enterMode(mode){
   stopTimer();
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
   activeFilter = "Tous";
+  activeFilters = new Set(["Tous"]);
+  // Réactiver le drapeau à chaque changement de mode
+  showFlag = true;
+  const ftgl = document.getElementById("typeFlagToggle");
+  if(ftgl){ ftgl.textContent = "🏳️ Drapeau visible"; ftgl.classList.add("active"); }
+  autoAdvanceOn = true;
+  const aat = document.getElementById("autoAdvanceToggle");
+  if(aat) aat.classList.add("active");
+  direction = "cap";
+  const dtgl = document.getElementById("dirToggle"); if(dtgl) dtgl.textContent = T().dirCap;
+  const hintBtn = document.getElementById("hintBtn"); if(hintBtn){ hintBtn.classList.add("hidden"); hintBtn.classList.remove("active"); hintBtn.textContent="💡 Aide"; }
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
@@ -1568,10 +1656,16 @@ function enterMode(mode){
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
+  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
-    flagsAllInProgress = false; // forcer la réinitialisation de la grille
+    flagsAllInProgress = false;
+    hard = false;
+    autoAdvanceOn = true;
+    const fab = document.getElementById("flagsAutoAdvanceBtn"); if(fab){ fab.classList.add("active"); }
+    const fcb = document.getElementById("flagsShowContinentBtn"); if(fcb){ fcb.textContent = "🌍 Continent visible"; fcb.classList.add("active"); }
     enterFlagsSubMode(flagsSubMode);
   }
   else if(isPvp){ pvpShowSection('pvpLobby'); }
@@ -1587,8 +1681,13 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
 // ---------- Options toolbar ----------
 const dirToggle=document.getElementById("dirToggle");
 dirToggle.onclick=()=>{
-  direction = direction==="cap" ? "country" : "cap";
-  dirToggle.textContent = direction==="cap" ? T().dirCap : T().dirCountry;
+  direction = direction==="cap" ? "flag" : "cap";
+  dirToggle.textContent = direction==="cap" ? T().dirCap : "🚩 Deviner le drapeau";
+  const hintBtn = document.getElementById("hintBtn");
+  hintBtn.classList.toggle("hidden", direction !== "flag");
+  hintBtn.classList.remove("active");
+  hintBtn.textContent = "💡 Aide";
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", direction === "flag");
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
 };
@@ -1598,8 +1697,44 @@ tableToggle.onclick=()=>{
   tableToggle.classList.toggle("active", typeTableMode);
   document.getElementById("play").classList.toggle("hidden", typeTableMode);
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode); // mode tableau = pas de toggle drapeau (géré par typeTableFlagPosToggle)
+  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", typeTableMode);
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
+};
+const typeFlagToggle=document.getElementById("typeFlagToggle");
+typeFlagToggle.onclick=()=>{
+  showFlag=!showFlag;
+  typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
+  typeFlagToggle.classList.toggle("active", showFlag);
+  if(activeMode!=="study" && !typeTableMode) nextQuestion();
+};
+document.getElementById("hintBtn").onclick = () => {
+  const btn = document.getElementById("hintBtn");
+  btn.classList.toggle("active");
+  const isActive = btn.classList.contains("active");
+  if(activeMode==="type" && typeTableMode){
+    // Mode tableau : afficher/cacher les capitales dans chaque ligne
+    document.querySelectorAll("#typeTableGrid .tbl-hint").forEach(hint => {
+      const item = hint.closest(".tbl-row")._item;
+      hint.textContent = isActive && item ? item.cap : "";
+    });
+  } else {
+    // Mode quiz/clavier : afficher/cacher la capitale sous le drapeau
+    const mainEl = document.getElementById("qCountry");
+    if(isActive){
+      mainEl.textContent = currentItem ? currentItem.cap : "";
+      btn.textContent = "💡 " + (currentItem ? currentItem.cap : "");
+    } else {
+      mainEl.textContent = "";
+      btn.textContent = "💡 Aide";
+    }
+  }
+};
+const autoAdvanceToggle=document.getElementById("autoAdvanceToggle");
+autoAdvanceToggle.onclick=()=>{
+  autoAdvanceOn=!autoAdvanceOn;
+  autoAdvanceToggle.classList.toggle("active", autoAdvanceOn);
 };
 const soundToggle=document.getElementById("soundToggle");
 soundToggle.onclick=()=>{
@@ -1613,6 +1748,13 @@ document.getElementById("timedStartBtn").onclick=launchTimed;
 document.getElementById("validateBtn").onclick=checkTyped;
 document.getElementById("typeInput").addEventListener("keydown",e=>{
   if(e.key==="Enter"){ if(answered) nextQuestion(); else checkTyped(); }
+});
+// Touche Entrée globale → question suivante (quiz, timed, flags)
+document.addEventListener("keydown", e=>{
+  if(e.key!=="Enter") return;
+  if(e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA") return;
+  const nb = document.getElementById("nextBtn");
+  if(nb && nb.classList.contains("show")) nextQuestion();
 });
 // Mode Clavier : valide automatiquement dès que la réponse tapée est correcte, sans attendre Entrée/Valider.
 document.getElementById("typeInput").addEventListener("input",e=>{
@@ -1660,12 +1802,16 @@ function startStopwatch(){
 }
 function stopStopwatch(){
   if(stopwatchId){ clearInterval(stopwatchId); stopwatchId = null; }
+  const timer = document.getElementById("typeTableTimer");
+  if(timer) timer.style.display = "none";
 }
 function updateStopwatch(){
   const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
   const s = String(stopwatchSecs % 60).padStart(2, "0");
   const btn = document.getElementById("flagsStartChronoBtn");
   if(btn) btn.textContent = `⏱️ ${m}:${s}`;
+  const timer = document.getElementById("typeTableTimer");
+  if(timer){ timer.style.display = "block"; timer.textContent = `⏱️ ${m}:${s}`; }
 }
 
 function renderFlagsAll(force=false){
@@ -1774,7 +1920,7 @@ function renderFlagsAll(force=false){
 }
 
 // ---------- Tableau (mode Clavier) ----------
-function renderTypeTable(force=false, overridePool=null){
+function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   if(!overridePool) reviewPool = null; // ne pas hériter d'une session de révision du mode normal
   const key = overridePool ? "review" : activeFilter + "|" + direction;
   if(typeTableInProgress && !force && typeTablePool === key) return;
@@ -1785,7 +1931,17 @@ function renderTypeTable(force=false, overridePool=null){
   const chronoBtn = document.getElementById("typeTableChronoBtn");
   if(chronoBtn){ chronoBtn.textContent = T().chrono; chronoBtn.disabled = false; }
 
-  const list = shuffle(overridePool || pool());
+  // Réinitialiser les boutons résultats
+  document.getElementById("typeTableSameBtn").classList.add("hidden");
+  document.getElementById("typeTableLastErrBtn").classList.add("hidden");
+
+  const _isOriginal = !overridePool || overridePool === originalTablePool;
+  const _basePool = overridePool || (lockFlagPos && lastTablePool && lastTablePool.length > 0 ? lastTablePool : pool());
+  const _isSameSeries = !overridePool || overridePool === lastTablePool || overridePool === originalTablePool;
+  lastTablePool = _basePool.slice();
+  const list = (!doShuffle) ? lastTablePool.slice() : (lockFlagPos && lastTableList && lastTableList.length > 0 && _isSameSeries) ? (overridePool === originalTablePool ? originalTableList.slice() : lastTableList.slice()) : shuffle(lastTablePool.slice());
+  lastTableList = list.slice();
+  if(_isOriginal){ originalTablePool = lastTablePool.slice(); originalTableList = lastTableList.slice(); }
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
@@ -1793,6 +1949,8 @@ function renderTypeTable(force=false, overridePool=null){
   checkBtn.disabled = false;
   checkBtn.textContent = T().verify;
 
+  let _firstFocusDone = false;
+  const hintActive = document.getElementById("hintBtn") && document.getElementById("hintBtn").classList.contains("active");
   list.forEach(d => {
     const answer = direction==="cap" ? d.cap : d.c;
     const row = document.createElement("div");
@@ -1800,15 +1958,23 @@ function renderTypeTable(force=false, overridePool=null){
     row.dataset.answer = answer;
     row._item = d;
     const flagHtml = `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>`;
-    const countryHtml = direction==="cap"
-      ? `<div class="tbl-given">${d.c}</div>`
-      : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
-    const capitalHtml = direction==="cap"
-      ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
-      : `<div class="tbl-given">${d.cap}</div>`;
-    // Le drapeau (si affiché) se place toujours au-dessus de la case pays, qu'elle soit donnée ou à deviner.
-    row.innerHTML = (showTableFlag ? flagHtml : "") + countryHtml + capitalHtml;
+    let countryHtml, capitalHtml;
+    if(direction==="flag"){
+      countryHtml = `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
+      capitalHtml = `<div class="tbl-hint" style="font-size:0.8rem;color:#888;min-height:1.2em;">${hintActive ? d.cap : ""}</div>`;
+    } else {
+      countryHtml = direction==="cap"
+        ? `<div class="tbl-given">${d.c}</div>`
+        : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
+      capitalHtml = direction==="cap"
+        ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
+        : `<div class="tbl-given">${d.cap}</div>`;
+    }
+    row.innerHTML = flagHtml + countryHtml + capitalHtml;
     const input = row.querySelector(".tbl-input");
+    input.addEventListener("focus", () => {
+      if(!_firstFocusDone){ _firstFocusDone=true; input.scrollIntoView({behavior:"smooth",block:"center"}); }
+    });
     input.addEventListener("keydown", (e) => {
       const inputs = [...document.querySelectorAll("#typeTableGrid .tbl-input:not(:disabled)")];
       const idx = inputs.indexOf(e.target);
@@ -1855,6 +2021,15 @@ function renderTypeTable(force=false, overridePool=null){
       }
     });
     checkBtn.classList.add("hidden");
+    document.getElementById("typeTableSameBtn").classList.remove("hidden");
+    // Sauvegarder les erreurs
+    if(wrongItems.length>0){
+      lastTableErrors = wrongItems.slice();
+      const newSaved = wrongItems.filter(e => !savedTableErrors.some(s=>s.c===e.c));
+      savedTableErrors = [...savedTableErrors, ...newSaved];
+      try { localStorage.setItem("atlasTableErrors", JSON.stringify(savedTableErrors)); } catch(e){}
+      document.getElementById("typeTableLastErrBtn").classList.remove("hidden");
+    }
     const pct = Math.round((correct/total)*100);
     const emoji = pct === 100 ? "🏆" : pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "💪";
     const m = String(Math.floor(stopwatchSecs / 60)).padStart(2, "0");
@@ -1865,6 +2040,10 @@ function renderTypeTable(force=false, overridePool=null){
     else if(pct >= 50){ soundCorrect(); }
     else { soundWrong(); }
 
+    const _capturedPool = lastTablePool ? lastTablePool.slice() : null;
+    const _continentLabel = (activeFilters.has("Tous") || activeFilters.size===0)
+      ? "🌍 Tous les pays"
+      : [...activeFilters].join(" · ");
     const overlay = document.createElement("div");
     overlay.className = "score-overlay";
     overlay.innerHTML = `
@@ -1873,29 +2052,38 @@ function renderTypeTable(force=false, overridePool=null){
         <div class="score-big">${correct} / ${total}</div>
         <div class="score-pct">${pct}%</div>
         <div class="score-lbl">${T().flagsResult}</div>
+        <div class="score-lbl" style="margin-top:4px; font-size:0.85rem; opacity:0.75;">${_continentLabel}</div>
         <div class="score-lbl" style="margin-top:6px;">${timeStr}</div>
-        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">${T().reviewErrors(wrongItems.length)}</button>` : ""}
-        <button class="score-restart" id="tblRestartBtn">${T().restart}</button>
+        ${wrongItems.length>0 ? `<button class="score-restart" id="tblReviewBtn" style="margin-top:10px;">⚠️ Refaire mes erreurs (${wrongItems.length})</button>` : ""}
+        <button class="score-restart" id="tblSameBtn">🔁 Même série</button>
+        <button class="score-restart" id="tblRestartBtn">🎲 Nouvelle série</button>
       </div>`;
     document.body.appendChild(overlay);
-    document.getElementById("tblRestartBtn").onclick = () => {
-      overlay.remove();
-      renderTypeTable(true);
-      setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-    };
+    const _scrollTable = () => setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+    overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true, originalTablePool || lastTablePool); _scrollTable(); };
+    overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); renderTypeTable(true, lastTablePool); _scrollTable(); };
     if(wrongItems.length>0){
-      document.getElementById("tblReviewBtn").onclick = () => {
-        overlay.remove();
-        renderTypeTable(true, wrongItems);
-        setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-      };
+      const _orderedErrors = lastTableList ? lastTableList.filter(d => wrongItems.some(w => w.c === d.c)) : wrongItems;
+      overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, _orderedErrors, false); _scrollTable(); };
     }
     overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };
 }
 
-document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
+document.getElementById("typeTableSameBtn").onclick = () => {
+  if(lastTablePool && lastTablePool.length>0){ renderTypeTable(true, lastTablePool); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+};
+document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true, originalTablePool || undefined);
+document.getElementById("typeTableLastErrBtn").onclick = () => {
+  if(lastTableErrors.length>0){
+    const _ord = lastTableList ? lastTableList.filter(d => lastTableErrors.some(e => e.c === d.c)) : lastTableErrors;
+    renderTypeTable(true, _ord, false);
+    setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80);
+  }
+};
 document.getElementById("typeTableChronoBtn").onclick = () => {
+  const _pool = lastTablePool ? lastTablePool.slice() : null;
+  renderTypeTable(true, _pool);
   document.getElementById("typeTableChronoBtn").disabled = true;
   startCountdown(() => startStopwatch());
 };
@@ -1904,14 +2092,23 @@ document.getElementById("typeTableFlagPosToggle").onclick = () => {
   document.getElementById("typeTableFlagPosToggle").textContent = showTableFlag ? T().flagShow : T().flagHide;
   renderTypeTable(true);
 };
+document.getElementById("typeTableLockPosBtn").onclick = () => {
+  lockFlagPos = !lockFlagPos;
+  const btn = document.getElementById("typeTableLockPosBtn");
+  btn.textContent = lockFlagPos ? "📌 Position fixe ✓" : "📌 Position fixe";
+  btn.style.opacity = lockFlagPos ? "1" : "";
+  btn.style.fontWeight = lockFlagPos ? "700" : "";
+};
 
 function enterFlagsSubMode(sub){
   flagsSubMode = sub;
   document.getElementById("subOne").classList.toggle("active", sub==="one");
   document.getElementById("subAll").classList.toggle("active", sub==="all");
 
-  // Le choix "écrire / 4 choix" n'a de sens qu'en mode "un par un"
+  // Ces boutons n'ont de sens qu'en mode "un par un"
   document.getElementById("flagsAnswerToggle").classList.toggle("hidden", sub!=="one");
+  document.getElementById("flagsAutoAdvanceBtn").classList.toggle("hidden", sub!=="one");
+  document.getElementById("flagsShowContinentBtn").classList.toggle("hidden", sub!=="one");
 
   if(sub === "all"){
     document.getElementById("flagsAll").classList.remove("hidden");
@@ -1933,6 +2130,18 @@ flagsAnswerToggle.onclick = () => {
   flagsAnswerMode = (flagsAnswerMode==="type") ? "qcm" : "type";
   flagsAnswerToggle.textContent = (flagsAnswerMode==="type") ? T().flagsWrite : T().flagsQcm;
   if(activeMode==="flags" && flagsSubMode==="one") startPlay();
+};
+document.getElementById("flagsAutoAdvanceBtn").onclick = () => {
+  autoAdvanceOn = !autoAdvanceOn;
+  document.getElementById("flagsAutoAdvanceBtn").classList.toggle("active", autoAdvanceOn);
+};
+document.getElementById("flagsShowContinentBtn").onclick = () => {
+  hard = !hard;
+  const btn = document.getElementById("flagsShowContinentBtn");
+  btn.textContent = hard ? "🌍 Continent caché" : "🌍 Continent visible";
+  btn.classList.toggle("active", !hard);
+  const cont = document.getElementById("qContinent");
+  if(cont) cont.classList.toggle("hidden-hint", hard);
 };
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
 document.getElementById("flagsStartChronoBtn").onclick = () => {
@@ -2160,7 +2369,9 @@ function applyLang(){
   const tbl = document.getElementById("tableToggle"); if(tbl) tbl.textContent = t.tableMode;
   const flagPos = document.getElementById("typeTableFlagPosToggle");
   if(flagPos) flagPos.textContent = showTableFlag ? t.flagShow : t.flagHide;
-  const ttRestart = document.getElementById("typeTableRestartBtn"); if(ttRestart) ttRestart.textContent = t.restart;
+  const ttRestart = document.getElementById("typeTableRestartBtn"); if(ttRestart) ttRestart.textContent = "🎲 Nouvelle série";
+  const ttSame = document.getElementById("typeTableSameBtn"); if(ttSame) ttSame.textContent = "🔁 Même série";
+  const ttLastErr = document.getElementById("typeTableLastErrBtn"); if(ttLastErr) ttLastErr.textContent = "⚠️ Refaire mes erreurs";
   const ttChrono = document.getElementById("typeTableChronoBtn"); if(ttChrono && !ttChrono.disabled) ttChrono.textContent = t.chrono;
   const ttCheck = document.getElementById("typeTableCheckBtn"); if(ttCheck && !ttCheck.classList.contains("hidden")) ttCheck.textContent = t.verify;
   // Flags submodes

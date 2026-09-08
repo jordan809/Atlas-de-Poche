@@ -211,11 +211,18 @@
   .menu { position: fixed; top: 14px; left: 16px; z-index: 510; }
   .menu-btn { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem; padding: 0 20px; height: 42px; border: none; border-radius: 30px; cursor: pointer; background: rgba(255,255,255,0.25); backdrop-filter: blur(6px); color: #fff; letter-spacing: 0.03em; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transition: transform 0.2s ease, background 0.2s ease; display: flex; align-items: center; gap: 8px; }
   .menu-btn:hover { transform: scale(1.05); background: rgba(255,255,255,0.4); }
-  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  .menu-panel { position: absolute; top: 50px; left: 0; min-width: 215px; max-height: 80vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 8px; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.3); display: none; flex-direction: column; gap: 3px; }
+  .menu-panel::-webkit-scrollbar { display: none; }
+  body.map-active .menu-btn { background: rgba(43,35,80,0.88); color: #fff; }
   .menu.open .menu-panel { display: flex; }
   .menu-panel a { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 11px; text-decoration: none; color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem; transition: background 0.15s ease; }
   .menu-panel a:hover { background: #f0edff; }
+  .menu-panel a.active { background: #ede9ff; color: var(--bg1); }
   .menu-divider { height: 1px; background: #e7e3f5; margin: 4px 6px; }
+  .menu-lang { display: flex; flex-direction: column; gap: 2px; padding: 2px 0; }
+  .lang-btn { display: flex; align-items: center; gap: 11px; padding: 10px 14px; border-radius: 11px; border: none; cursor: pointer; background: transparent; color: var(--ink); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.95rem; text-align: left; width: 100%; transition: background 0.15s ease; }
+  .lang-btn:hover { background: #f0edff; }
+  .lang-btn.active { background: #ede9ff; color: var(--bg1); }
   html.dark .menu-btn { background: rgba(0,0,0,0.35); }
   html.dark .menu-btn:hover { background: rgba(0,0,0,0.5); }
   html.dark .menu-panel { background: rgba(28,22,42,0.97); }
@@ -245,8 +252,8 @@
   .mapfeat.target { fill: var(--good) !important; stroke: #0a8f4c !important; stroke-width: 2.4 !important; }
   #mapTip { position: fixed; z-index: 506; pointer-events: none; transform: translate(-50%,-135%); font-weight: 700; color: #fff; background: rgba(0,0,0,.72); padding: 4px 11px; border-radius: 8px; font-size: .88rem; white-space: nowrap; display: none; }
 
-  .map-topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 502; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 12px 14px 12px 70px; }
-  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .92rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 9px 15px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 7px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; }
+  .map-topbar { position: fixed; top: 66px; left: 16px; z-index: 502; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .map-pill { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,0.92); color: var(--ink); backdrop-filter: blur(6px); border: 1px solid rgba(43,35,80,0.12); padding: 8px 13px; border-radius: 30px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(43,35,80,0.08); transition: filter .15s ease; white-space: nowrap; }
   .map-pill:hover { filter: brightness(0.97); }
   .map-pill.active { background: var(--bg1); color: #fff; }
   html.dark .map-pill { background: rgba(255,255,255,0.14); color: #fff; border-color: rgba(255,255,255,0.2); }
@@ -271,13 +278,15 @@
   .gp-score b { color: #6a5cff; font-size: 1.05rem; }
   .gp-q { margin: 14px 0 10px; font-weight: 700; font-size: .95rem; min-height: 20px; }
   .gp-field { display: block; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #9088ad; margin: 10px 0 4px; }
-  .gp-input { width: 100%; font-family: inherit; font-weight: 700; font-size: 1rem; padding: 11px 12px; border: 2.5px solid #ece9ff; background: #f7f6ff; color: #2b2350; border-radius: 12px; outline: none; }
-  .gp-input:focus { border-color: #6a5cff; }
+  .gp-input { width: 100%; font-family: inherit; font-weight: 700; font-size: 1rem; padding: 11px 12px; border: 2.5px solid #b8b2e8; background: #edeaff; color: #2b2350; border-radius: 12px; outline: none; transition: border-color .15s ease; }
+  .gp-input:hover { background: #edeaff; border-color: #b8b2e8; }
+  .gp-input:focus { border-color: #6a5cff; background: #edeaff; }
   .gp-input.ok { border-color: var(--good); background: #e7faf0; }
   .gp-input.no { border-color: #ef3e5b; background: #fdeaee; }
   .gp-btn { width: 100%; margin-top: 14px; font-family: inherit; font-weight: 800; font-size: 1rem; padding: 13px; border: none; border-radius: 14px; cursor: pointer; color: #fff; background: linear-gradient(100deg,#6a5cff,#ff5d8f); box-shadow: 0 8px 20px rgba(106,92,255,.4); }
-  .gp-btn:hover { filter: brightness(1.05); }
-  .gp-btn.sec { background: #efedfb; color: #6a5cff; box-shadow: none; }
+  .gp-btn:hover { filter: brightness(0.96); }
+  .gp-btn.sec { background: #dddaf7; color: #5a4ee0; box-shadow: none; }
+  .gp-btn.sec:hover { filter: none; background: #ccc7f0; }
   .gp-fb { margin-top: 12px; font-weight: 800; font-size: .92rem; min-height: 18px; }
   .gp-fb .good { color: #1fae6a; } .gp-fb .bad { color: #ef3e5b; }
   .gp-fb .reveal { display: flex; align-items: center; gap: 6px; color: #6b6396; font-weight: 700; font-size: .85rem; margin-top: 3px; }
@@ -290,7 +299,8 @@
   @media (max-width: 600px) {
     #mapGamePanel { top: auto; bottom: 0; right: 0; left: 0; width: 100%; max-width: 100%; transform: translateY(120%); border-radius: 22px 22px 0 0; }
     #mapGamePanel.show { transform: translateY(0); }
-    .map-topbar { padding-left: 60px; }
+    .map-topbar { top: 58px; left: 12px; }
+    .map-pill { font-size: .78rem; padding: 7px 10px; }
   }
 </style>
 </head>
@@ -301,10 +311,17 @@
   <div class="menu-panel">
     <a href="/">🏠 Accueil</a>
     <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
-    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
-    <a href="/regions.html#map">🐓 Carte de France</a>
+    <a href="/regions.html" class="active"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
     <a href="/globe.html">🌍 Globe interactif</a>
     <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛 Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <div class="menu-divider"></div>
+    <div class="menu-lang" id="menuLang">
+      <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+    </div>
     <div class="menu-divider"></div>
     <a href="/contact.html">📬 Contact</a>
   </div>
@@ -433,7 +450,7 @@
     <button class="map-pill" id="btnExitMap">✕ Quitter la carte</button>
   </div>
 
-  <div class="map-hint" id="mapHint">Clique sur un département pour le découvrir 🐓 — glisse pour te déplacer, molette pour zoomer</div>
+  <div class="map-hint hidden" id="mapHint"></div>
 
   <div id="mapInfo">
     <span id="iBadge"></span>
@@ -1023,6 +1040,7 @@ function enterMode(mode){
   document.querySelector(".intro").classList.toggle("hidden", isMap);
   document.querySelector("footer").classList.toggle("hidden", !isStudy || isMap);
   document.getElementById("mapMode").classList.toggle("hidden", !isMap);
+  document.body.classList.toggle("map-active", isMap);
 
   if(isMap){ initMap(); }
   else if(isStudy){ renderStudy(); }
@@ -1198,11 +1216,13 @@ let mapInited = false;
 let mapLevel = "dept";
 let mapUiMode = "discover";
 let mapTarget = null, mapCurrent = null;
+let zoomedRegion = null; // quand on zoome sur une région depuis la vue régions
 let gScore = 0, gAsked = 0;
 let deptGeo = null, regionGeo = null;
 let svgSel, gSel, mapProjection, mapPath, mapZoom, mapW, mapH, mapFeatSel;
 let deptByNum = {}, deptByName = {}, regionByName = {};
 let mapGameItems = [];
+let mapGameBag = []; // sac mélangé pour un vrai tirage sans répétition
 
 function loadScript(src){
   return new Promise((resolve, reject) => {
@@ -1280,14 +1300,56 @@ function drawMap(){
     .on("mouseleave", ()=> tip.style.display="none")
     .on("click", (ev,f)=>{
       if(mapUiMode!=="discover") return;
-      showMapInfo(lookupFeat(f.properties), f.properties.nom);
-      zoomToMapFeature(f, 3.2);
+      if(mapLevel==="region"){
+        showMapInfo(lookupFeat(f.properties), f.properties.nom);
+        zoomToRegionDepts(f.properties.nom);
+      } else {
+        showMapInfo(lookupFeat(f.properties), f.properties.nom);
+        zoomToMapFeature(f, 3.2);
+      }
     });
   refreshMapColors();
 }
 
 function refreshMapColors(){
-  if(mapFeatSel) mapFeatSel.classed("target", f => mapUiMode==="game" && f===mapTarget);
+  if(!mapFeatSel) return;
+  mapFeatSel.classed("target", f => mapUiMode==="game" && f===mapTarget);
+  if(mapLevel==="dept"){
+    mapFeatSel.style("fill", f => {
+      if(mapUiMode==="game" && f===mapTarget) return null;
+      const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+      if(!d) return null;
+      const col = COLORS[d.k] || null;
+      if(zoomedRegion) return d.k===zoomedRegion ? col : null;
+      return col;
+    })
+    .style("opacity", f => {
+      if(!zoomedRegion) return null;
+      const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+      return (!d || d.k!==zoomedRegion) ? "0.25" : "1";
+    });
+  } else {
+    mapFeatSel.style("fill", null).style("opacity", null);
+  }
+}
+
+function zoomToRegionDepts(regionName){
+  zoomedRegion = regionName;
+  switchLevel("dept");
+  drawMap();
+  const feats = deptGeo.features.filter(f=>{
+    const d = deptByNum[f.properties.code] || deptByName[norm(f.properties.nom)];
+    return d && d.k===regionName;
+  });
+  if(!feats.length){ resetMapView(); return; }
+  let x0=Infinity, y0=Infinity, x1=-Infinity, y1=-Infinity;
+  feats.forEach(f=>{ const b=mapPath.bounds(f); x0=Math.min(x0,b[0][0]); y0=Math.min(y0,b[0][1]); x1=Math.max(x1,b[1][0]); y1=Math.max(y1,b[1][1]); });
+  const dx=Math.max(x1-x0,1), dy=Math.max(y1-y0,1), cx=(x0+x1)/2, cy=(y0+y1)/2;
+  let scale=Math.min(mapW/(dx*2.2), mapH/(dy*2.2));
+  scale=Math.max(1,Math.min(scale,16));
+  svgSel.transition().duration(700).call(mapZoom.transform, d3.zoomIdentity.translate(mapW/2,mapH/2).scale(scale).translate(-cx,-cy));
+  document.getElementById("mapHint").textContent=`${regionName} — ${feats.length} département${feats.length>1?"s":""} 🐓 — clique pour découvrir`;
+  document.getElementById("mapHint").classList.remove("hidden");
 }
 
 function zoomToMapFeature(feature, padding){
@@ -1309,12 +1371,11 @@ function mapResize(){
 }
 
 function switchLevel(level){
+  if(level!==mapLevel) zoomedRegion=null;
   mapLevel = level;
   document.getElementById("btnLevel").textContent = level==="dept" ? "🗾 Voir les régions" : "📍 Voir les départements";
-  document.getElementById("mapHint").textContent = level==="dept"
-    ? "Clique sur un département pour le découvrir 🐓 — glisse pour te déplacer, molette pour zoomer"
-    : "Clique sur une région pour la découvrir 🐓 — glisse pour te déplacer, molette pour zoomer";
-  mapGameItems = [];
+  document.getElementById("mapHint").classList.add("hidden");
+  mapGameItems = []; mapGameBag = [];
   currentGeo().features.forEach(f=>{
     const d = lookupFeat(f.properties); if(!d) return;
     mapGameItems.push({f,d});
@@ -1343,6 +1404,18 @@ function showMapInfo(d, fallbackName){
 }
 document.getElementById("iClose").onclick = ()=> document.getElementById("mapInfo").classList.remove("show");
 
+function drawMapItem(){
+  if(!mapGameBag.length){
+    mapGameBag = mapGameItems.slice();
+    for(let i=mapGameBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [mapGameBag[i],mapGameBag[j]]=[mapGameBag[j],mapGameBag[i]]; }
+    // éviter que le 1er élément du nouveau sac soit le même que le dernier joué
+    if(mapGameBag.length>1 && mapCurrent && mapGameBag[mapGameBag.length-1].d.c===mapCurrent.c){
+      [mapGameBag[mapGameBag.length-1],mapGameBag[0]]=[mapGameBag[0],mapGameBag[mapGameBag.length-1]];
+    }
+  }
+  return mapGameBag.pop();
+}
+
 function startMapRound(){
   if(!mapGameItems.length) return;
   mapTarget=null; mapCurrent=null; refreshMapColors();
@@ -1352,7 +1425,7 @@ function startMapRound(){
   document.getElementById("gpQ").textContent = "🔎 Choix en cours…";
   resetMapView();
   setTimeout(()=>{
-    const item = mapGameItems[Math.floor(Math.random()*mapGameItems.length)];
+    const item = drawMapItem();
     mapTarget = item.f; mapCurrent = item.d;
     refreshMapColors();
     zoomToMapFeature(item.f, 3.2);
@@ -1399,6 +1472,7 @@ function setMapUiMode(m){
   document.getElementById("btnDiscover").classList.toggle("active", m==="discover");
   document.getElementById("btnGame").classList.toggle("active", m==="game");
   document.body.classList.toggle("map-discover", m==="discover");
+  zoomedRegion=null;
   mapTarget=null; mapCurrent=null; refreshMapColors();
   document.getElementById("mapInfo").classList.remove("show");
   document.getElementById("mapTip").style.display="none";
@@ -1431,6 +1505,12 @@ document.getElementById("gStop").onclick = ()=>{
 };
 document.getElementById("inCountry").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("inCapital").focus(); } });
 document.getElementById("inCapital").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); checkMapAnswer(); } });
+document.addEventListener("keydown", e=>{
+  if(e.key!=="Enter") return;
+  if(e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA") return;
+  const gn = document.getElementById("gNext");
+  if(gn && !gn.classList.contains("hidden")) startMapRound();
+});
 document.getElementById("btnLevel").onclick = ()=>{
   switchLevel(mapLevel==="dept" ? "region" : "dept");
   drawMap();

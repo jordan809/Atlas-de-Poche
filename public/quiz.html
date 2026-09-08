@@ -2006,7 +2006,7 @@ function renderTypeTable(force=false, overridePool=null){
     document.body.appendChild(overlay);
     const _scrollTable = () => setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
     overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true); _scrollTable(); };
-    overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); if(_capturedPool) renderTypeTable(true, _capturedPool); else renderTypeTable(true); _scrollTable(); };
+    overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); renderTypeTable(true, lastTablePool); _scrollTable(); };
     if(wrongItems.length>0){
       overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, wrongItems); _scrollTable(); };
     }

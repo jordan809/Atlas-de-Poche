@@ -46,19 +46,20 @@
     padding:9px 15px; border-radius:30px; cursor:pointer; display:flex; align-items:center; gap:7px; box-shadow:0 6px 16px rgba(43,35,80,0.08); }
   .pill:hover{ filter:brightness(0.97); }
   .pill.active{ background:#6a5cff; color:#fff; border-color:#6a5cff; }
-  .menu-globe{ position:fixed; top:12px; left:14px; z-index:20; }
-  .menu-globe-btn{ font-family:system-ui,sans-serif; font-weight:700; font-size:.92rem; padding:0 18px; height:40px; border:1px solid var(--chrome-border); border-radius:30px; cursor:pointer; background:var(--chrome-bg); backdrop-filter:blur(6px); color:var(--chrome-text); display:flex; align-items:center; gap:7px; transition:background 0.2s; box-shadow:0 6px 16px rgba(43,35,80,0.08); }
-  .menu-globe-btn:hover{ filter:brightness(0.97); }
-  .menu-globe-panel{ position:absolute; top:48px; left:0; min-width:215px; padding:8px; background:rgba(255,255,255,0.98); backdrop-filter:blur(10px); border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
-  .menu-globe.open .menu-globe-panel{ display:flex; }
-  .menu-globe-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:800; font-size:.95rem; transition:background 0.15s; }
-  .menu-globe-panel a:hover{ background:#f0edff; }
-  .menu-globe-panel a.active{ background:#ede9ff; color:#6a5cff; }
-  .menu-globe-divider{ height:1px; background:#e7e3f5; margin:4px 6px; }
-  .menu-globe-lang{ display:flex; flex-direction:column; gap:2px; padding:2px 0; }
-  .menu-globe-lang-btn{ display:flex; align-items:center; gap:11px; padding:10px 14px; border-radius:11px; border:none; cursor:pointer; background:transparent; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:800; font-size:.95rem; text-align:left; width:100%; transition:background 0.15s; }
-  .menu-globe-lang-btn:hover{ background:#f0edff; }
-  .menu-globe-lang-btn.active{ background:#ede9ff; color:#6a5cff; }
+  .menu{ position:fixed; top:14px; left:16px; z-index:100; }
+  .menu-btn{ font-family:'Baloo 2',cursive; font-weight:700; font-size:0.95rem; padding:0 20px; height:42px; border:none; border-radius:30px; cursor:pointer; background:rgba(255,255,255,0.25); backdrop-filter:blur(6px); color:#fff; letter-spacing:0.03em; box-shadow:0 4px 14px rgba(0,0,0,0.2); transition:transform 0.2s ease,background 0.2s ease; display:flex; align-items:center; gap:8px; }
+  .menu-btn:hover{ transform:scale(1.05); background:rgba(255,255,255,0.4); }
+  .menu-panel{ position:absolute; top:50px; left:0; min-width:215px; max-height:80vh; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:none; padding:8px; background:rgba(255,255,255,0.96); backdrop-filter:blur(10px); border-radius:20px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
+  .menu-panel::-webkit-scrollbar{ display:none; }
+  .menu.open .menu-panel{ display:flex; }
+  .menu-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.95rem; transition:background 0.15s; }
+  .menu-panel a:hover{ background:#f0edff; }
+  .menu-panel a.active{ background:#ede9ff; color:#6a5cff; }
+  .menu-divider{ height:1px; background:#e7e3f5; margin:4px 6px; }
+  .menu-lang{ display:flex; flex-direction:column; gap:2px; padding:2px 0; }
+  .lang-btn{ display:flex; align-items:center; gap:11px; padding:10px 14px; border-radius:11px; border:none; cursor:pointer; background:transparent; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.95rem; text-align:left; width:100%; transition:background 0.15s; }
+  .lang-btn:hover{ background:#f0edff; }
+  .lang-btn.active{ background:#ede9ff; color:#6a5cff; }
 
   /* ---- Chargement ---- */
   #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:var(--loading-bg); text-align:center; padding:20px; color:var(--chrome-text); }
@@ -138,31 +139,31 @@
   </svg>
   <div id="mapTip"></div>
 
-  <div class="menu-globe" id="menuGlobe">
-    <button class="menu-globe-btn" id="menuGlobeBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
-    <div class="menu-globe-panel">
+  <div class="menu" id="menu">
+    <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">☰ Menu</button>
+    <div class="menu-panel">
       <a href="/">🏠 Accueil</a>
       <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
       <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
       <a href="/globe.html" class="active">🌍 Globe interactif</a>
       <a href="/mers.html">🌊 Mers &amp; Océans</a>
       <a href="/monuments.html">🏛 Monuments du Monde</a>
-      <div class="menu-globe-divider"></div>
-      <div class="menu-globe-divider"></div>
-      <div class="menu-globe-lang">
-        <button class="menu-globe-lang-btn active" data-lang="fr">🇫🇷 Français</button>
-        <button class="menu-globe-lang-btn" data-lang="en">🇬🇧 English</button>
-        <button class="menu-globe-lang-btn" data-lang="es">🇪🇸 Español</button>
+      <div class="menu-divider"></div>
+      <div class="menu-divider"></div>
+      <div class="menu-lang" id="menuLang">
+        <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+        <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+        <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
       </div>
-      <div class="menu-globe-divider"></div>
+      <div class="menu-divider"></div>
       <a href="/contact.html">📬 Contact</a>
     </div>
   </div>
   <script>
   (function(){
-    var m=document.getElementById('menuGlobe'),b=document.getElementById('menuGlobeBtn');
-    b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});
-    document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
   })();
   </script>
   <div class="top-right-btns">

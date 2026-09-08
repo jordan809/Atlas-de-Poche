@@ -1679,11 +1679,12 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
 // ---------- Options toolbar ----------
 const dirToggle=document.getElementById("dirToggle");
 dirToggle.onclick=()=>{
-  direction = direction==="cap" ? "country" : direction==="country" ? "flag" : "cap";
-  const labels = {cap: T().dirCap, country: T().dirCountry, flag: "🚩 Deviner depuis le drapeau"};
-  dirToggle.textContent = labels[direction];
-  document.getElementById("hintBtn").classList.toggle("hidden", direction !== "flag");
-  document.getElementById("hintBtn").classList.remove("active");
+  direction = direction==="cap" ? "flag" : "cap";
+  dirToggle.textContent = direction==="cap" ? T().dirCap : "🚩 Deviner le drapeau";
+  const hintBtn = document.getElementById("hintBtn");
+  hintBtn.classList.toggle("hidden", direction !== "flag");
+  hintBtn.classList.remove("active");
+  hintBtn.textContent = "💡 Aide";
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
 };

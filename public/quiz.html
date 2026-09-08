@@ -1191,6 +1191,8 @@ try { const ste = localStorage.getItem("atlasTypeErrors"); if(ste) savedTypeErro
 let lastRoundPool = null;           // série jouée au dernier tour (clavier)
 let lastTablePool = null;           // série jouée au dernier tableau
 let lastTableList = null;           // ordre affiché (après mélange) au dernier tableau
+let originalTablePool = null;       // pool d'origine (avant erreurs)
+let originalTableList = null;       // ordre affiché d'origine
 
 // ---------- Persisted records ----------
 const STORE_KEY = "capitales_records_v1";
@@ -1288,7 +1290,7 @@ CONTINENTS.forEach(name=>{
     activeFilter=[...activeFilters][0]||"Tous";
     if(activeMode==="study") renderStudy();
     else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
-    else if(activeMode==="type" && typeTableMode){ lastTablePool = null; lastTableList = null; renderTypeTable(true); }
+    else if(activeMode==="type" && typeTableMode){ lastTablePool = null; lastTableList = null; originalTablePool = null; originalTableList = null; renderTypeTable(true); }
     else startPlay();
   };
   filtersEl.appendChild(b);
@@ -1888,11 +1890,13 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   document.getElementById("typeTableSameBtn").classList.add("hidden");
   document.getElementById("typeTableLastErrBtn").classList.add("hidden");
 
+  const _isOriginal = !overridePool || overridePool === originalTablePool;
   const _basePool = overridePool || (lockFlagPos && lastTablePool && lastTablePool.length > 0 ? lastTablePool : pool());
-  const _isSameSeries = !overridePool || overridePool === lastTablePool;
+  const _isSameSeries = !overridePool || overridePool === lastTablePool || overridePool === originalTablePool;
   lastTablePool = _basePool.slice();
-  const list = (!doShuffle) ? lastTablePool.slice() : (lockFlagPos && lastTableList && lastTableList.length > 0 && _isSameSeries) ? lastTableList.slice() : shuffle(lastTablePool.slice());
+  const list = (!doShuffle) ? lastTablePool.slice() : (lockFlagPos && lastTableList && lastTableList.length > 0 && _isSameSeries) ? (overridePool === originalTablePool ? originalTableList.slice() : lastTableList.slice()) : shuffle(lastTablePool.slice());
   lastTableList = list.slice();
+  if(_isOriginal){ originalTablePool = lastTablePool.slice(); originalTableList = lastTableList.slice(); }
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
@@ -2005,7 +2009,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
       </div>`;
     document.body.appendChild(overlay);
     const _scrollTable = () => setTimeout(() => document.getElementById("typeTable").scrollIntoView({ behavior: "smooth", block: "start" }), 80);
-    overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true, lastTablePool); _scrollTable(); };
+    overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true, originalTablePool || lastTablePool); _scrollTable(); };
     overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); renderTypeTable(true, lastTablePool); _scrollTable(); };
     if(wrongItems.length>0){
       const _orderedErrors = lastTableList ? lastTableList.filter(d => wrongItems.some(w => w.c === d.c)) : wrongItems;
@@ -2018,7 +2022,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
 document.getElementById("typeTableSameBtn").onclick = () => {
   if(lastTablePool && lastTablePool.length>0){ renderTypeTable(true, lastTablePool); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
 };
-document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
+document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true, originalTablePool || undefined);
 document.getElementById("typeTableLastErrBtn").onclick = () => {
   if(lastTableErrors.length>0){
     const _ord = lastTableList ? lastTableList.filter(d => lastTableErrors.some(e => e.c === d.c)) : lastTableErrors;

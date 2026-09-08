@@ -773,6 +773,8 @@
     <button class="submode-btn active" id="subOne">🎯 Un par un</button>
     <button class="submode-btn" id="subAll">🗺️ Tous les drapeaux</button>
     <button class="toggle" id="flagsAnswerToggle">✍️ Réponse : écrire</button>
+    <button class="toggle active" id="flagsAutoAdvanceBtn">⚡ Auto-avance</button>
+    <button class="toggle active" id="flagsShowContinentBtn">🌍 Continent visible</button>
   </div>
 
   <section id="flagsAll" class="hidden">
@@ -1647,7 +1649,11 @@ function enterMode(mode){
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
-    flagsAllInProgress = false; // forcer la réinitialisation de la grille
+    flagsAllInProgress = false;
+    hard = false;
+    autoAdvanceOn = true;
+    const fab = document.getElementById("flagsAutoAdvanceBtn"); if(fab){ fab.classList.add("active"); }
+    const fcb = document.getElementById("flagsShowContinentBtn"); if(fcb){ fcb.textContent = "🌍 Continent visible"; fcb.classList.add("active"); }
     enterFlagsSubMode(flagsSubMode);
   }
   else if(isPvp){ pvpShowSection('pvpLobby'); }
@@ -2054,8 +2060,10 @@ function enterFlagsSubMode(sub){
   document.getElementById("subOne").classList.toggle("active", sub==="one");
   document.getElementById("subAll").classList.toggle("active", sub==="all");
 
-  // Le choix "écrire / 4 choix" n'a de sens qu'en mode "un par un"
+  // Ces boutons n'ont de sens qu'en mode "un par un"
   document.getElementById("flagsAnswerToggle").classList.toggle("hidden", sub!=="one");
+  document.getElementById("flagsAutoAdvanceBtn").classList.toggle("hidden", sub!=="one");
+  document.getElementById("flagsShowContinentBtn").classList.toggle("hidden", sub!=="one");
 
   if(sub === "all"){
     document.getElementById("flagsAll").classList.remove("hidden");
@@ -2077,6 +2085,18 @@ flagsAnswerToggle.onclick = () => {
   flagsAnswerMode = (flagsAnswerMode==="type") ? "qcm" : "type";
   flagsAnswerToggle.textContent = (flagsAnswerMode==="type") ? T().flagsWrite : T().flagsQcm;
   if(activeMode==="flags" && flagsSubMode==="one") startPlay();
+};
+document.getElementById("flagsAutoAdvanceBtn").onclick = () => {
+  autoAdvanceOn = !autoAdvanceOn;
+  document.getElementById("flagsAutoAdvanceBtn").classList.toggle("active", autoAdvanceOn);
+};
+document.getElementById("flagsShowContinentBtn").onclick = () => {
+  hard = !hard;
+  const btn = document.getElementById("flagsShowContinentBtn");
+  btn.textContent = hard ? "🌍 Continent caché" : "🌍 Continent visible";
+  btn.classList.toggle("active", !hard);
+  const cont = document.getElementById("qContinent");
+  if(cont) cont.classList.toggle("hidden-hint", hard);
 };
 document.getElementById("flagsRestartBtn").onclick = () => renderFlagsAll(true);
 document.getElementById("flagsStartChronoBtn").onclick = () => {

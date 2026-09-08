@@ -1873,7 +1873,7 @@ function renderFlagsAll(force=false){
 }
 
 // ---------- Tableau (mode Clavier) ----------
-function renderTypeTable(force=false, overridePool=null){
+function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   if(!overridePool) reviewPool = null; // ne pas hériter d'une session de révision du mode normal
   const key = overridePool ? "review" : activeFilter + "|" + direction;
   if(typeTableInProgress && !force && typeTablePool === key) return;
@@ -1891,7 +1891,7 @@ function renderTypeTable(force=false, overridePool=null){
   const _basePool = overridePool || (lockFlagPos && lastTablePool && lastTablePool.length > 0 ? lastTablePool : pool());
   const _isSameSeries = !overridePool || overridePool === lastTablePool;
   lastTablePool = _basePool.slice();
-  const list = (lockFlagPos && lastTableList && lastTableList.length > 0 && _isSameSeries) ? lastTableList.slice() : shuffle(lastTablePool.slice());
+  const list = (!doShuffle) ? lastTablePool.slice() : (lockFlagPos && lastTableList && lastTableList.length > 0 && _isSameSeries) ? lastTableList.slice() : shuffle(lastTablePool.slice());
   lastTableList = list.slice();
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
@@ -2008,7 +2008,8 @@ function renderTypeTable(force=false, overridePool=null){
     overlay.querySelector("#tblRestartBtn").onclick = () => { overlay.remove(); renderTypeTable(true); _scrollTable(); };
     overlay.querySelector("#tblSameBtn").onclick = () => { overlay.remove(); renderTypeTable(true, lastTablePool); _scrollTable(); };
     if(wrongItems.length>0){
-      overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, wrongItems); _scrollTable(); };
+      const _orderedErrors = lastTableList ? lastTableList.filter(d => wrongItems.some(w => w.c === d.c)) : wrongItems;
+      overlay.querySelector("#tblReviewBtn").onclick = () => { overlay.remove(); renderTypeTable(true, _orderedErrors, false); _scrollTable(); };
     }
     overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   };
@@ -2019,7 +2020,11 @@ document.getElementById("typeTableSameBtn").onclick = () => {
 };
 document.getElementById("typeTableRestartBtn").onclick = () => renderTypeTable(true);
 document.getElementById("typeTableLastErrBtn").onclick = () => {
-  if(lastTableErrors.length>0){ renderTypeTable(true, lastTableErrors); setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80); }
+  if(lastTableErrors.length>0){
+    const _ord = lastTableList ? lastTableList.filter(d => lastTableErrors.some(e => e.c === d.c)) : lastTableErrors;
+    renderTypeTable(true, _ord, false);
+    setTimeout(()=>document.getElementById("typeTable").scrollIntoView({behavior:"smooth",block:"start"}),80);
+  }
 };
 document.getElementById("typeTableChronoBtn").onclick = () => {
   const _pool = lastTablePool ? lastTablePool.slice() : null;

@@ -51,9 +51,14 @@
   .menu-globe-btn:hover{ filter:brightness(0.97); }
   .menu-globe-panel{ position:absolute; top:48px; left:0; min-width:215px; padding:8px; background:rgba(255,255,255,0.98); backdrop-filter:blur(10px); border-radius:16px; box-shadow:0 14px 36px rgba(0,0,0,0.3); display:none; flex-direction:column; gap:3px; }
   .menu-globe.open .menu-globe-panel{ display:flex; }
-  .menu-globe-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-weight:700; font-size:.95rem; transition:background 0.15s; }
+  .menu-globe-panel a{ display:flex; align-items:center; gap:11px; padding:11px 14px; border-radius:11px; text-decoration:none; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:800; font-size:.95rem; transition:background 0.15s; }
   .menu-globe-panel a:hover{ background:#f0edff; }
+  .menu-globe-panel a.active{ background:#ede9ff; color:#6a5cff; }
   .menu-globe-divider{ height:1px; background:#e7e3f5; margin:4px 6px; }
+  .menu-globe-lang{ display:flex; flex-direction:column; gap:2px; padding:2px 0; }
+  .menu-globe-lang-btn{ display:flex; align-items:center; gap:11px; padding:10px 14px; border-radius:11px; border:none; cursor:pointer; background:transparent; color:#2b2350; font-family:'Nunito',sans-serif; font-weight:800; font-size:.95rem; text-align:left; width:100%; transition:background 0.15s; }
+  .menu-globe-lang-btn:hover{ background:#f0edff; }
+  .menu-globe-lang-btn.active{ background:#ede9ff; color:#6a5cff; }
 
   /* ---- Chargement ---- */
   #loading{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:30; background:var(--loading-bg); text-align:center; padding:20px; color:var(--chrome-text); }
@@ -139,8 +144,16 @@
       <a href="/">🏠 Accueil</a>
       <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
       <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
-      <a href="/globe.html">🌍 Globe interactif</a>
+      <a href="/globe.html" class="active">🌍 Globe interactif</a>
       <a href="/mers.html">🌊 Mers &amp; Océans</a>
+      <a href="/monuments.html">🏛 Monuments du Monde</a>
+      <div class="menu-globe-divider"></div>
+      <div class="menu-globe-divider"></div>
+      <div class="menu-globe-lang">
+        <button class="menu-globe-lang-btn active" data-lang="fr">🇫🇷 Français</button>
+        <button class="menu-globe-lang-btn" data-lang="en">🇬🇧 English</button>
+        <button class="menu-globe-lang-btn" data-lang="es">🇪🇸 Español</button>
+      </div>
       <div class="menu-globe-divider"></div>
       <a href="/contact.html">📬 Contact</a>
     </div>

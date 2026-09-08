@@ -153,6 +153,22 @@
     padding: 4px 9px; border-radius: 20px; text-transform: uppercase;
   }
 
+  /* ---- CARD 5 : Monuments ---- */
+  .card-monuments .card-visual { background: linear-gradient(145deg, #78350f 0%, #92400e 45%, #b45309 100%); }
+  .monuments-scatter {
+    position: absolute; inset: 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 8px;
+  }
+  .monuments-scatter span {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; opacity: 0.5; transition: transform 0.2s, opacity 0.2s;
+  }
+  .card:hover .monuments-scatter span { opacity: 0.85; }
+  .card:hover .monuments-scatter span:nth-child(odd) { transform: scale(1.18) rotate(-4deg); }
+  .card:hover .monuments-scatter span:nth-child(even) { transform: scale(1.15) rotate(3deg); }
+
   /* ---- CARD 4 : Régions & Départements ---- */
   .card-regions .card-visual { background: linear-gradient(145deg, #1e3a8a 0%, #7c2d3f 55%, #b91c3c 100%); }
   .dept-scatter {
@@ -260,6 +276,23 @@
         <div class="card-desc">Explore &amp; devine les pays du monde</div>
       </div>
       <div class="card-cta">Découvrir →</div>
+    </div>
+  </a>
+
+  <a class="card card-monuments" href="/monuments.html">
+    <div class="card-visual">
+      <div class="monuments-scatter">
+        <span>🗼</span><span>🕌</span><span>🏛</span><span>🗽</span>
+        <span>🧱</span><span>⛩</span><span>🏯</span><span>🔺</span>
+        <span>🎭</span><span>🕍</span><span>🏰</span><span>🪨</span>
+      </div>
+    </div>
+    <div class="card-foot">
+      <div>
+        <div class="card-title">Monuments du Monde</div>
+        <div class="card-desc">Quiz & clavier sur les monuments</div>
+      </div>
+      <div class="card-cta">Jouer →</div>
     </div>
   </a>
 

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monuments du Monde – Atlas de Poche</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#c471ed; --bg2:#f64f59;
+  --ink:#1a1a2e; --card:#fff;
+  --accent:#e040fb;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Baloo 2',cursive;
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 100%);
+  color:var(--ink);
+}
+a{text-decoration:none;}
+
+/* NAV */
+nav{display:flex;align-items:center;gap:14px;padding:14px 20px;}
+.nav-back{color:#fff;font-size:0.9rem;font-weight:700;opacity:0.85;transition:opacity .2s;}
+.nav-back:hover{opacity:1;}
+.nav-title{color:#fff;font-size:1.1rem;font-weight:800;letter-spacing:0.5px;}
+
+/* MODES BAR */
+.modes-bar{display:flex;justify-content:center;gap:10px;padding:0 16px 16px;}
+.mode-btn{
+  background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.35);
+  color:#fff;font-family:'Baloo 2',cursive;font-size:0.95rem;font-weight:700;
+  padding:9px 22px;border-radius:50px;cursor:pointer;transition:all .2s;
+}
+.mode-btn.active{background:#fff;color:var(--ink);border-color:#fff;}
+.mode-btn:hover{background:rgba(255,255,255,0.3);}
+
+/* OPTIONS BAR */
+.options-bar{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:0 16px 14px;}
+.toggle{
+  background:rgba(255,255,255,0.18);border:2px solid rgba(255,255,255,0.35);
+  color:#fff;font-family:'Baloo 2',cursive;font-size:0.85rem;font-weight:700;
+  padding:7px 16px;border-radius:50px;cursor:pointer;transition:all .2s;
+}
+.toggle.active{background:rgba(255,255,255,0.9);color:var(--ink);border-color:#fff;}
+.toggle:hover{background:rgba(255,255,255,0.3);}
+.toggle.hidden{display:none!important;}
+.hint-revealed{background:rgba(255,255,255,0.9)!important;color:var(--ink)!important;border-color:#fff!important;}
+
+/* QUIZ CARD */
+#quizSection{max-width:520px;margin:0 auto;padding:0 16px 32px;}
+.q-card{
+  background:#fff;border-radius:var(--radius);
+  padding:28px 24px;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,0.18);
+  margin-bottom:16px;
+}
+.q-emoji{font-size:4rem;line-height:1;margin-bottom:10px;display:block;}
+.q-prompt{font-size:0.9rem;color:#888;margin-bottom:6px;}
+.q-monument{font-size:1.6rem;font-weight:800;color:var(--ink);margin-bottom:14px;}
+.hints-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.hint-btn{
+  background:rgba(0,0,0,0.07);border:2px solid rgba(0,0,0,0.12);
+  color:#555;font-family:'Baloo 2',cursive;font-size:0.8rem;font-weight:700;
+  padding:5px 14px;border-radius:50px;cursor:pointer;transition:all .2s;
+  min-width:80px;
+}
+.hint-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.hint-btn:disabled{opacity:0.45;cursor:default;}
+.hint-text{
+  font-size:0.82rem;color:#888;min-height:1.4em;margin-bottom:10px;
+  font-weight:600;
+}
+.feedback{font-size:1rem;font-weight:700;padding:8px 0;min-height:2em;}
+.feedback.good{color:#16a34a;}
+.feedback.bad{color:#dc2626;}
+
+/* Options quiz */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.opt{
+  background:rgba(0,0,0,0.05);border:2px solid rgba(0,0,0,0.1);
+  color:var(--ink);font-family:'Baloo 2',cursive;font-size:0.95rem;font-weight:700;
+  padding:12px 10px;border-radius:12px;cursor:pointer;transition:all .15s;text-align:center;
+}
+.opt:hover:not(:disabled){background:rgba(0,0,0,0.12);}
+.opt.correct{background:#dcfce7!important;border-color:#16a34a!important;color:#166534!important;}
+.opt.wrong{background:#fee2e2!important;border-color:#dc2626!important;color:#991b1b!important;}
+.opt.dim{opacity:0.4;}
+.opt:disabled{cursor:default;}
+
+/* Type input */
+.type-row{display:flex;gap:8px;margin-top:8px;}
+.type-input-q{
+  flex:1;padding:11px 14px;border:2px solid #e5e7eb;border-radius:12px;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:600;outline:none;
+}
+.type-input-q:focus{border-color:var(--accent);}
+.type-input-q.correct{border-color:#16a34a;background:#dcfce7;}
+.type-input-q.wrong{border-color:#dc2626;background:#fee2e2;}
+.validate-btn{
+  background:var(--accent);color:#fff;border:none;border-radius:12px;
+  padding:11px 18px;font-family:'Baloo 2',cursive;font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:background .2s;
+}
+.validate-btn:hover{background:#c026d3;}
+.validate-btn:disabled{opacity:0.5;cursor:default;}
+
+.next-btn{
+  display:block;width:100%;padding:13px;margin-top:14px;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;
+  border:none;border-radius:12px;font-family:'Baloo 2',cursive;
+  font-size:1rem;font-weight:800;cursor:pointer;transition:opacity .2s;
+  opacity:0;pointer-events:none;
+}
+.next-btn.show{opacity:1;pointer-events:auto;}
+
+/* Score */
+.score-bar{
+  display:flex;justify-content:center;gap:24px;padding:4px 0 14px;
+  font-size:0.9rem;font-weight:700;color:rgba(255,255,255,0.9);
+}
+
+/* TABLEAU */
+#tableauSection{max-width:900px;margin:0 auto;padding:0 16px 32px;}
+.tbl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.tbl-card{
+  background:#fff;border-radius:14px;padding:14px;
+  display:flex;flex-direction:column;gap:6px;align-items:center;
+  box-shadow:0 4px 16px rgba(0,0,0,0.12);
+}
+.tbl-emoji{font-size:2.2rem;}
+.tbl-name{font-size:0.95rem;font-weight:800;text-align:center;color:var(--ink);}
+.tbl-hints-cell{font-size:0.72rem;color:#888;font-weight:600;text-align:center;min-height:1.2em;}
+.tbl-input{
+  width:100%;padding:8px 12px;border:2px solid #e5e7eb;border-radius:10px;
+  font-family:'Baloo 2',cursive;font-size:0.9rem;font-weight:600;outline:none;
+  text-align:center;
+}
+.tbl-input:focus{border-color:var(--accent);}
+.tbl-input.correct{border-color:#16a34a;background:#dcfce7;}
+.tbl-input.wrong{border-color:#dc2626;background:#fee2e2;}
+.tbl-check-btn{
+  display:block;margin:18px auto 0;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;
+  border:none;border-radius:14px;padding:13px 40px;
+  font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;cursor:pointer;
+}
+
+/* Overlay */
+.score-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  display:flex;align-items:center;justify-content:center;z-index:200;
+}
+.score-modal{
+  background:#fff;border-radius:22px;padding:32px 28px;
+  text-align:center;max-width:340px;width:90%;
+  box-shadow:0 16px 60px rgba(0,0,0,0.3);
+}
+.score-emoji{font-size:3.2rem;margin-bottom:10px;}
+.score-big{font-size:2.6rem;font-weight:800;color:var(--ink);}
+.score-pct{font-size:1.1rem;font-weight:700;color:#888;margin-bottom:6px;}
+.score-btn{
+  display:block;width:100%;margin-top:12px;padding:12px;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;
+  border:none;border-radius:12px;font-family:'Baloo 2',cursive;
+  font-size:0.95rem;font-weight:800;cursor:pointer;
+}
+
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="/">← Accueil</a>
+  <span class="nav-title">🏛 Monuments du Monde</span>
+</nav>
+
+<div class="modes-bar">
+  <button class="mode-btn active" id="modeQuizBtn">🎯 Quiz</button>
+  <button class="mode-btn" id="modeTableauBtn">⌨️ Tableau</button>
+</div>
+
+<div class="options-bar" id="optionsBar">
+  <button class="toggle active" id="answerModeBtn">✍️ Écrire</button>
+  <button class="toggle hidden" id="tblHint1Btn">🌍 Continent</button>
+  <button class="toggle hidden" id="tblHint2Btn">🗺️ Pays</button>
+  <button class="toggle hidden" id="tblHint3Btn">🏙️ Ville</button>
+  <button class="toggle hidden" id="tblRestartBtn">🎲 Nouvelle série</button>
+  <button class="toggle hidden" id="tblCheckBtn">✅ Vérifier</button>
+</div>
+
+<!-- QUIZ -->
+<section id="quizSection">
+  <div class="score-bar">
+    <span id="scoreDisplay">✅ 0</span>
+    <span id="streakDisplay">🔥 0</span>
+    <span id="totalDisplay">📍 0 / ?</span>
+  </div>
+  <div class="q-card" id="qCard">
+    <span class="q-emoji" id="qEmoji">🏛</span>
+    <div class="q-prompt">Quel est ce monument ?</div>
+    <div class="q-monument hidden" id="qMonument"></div>
+    <div class="hints-row">
+      <button class="hint-btn" id="hint1Btn">🌍 Continent</button>
+      <button class="hint-btn" id="hint2Btn">🗺️ Pays</button>
+      <button class="hint-btn" id="hint3Btn">🏙️ Ville</button>
+    </div>
+    <div class="hint-text" id="hintText"></div>
+    <div id="optionsDiv" class="options"></div>
+    <div id="typeRowDiv" class="type-row hidden">
+      <input class="type-input-q" id="typeInputQ" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du monument…">
+      <button class="validate-btn" id="validateBtnQ">OK</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn">Question suivante →</button>
+  </div>
+</section>
+
+<!-- TABLEAU -->
+<section id="tableauSection" class="hidden">
+  <div class="tbl-grid" id="tblGrid"></div>
+  <button class="tbl-check-btn hidden" id="tblCheckBtnMain">✅ Vérifier mes réponses</button>
+</section>
+
+<script>
+// ==================== DONNÉES ====================
+const MONUMENTS = [
+  {name:"Tour Eiffel",       emoji:"🗼", city:"Paris",          country:"France",        continent:"Europe"},
+  {name:"Big Ben",            emoji:"🕰️", city:"Londres",        country:"Royaume-Uni",   continent:"Europe"},
+  {name:"Colisée",            emoji:"🏛️", city:"Rome",           country:"Italie",        continent:"Europe"},
+  {name:"Sagrada Família",    emoji:"⛪", city:"Barcelone",      country:"Espagne",       continent:"Europe"},
+  {name:"Tour de Pise",       emoji:"🏗️", city:"Pise",           country:"Italie",        continent:"Europe"},
+  {name:"Acropole",           emoji:"🏺", city:"Athènes",        country:"Grèce",         continent:"Europe"},
+  {name:"Kremlin",            emoji:"🏰", city:"Moscou",         country:"Russie",        continent:"Europe"},
+  {name:"Alhambra",           emoji:"🏯", city:"Grenade",        country:"Espagne",       continent:"Europe"},
+  {name:"Mont-Saint-Michel",  emoji:"🏝️", city:"Normandie",      country:"France",        continent:"Europe"},
+  {name:"Stonehenge",         emoji:"🪨", city:"Salisbury",      country:"Royaume-Uni",   continent:"Europe"},
+  {name:"Château Neuschwanstein", emoji:"🏰", city:"Bavière",    country:"Allemagne",     continent:"Europe"},
+  {name:"Palais de Versailles",emoji:"👑", city:"Versailles",    country:"France",        continent:"Europe"},
+  {name:"Brandenburger Tor",  emoji:"🚪", city:"Berlin",         country:"Allemagne",     continent:"Europe"},
+  {name:"Pyramides de Gizeh", emoji:"🔺", city:"Le Caire",       country:"Égypte",        continent:"Afrique"},
+  {name:"Sphinx de Gizeh",    emoji:"🦁", city:"Le Caire",       country:"Égypte",        continent:"Afrique"},
+  {name:"Victoria Falls",     emoji:"💧", city:"Livingstone",    country:"Zambie",        continent:"Afrique"},
+  {name:"Kilimandjaro",       emoji:"🏔️", city:"Arusha",         country:"Tanzanie",      continent:"Afrique"},
+  {name:"Statue de la Liberté",emoji:"🗽",city:"New York",       country:"États-Unis",    continent:"Amérique du Nord"},
+  {name:"Empire State Building",emoji:"🏢",city:"New York",      country:"États-Unis",    continent:"Amérique du Nord"},
+  {name:"Grand Canyon",       emoji:"🏜️", city:"Arizona",        country:"États-Unis",    continent:"Amérique du Nord"},
+  {name:"Golden Gate Bridge", emoji:"🌉", city:"San Francisco",  country:"États-Unis",    continent:"Amérique du Nord"},
+  {name:"Chichen Itza",       emoji:"🔺", city:"Yucatán",        country:"Mexique",       continent:"Amérique du Nord"},
+  {name:"Niagara Falls",      emoji:"🌊", city:"Ontario",        country:"Canada",        continent:"Amérique du Nord"},
+  {name:"Machu Picchu",       emoji:"🏔️", city:"Cusco",          country:"Pérou",         continent:"Amérique du Sud"},
+  {name:"Christ Rédempteur",  emoji:"✝️", city:"Rio de Janeiro", country:"Brésil",        continent:"Amérique du Sud"},
+  {name:"Chutes d'Iguazú",    emoji:"💦", city:"Puerto Iguazú",  country:"Argentine",     continent:"Amérique du Sud"},
+  {name:"Taj Mahal",          emoji:"🕌", city:"Agra",           country:"Inde",          continent:"Asie"},
+  {name:"Grande Muraille",    emoji:"🧱", city:"Pékin",          country:"Chine",         continent:"Asie"},
+  {name:"Angkor Wat",         emoji:"⛩️", city:"Siem Reap",      country:"Cambodge",      continent:"Asie"},
+  {name:"Burj Khalifa",       emoji:"🏙️", city:"Dubaï",          country:"Émirats arabes unis", continent:"Asie"},
+  {name:"Mont Fuji",          emoji:"🗻", city:"Shizuoka",       country:"Japon",         continent:"Asie"},
+  {name:"Petra",              emoji:"🏺", city:"Ma'an",          country:"Jordanie",      continent:"Asie"},
+  {name:"Hagia Sophia",       emoji:"🕌", city:"Istanbul",       country:"Turquie",       continent:"Asie"},
+  {name:"Borobudur",          emoji:"☸️", city:"Magelang",       country:"Indonésie",     continent:"Asie"},
+  {name:"Mur des Lamentations",emoji:"🕍",city:"Jérusalem",      country:"Israël",        continent:"Asie"},
+  {name:"Opéra de Sydney",    emoji:"🎭", city:"Sydney",         country:"Australie",     continent:"Océanie"},
+  {name:"Uluru",              emoji:"🪨", city:"Territoire du Nord", country:"Australie", continent:"Océanie"},
+];
+
+// ==================== ÉTAT ====================
+let activeMode = "quiz";
+let answerMode = "qcm"; // "qcm" | "type"
+let currentItem = null;
+let answered = false;
+let score = 0, streak = 0, total = 0;
+let bag = [];
+let hintsShown = 0; // 0-3
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
+
+// ==================== QUIZ ====================
+function refillBag(){ bag = shuffle(MONUMENTS).slice(0, 20); }
+
+function nextQuestion(){
+  if(bag.length === 0) refillBag();
+  const q = bag.shift();
+  currentItem = q;
+  answered = false;
+  hintsShown = 0;
+  document.getElementById("hintText").textContent = "";
+  document.getElementById("hint1Btn").classList.remove("active");
+  document.getElementById("hint2Btn").classList.remove("active");
+  document.getElementById("hint3Btn").classList.remove("active");
+  document.getElementById("hint1Btn").disabled = false;
+  document.getElementById("hint2Btn").disabled = false;
+  document.getElementById("hint3Btn").disabled = false;
+  document.getElementById("qEmoji").textContent = q.emoji;
+  document.getElementById("qMonument").textContent = q.name;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("nextBtn").classList.remove("show");
+
+  if(answerMode === "qcm") buildOptions(q);
+  else buildTypeRow(q);
+  updateScore();
+}
+
+function buildOptions(q){
+  document.getElementById("optionsDiv").classList.remove("hidden");
+  document.getElementById("typeRowDiv").classList.add("hidden");
+  const others = shuffle(MONUMENTS.filter(m=>m.name!==q.name)).slice(0,3);
+  const choices = shuffle([q, ...others]);
+  const div = document.getElementById("optionsDiv");
+  div.innerHTML = "";
+  choices.forEach(m=>{
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.textContent = m.name;
+    btn.onclick = () => chooseOpt(btn, m.name === q.name);
+    div.appendChild(btn);
+  });
+}
+
+function buildTypeRow(q){
+  document.getElementById("optionsDiv").classList.add("hidden");
+  document.getElementById("typeRowDiv").classList.remove("hidden");
+  const input = document.getElementById("typeInputQ");
+  const valBtn = document.getElementById("validateBtnQ");
+  input.value = ""; input.disabled = false; input.className = "type-input-q";
+  valBtn.disabled = false;
+  setTimeout(()=>input.focus({preventScroll:true}),30);
+}
+
+function chooseOpt(btn, correct){
+  if(answered) return; answered = true;
+  const q = currentItem;
+  if(correct){
+    btn.classList.add("correct");
+    document.getElementById("feedback").textContent = "✅ Bravo !";
+    document.getElementById("feedback").className = "feedback good";
+    score++; streak++;
+  } else {
+    btn.classList.add("wrong");
+    document.getElementById("feedback").textContent = `❌ C'est : ${q.name}`;
+    document.getElementById("feedback").className = "feedback bad";
+    streak = 0;
+    document.querySelectorAll(".opt").forEach(b=>{ if(b.textContent===q.name) b.classList.add("correct"); else if(b!==btn) b.classList.add("dim"); });
+  }
+  document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
+  total++;
+  updateScore();
+  document.getElementById("nextBtn").classList.add("show");
+}
+
+function checkTyped(){
+  if(answered) return; answered = true;
+  const q = currentItem;
+  const input = document.getElementById("typeInputQ");
+  const correct = norm(input.value) === norm(q.name) && input.value.trim() !== "";
+  input.disabled = true;
+  document.getElementById("validateBtnQ").disabled = true;
+  if(correct){
+    input.classList.add("correct");
+    document.getElementById("feedback").textContent = "✅ Bravo !";
+    document.getElementById("feedback").className = "feedback good";
+    score++; streak++;
+  } else {
+    input.classList.add("wrong");
+    document.getElementById("feedback").textContent = `❌ C'est : ${q.name}`;
+    document.getElementById("feedback").className = "feedback bad";
+    streak = 0;
+  }
+  total++;
+  updateScore();
+  document.getElementById("nextBtn").classList.add("show");
+}
+
+function updateScore(){
+  document.getElementById("scoreDisplay").textContent = `✅ ${score}`;
+  document.getElementById("streakDisplay").textContent = `🔥 ${streak}`;
+  document.getElementById("totalDisplay").textContent = `📍 ${total} / ${total+bag.length+1}`;
+}
+
+// Hints
+function showHint(level){
+  if(!currentItem) return;
+  const q = currentItem;
+  const texts = ["", q.continent, q.country, q.city];
+  const labels = ["", "🌍 Continent : ", "🗺️ Pays : ", "🏙️ Ville : "];
+  // Afficher tous les hints jusqu'au level demandé
+  hintsShown = level;
+  let display = [];
+  for(let i=1;i<=level;i++) display.push(labels[i]+texts[i]);
+  document.getElementById("hintText").textContent = display.join("  ·  ");
+  for(let i=1;i<=3;i++){
+    const btn = document.getElementById(`hint${i}Btn`);
+    btn.classList.toggle("active", i<=level);
+    btn.disabled = i <= level;
+  }
+}
+
+document.getElementById("hint1Btn").onclick = () => showHint(1);
+document.getElementById("hint2Btn").onclick = () => showHint(2);
+document.getElementById("hint3Btn").onclick = () => showHint(3);
+document.getElementById("nextBtn").onclick = () => nextQuestion();
+document.getElementById("validateBtnQ").onclick = () => checkTyped();
+document.getElementById("typeInputQ").addEventListener("keydown", e=>{ if(e.key==="Enter") checkTyped(); });
+
+// ==================== MODE SWITCH ====================
+document.getElementById("answerModeBtn").onclick = () => {
+  answerMode = answerMode === "qcm" ? "type" : "qcm";
+  document.getElementById("answerModeBtn").textContent = answerMode === "qcm" ? "🎲 4 choix" : "✍️ Écrire";
+  nextQuestion();
+};
+
+document.getElementById("modeQuizBtn").onclick = () => enterMode("quiz");
+document.getElementById("modeTableauBtn").onclick = () => enterMode("tableau");
+
+function enterMode(mode){
+  activeMode = mode;
+  document.getElementById("modeQuizBtn").classList.toggle("active", mode==="quiz");
+  document.getElementById("modeTableauBtn").classList.toggle("active", mode==="tableau");
+  document.getElementById("quizSection").classList.toggle("hidden", mode!=="quiz");
+  document.getElementById("tableauSection").classList.toggle("hidden", mode!=="tableau");
+  document.getElementById("answerModeBtn").classList.toggle("hidden", mode!=="quiz");
+  document.getElementById("tblHint1Btn").classList.toggle("hidden", mode!=="tableau");
+  document.getElementById("tblHint2Btn").classList.toggle("hidden", mode!=="tableau");
+  document.getElementById("tblHint3Btn").classList.toggle("hidden", mode!=="tableau");
+  document.getElementById("tblRestartBtn").classList.toggle("hidden", mode!=="tableau");
+  document.getElementById("tblCheckBtn").classList.toggle("hidden", mode!=="tableau");
+  if(mode === "quiz"){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
+  else renderTableau();
+}
+
+// ==================== TABLEAU ====================
+let tblList = [];
+
+function renderTableau(){
+  tblList = shuffle(MONUMENTS);
+  const grid = document.getElementById("tblGrid");
+  grid.innerHTML = "";
+  // Reset hints
+  ["tblHint1Btn","tblHint2Btn","tblHint3Btn"].forEach(id=>{
+    const b=document.getElementById(id);
+    b.classList.remove("hint-revealed","active");
+  });
+  document.getElementById("tblCheckBtnMain").classList.add("hidden");
+
+  tblList.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "tbl-card";
+    card.innerHTML = `
+      <div class="tbl-emoji">${m.emoji}</div>
+      <div class="tbl-name">${m.name}</div>
+      <div class="tbl-hints-cell" data-continent="${m.continent}" data-country="${m.country}" data-city="${m.city}"></div>
+      <input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Quelle ville ?">
+    `;
+    card._item = m;
+    grid.appendChild(card);
+  });
+  document.getElementById("tblCheckBtnMain").classList.remove("hidden");
+}
+
+// Hints tableau
+let tblHintLevel = 0;
+function setTblHint(level){
+  tblHintLevel = level;
+  document.querySelectorAll(".tbl-hints-cell").forEach(cell=>{
+    const parts = [];
+    if(level>=1) parts.push("🌍 "+cell.dataset.continent);
+    if(level>=2) parts.push("🗺️ "+cell.dataset.country);
+    if(level>=3) parts.push("🏙️ "+cell.dataset.city);
+    cell.textContent = parts.join("  ·  ");
+  });
+  for(let i=1;i<=3;i++){
+    const b = document.getElementById(`tblHint${i}Btn`);
+    b.classList.toggle("active", i<=level);
+  }
+}
+
+document.getElementById("tblHint1Btn").onclick = () => setTblHint(Math.max(tblHintLevel,1)===1 && tblHintLevel===1 ? 0 : 1);
+document.getElementById("tblHint2Btn").onclick = () => setTblHint(2);
+document.getElementById("tblHint3Btn").onclick = () => setTblHint(3);
+document.getElementById("tblRestartBtn").onclick = () => { tblHintLevel=0; renderTableau(); };
+
+document.getElementById("tblCheckBtnMain").onclick = () => {
+  let correct=0, total=0;
+  document.querySelectorAll("#tblGrid .tbl-card").forEach(card=>{
+    const input = card.querySelector(".tbl-input");
+    const m = card._item;
+    if(!input || input.disabled) return;
+    total++;
+    input.disabled = true;
+    if(norm(input.value) === norm(m.city)){
+      input.classList.add("correct"); correct++;
+    } else {
+      input.classList.add("wrong");
+      input.value = m.city;
+    }
+  });
+  const pct = total ? Math.round(correct/total*100) : 0;
+  const emoji = pct===100?"🏆":pct>=75?"🎉":pct>=50?"👍":"💪";
+  const overlay = document.createElement("div");
+  overlay.className = "score-overlay";
+  overlay.innerHTML = `<div class="score-modal">
+    <div class="score-emoji">${emoji}</div>
+    <div class="score-big">${correct} / ${total}</div>
+    <div class="score-pct">${pct}%</div>
+    <button class="score-btn" id="overlayRestart">🎲 Nouvelle série</button>
+    <button class="score-btn" style="margin-top:8px;background:rgba(0,0,0,0.08);color:#333;" id="overlayClose">Voir mes réponses</button>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector("#overlayRestart").onclick = () => { overlay.remove(); tblHintLevel=0; renderTableau(); };
+  overlay.querySelector("#overlayClose").onclick = () => overlay.remove();
+  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
+};
+
+// ==================== INIT ====================
+refillBag();
+nextQuestion();
+</script>
+</body>
+</html>

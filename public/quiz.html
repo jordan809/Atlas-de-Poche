@@ -748,7 +748,6 @@
     <button class="mode-btn" data-mode="quiz">🎯 Quiz</button>
     <button class="mode-btn" data-mode="type">⌨️ Clavier</button>
     <button class="mode-btn" data-mode="timed">⏱️ Défi</button>
-    <button class="mode-btn" data-mode="flags">🚩 Drapeaux</button>
     <button class="mode-btn" data-mode="pvp">⚔️ 1v1</button>
   </div>
 
@@ -757,6 +756,7 @@
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
     <button class="toggle hidden active" id="typeFlagToggle">🏳️ Drapeau visible</button>
     <button class="toggle hidden active" id="autoAdvanceToggle">⚡ Auto-avance</button>
+    <button class="toggle hidden" id="hintBtn">💡 Aide</button>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -1233,6 +1233,7 @@ function drawNext(){
 }
 function questionLabel(d){ return direction==="cap" ? d.c : d.cap; }
 function answerLabel(d){ return direction==="cap" ? d.cap : d.c; }
+// direction="flag" → deviner le nom du pays depuis le drapeau
 // Texte des propositions QCM : en mode Drapeau on devine le PAYS, sinon selon le sens choisi.
 function optLabel(d){ return activeMode==="flags" ? d.c : answerLabel(d); }
 function currentAnswer(){ return activeMode==="flags" ? currentItem.c : answerLabel(currentItem); }
@@ -1373,11 +1374,17 @@ function nextQuestion(){
     promptEl.textContent=T().promptCap;
     flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.c;
+  } else if(direction==="flag"){
+    promptEl.textContent="🚩 Quel est ce pays ?";
+    flagEl.innerHTML=flagImg(q.f, 80);
+    mainEl.textContent="";
   } else {
     promptEl.textContent=T().promptCountry;
     flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
     mainEl.textContent=q.cap;
   }
+  const hintBtn = document.getElementById("hintBtn");
+  if(hintBtn){ hintBtn.classList.remove("active"); hintBtn.textContent = "💡 Aide"; }
   // restart flag pop animation
   flagEl.style.animation="none"; void flagEl.offsetWidth; flagEl.style.animation="";
 
@@ -1626,6 +1633,9 @@ function enterMode(mode){
   autoAdvanceOn = true;
   const aat = document.getElementById("autoAdvanceToggle");
   if(aat) aat.classList.add("active");
+  direction = "cap";
+  const dtgl = document.getElementById("dirToggle"); if(dtgl) dtgl.textContent = T().dirCap;
+  const hintBtn = document.getElementById("hintBtn"); if(hintBtn){ hintBtn.classList.add("hidden"); hintBtn.classList.remove("active"); hintBtn.textContent="💡 Aide"; }
   filtersEl.classList.remove('locked'); // déverrouiller les continents en changeant de mode
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
@@ -1669,8 +1679,11 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
 // ---------- Options toolbar ----------
 const dirToggle=document.getElementById("dirToggle");
 dirToggle.onclick=()=>{
-  direction = direction==="cap" ? "country" : "cap";
-  dirToggle.textContent = direction==="cap" ? T().dirCap : T().dirCountry;
+  direction = direction==="cap" ? "country" : direction==="country" ? "flag" : "cap";
+  const labels = {cap: T().dirCap, country: T().dirCountry, flag: "🚩 Deviner depuis le drapeau"};
+  dirToggle.textContent = labels[direction];
+  document.getElementById("hintBtn").classList.toggle("hidden", direction !== "flag");
+  document.getElementById("hintBtn").classList.remove("active");
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
 };
@@ -1691,6 +1704,28 @@ typeFlagToggle.onclick=()=>{
   typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
   typeFlagToggle.classList.toggle("active", showFlag);
   if(activeMode!=="study" && !typeTableMode) nextQuestion();
+};
+document.getElementById("hintBtn").onclick = () => {
+  const btn = document.getElementById("hintBtn");
+  btn.classList.toggle("active");
+  const isActive = btn.classList.contains("active");
+  if(activeMode==="type" && typeTableMode){
+    // Mode tableau : afficher/cacher les capitales dans chaque ligne
+    document.querySelectorAll("#typeTableGrid .tbl-hint").forEach(hint => {
+      const item = hint.closest(".tbl-row")._item;
+      hint.textContent = isActive && item ? item.cap : "";
+    });
+  } else {
+    // Mode quiz/clavier : afficher/cacher la capitale sous le drapeau
+    const mainEl = document.getElementById("qCountry");
+    if(isActive){
+      mainEl.textContent = currentItem ? currentItem.cap : "";
+      btn.textContent = "💡 " + (currentItem ? currentItem.cap : "");
+    } else {
+      mainEl.textContent = "";
+      btn.textContent = "💡 Aide";
+    }
+  }
 };
 const autoAdvanceToggle=document.getElementById("autoAdvanceToggle");
 autoAdvanceToggle.onclick=()=>{
@@ -1911,6 +1946,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   checkBtn.textContent = T().verify;
 
   let _firstFocusDone = false;
+  const hintActive = document.getElementById("hintBtn") && document.getElementById("hintBtn").classList.contains("active");
   list.forEach(d => {
     const answer = direction==="cap" ? d.cap : d.c;
     const row = document.createElement("div");
@@ -1918,14 +1954,19 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
     row.dataset.answer = answer;
     row._item = d;
     const flagHtml = `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>`;
-    const countryHtml = direction==="cap"
-      ? `<div class="tbl-given">${d.c}</div>`
-      : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
-    const capitalHtml = direction==="cap"
-      ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
-      : `<div class="tbl-given">${d.cap}</div>`;
-    // Le drapeau (si affiché) se place toujours au-dessus de la case pays, qu'elle soit donnée ou à deviner.
-    row.innerHTML = (showTableFlag ? flagHtml : "") + countryHtml + capitalHtml;
+    let countryHtml, capitalHtml;
+    if(direction==="flag"){
+      countryHtml = `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
+      capitalHtml = `<div class="tbl-hint" style="font-size:0.8rem;color:#888;min-height:1.2em;">${hintActive ? d.cap : ""}</div>`;
+    } else {
+      countryHtml = direction==="cap"
+        ? `<div class="tbl-given">${d.c}</div>`
+        : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
+      capitalHtml = direction==="cap"
+        ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
+        : `<div class="tbl-given">${d.cap}</div>`;
+    }
+    row.innerHTML = flagHtml + countryHtml + capitalHtml;
     const input = row.querySelector(".tbl-input");
     input.addEventListener("focus", () => {
       if(!_firstFocusDone){ _firstFocusDone=true; input.scrollIntoView({behavior:"smooth",block:"center"}); }

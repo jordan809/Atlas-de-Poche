@@ -2361,8 +2361,8 @@ function applyLang(){
   document.querySelector('[data-mode="quiz"]').textContent  = t.modeQuiz;
   document.querySelector('[data-mode="type"]').textContent  = t.modeType;
   document.querySelector('[data-mode="timed"]').textContent = t.modeTimed;
-  document.querySelector('[data-mode="flags"]').textContent = t.modeFlags;
-  document.querySelector('[data-mode="pvp"]').textContent   = t.modePvp;
+  const fl = document.querySelector('[data-mode="flags"]'); if(fl) fl.textContent = t.modeFlags;
+  const pv = document.querySelector('[data-mode="pvp"]'); if(pv) pv.textContent   = t.modePvp;
   // Options bar
   const dir = document.getElementById("dirToggle");
   if(dir) dir.textContent = direction==="cap" ? t.dirCap : t.dirCountry;

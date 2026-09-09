@@ -293,43 +293,112 @@ a{text-decoration:none;}
 <script>
 // ==================== DONNÉES ====================
 const MONUMENTS = [
-  {name:"Tour Eiffel",          emoji:"🗼", city:"Paris",              country:"France",              continent:"Europe",          wiki:"Eiffel_Tower"},
-  {name:"Big Ben",               emoji:"🕰️",city:"Londres",            country:"Royaume-Uni",         continent:"Europe",          wiki:"Big_Ben"},
-  {name:"Colisée",               emoji:"🏛️",city:"Rome",               country:"Italie",              continent:"Europe",          wiki:"Colosseum"},
-  {name:"Sagrada Família",       emoji:"⛪", city:"Barcelone",          country:"Espagne",             continent:"Europe",          wiki:"Sagrada_Família"},
-  {name:"Tour de Pise",          emoji:"🗼", city:"Pise",               country:"Italie",              continent:"Europe",          wiki:"Leaning_Tower_of_Pisa"},
-  {name:"Acropole",              emoji:"🏺", city:"Athènes",            country:"Grèce",               continent:"Europe",          wiki:"Acropolis_of_Athens"},
-  {name:"Kremlin",               emoji:"🏰", city:"Moscou",             country:"Russie",              continent:"Europe",          wiki:"Moscow_Kremlin"},
-  {name:"Alhambra",              emoji:"🏯", city:"Grenade",            country:"Espagne",             continent:"Europe",          wiki:"Alhambra"},
-  {name:"Mont-Saint-Michel",     emoji:"🏝️",city:"Normandie",          country:"France",              continent:"Europe",          wiki:"Mont-Saint-Michel"},
-  {name:"Stonehenge",            emoji:"🪨", city:"Salisbury",          country:"Royaume-Uni",         continent:"Europe",          wiki:"Stonehenge"},
-  {name:"Château Neuschwanstein",emoji:"🏰", city:"Bavière",            country:"Allemagne",           continent:"Europe",          wiki:"Neuschwanstein_Castle"},
-  {name:"Palais de Versailles",  emoji:"👑", city:"Versailles",         country:"France",              continent:"Europe",          wiki:"Palace_of_Versailles"},
-  {name:"Porte de Brandebourg",  emoji:"🚪", city:"Berlin",             country:"Allemagne",           continent:"Europe",          wiki:"Brandenburg_Gate"},
-  {name:"Pyramides de Gizeh",    emoji:"🔺", city:"Le Caire",           country:"Égypte",              continent:"Afrique",         wiki:"Great_Pyramid_of_Giza"},
-  {name:"Sphinx de Gizeh",       emoji:"🦁", city:"Le Caire",           country:"Égypte",              continent:"Afrique",         wiki:"Great_Sphinx_of_Giza"},
-  {name:"Chutes Victoria",       emoji:"💧", city:"Livingstone",        country:"Zambie",              continent:"Afrique",         wiki:"Victoria_Falls"},
-  {name:"Kilimandjaro",          emoji:"🏔️",city:"Arusha",             country:"Tanzanie",            continent:"Afrique",         wiki:"Mount_Kilimanjaro"},
-  {name:"Statue de la Liberté",  emoji:"🗽", city:"New York",           country:"États-Unis",          continent:"Amérique du Nord",wiki:"Statue_of_Liberty"},
-  {name:"Empire State Building", emoji:"🏢", city:"New York",           country:"États-Unis",          continent:"Amérique du Nord",wiki:"Empire_State_Building"},
-  {name:"Grand Canyon",          emoji:"🏜️",city:"Arizona",            country:"États-Unis",          continent:"Amérique du Nord",wiki:"Grand_Canyon"},
-  {name:"Golden Gate Bridge",    emoji:"🌉", city:"San Francisco",      country:"États-Unis",          continent:"Amérique du Nord",wiki:"Golden_Gate_Bridge"},
-  {name:"Chichen Itza",          emoji:"🔺", city:"Yucatán",            country:"Mexique",             continent:"Amérique du Nord",wiki:"Chichen_Itza"},
-  {name:"Niagara Falls",         emoji:"🌊", city:"Ontario",            country:"Canada",              continent:"Amérique du Nord",wiki:"Niagara_Falls"},
-  {name:"Machu Picchu",          emoji:"🏔️",city:"Cusco",              country:"Pérou",               continent:"Amérique du Sud", wiki:"Machu_Picchu"},
-  {name:"Christ Rédempteur",     emoji:"✝️", city:"Rio de Janeiro",     country:"Brésil",              continent:"Amérique du Sud", wiki:"Christ_the_Redeemer_(statue)"},
-  {name:"Chutes d'Iguazú",       emoji:"💦", city:"Puerto Iguazú",      country:"Argentine",           continent:"Amérique du Sud", wiki:"Iguazu_Falls"},
-  {name:"Taj Mahal",             emoji:"🕌", city:"Agra",               country:"Inde",                continent:"Asie",            wiki:"Taj_Mahal"},
-  {name:"Grande Muraille",       emoji:"🧱", city:"Pékin",              country:"Chine",               continent:"Asie",            wiki:"Great_Wall_of_China"},
-  {name:"Angkor Wat",            emoji:"⛩️",city:"Siem Reap",          country:"Cambodge",            continent:"Asie",            wiki:"Angkor_Wat"},
-  {name:"Burj Khalifa",          emoji:"🏙️",city:"Dubaï",              country:"Émirats arabes unis", continent:"Asie",            wiki:"Burj_Khalifa"},
-  {name:"Mont Fuji",             emoji:"🗻", city:"Shizuoka",           country:"Japon",               continent:"Asie",            wiki:"Mount_Fuji"},
-  {name:"Petra",                 emoji:"🏺", city:"Ma'an",              country:"Jordanie",            continent:"Asie",            wiki:"Petra"},
-  {name:"Hagia Sophia",          emoji:"🕌", city:"Istanbul",           country:"Turquie",             continent:"Asie",            wiki:"Hagia_Sophia"},
-  {name:"Borobudur",             emoji:"☸️", city:"Magelang",           country:"Indonésie",           continent:"Asie",            wiki:"Borobudur"},
-  {name:"Mur des Lamentations",  emoji:"🕍", city:"Jérusalem",          country:"Israël",              continent:"Asie",            wiki:"Western_Wall"},
-  {name:"Opéra de Sydney",       emoji:"🎭", city:"Sydney",             country:"Australie",           continent:"Océanie",         wiki:"Sydney_Opera_House"},
-  {name:"Uluru",                 emoji:"🪨", city:"Territoire du Nord", country:"Australie",           continent:"Océanie",         wiki:"Uluru"},
+  // ── Europe ──────────────────────────────────────────────────────────────
+  {name:"Tour Eiffel",                        emoji:"🗼", city:"Paris",                 country:"France",              continent:"Europe",          wiki:"Eiffel_Tower"},
+  {name:"Arc de Triomphe",                    emoji:"🏛️",city:"Paris",                 country:"France",              continent:"Europe",          wiki:"Arc_de_Triomphe"},
+  {name:"Mont-Saint-Michel",                  emoji:"🏝️",city:"Le Mont-Saint-Michel",  country:"France",              continent:"Europe",          wiki:"Mont-Saint-Michel"},
+  {name:"Cathédrale Notre-Dame",              emoji:"⛪", city:"Paris",                 country:"France",              continent:"Europe",          wiki:"Notre-Dame_de_Paris"},
+  {name:"Colisée",                            emoji:"🏛️",city:"Rome",                  country:"Italie",              continent:"Europe",          wiki:"Colosseum"},
+  {name:"Tour de Pise",                       emoji:"🗼", city:"Pise",                  country:"Italie",              continent:"Europe",          wiki:"Leaning_Tower_of_Pisa"},
+  {name:"Basilique Saint-Pierre",             emoji:"⛪", city:"Vatican",               country:"Italie",              continent:"Europe",          wiki:"St._Peter's_Basilica"},
+  {name:"Duomo de Milan",                     emoji:"⛪", city:"Milan",                 country:"Italie",              continent:"Europe",          wiki:"Milan_Cathedral"},
+  {name:"Sagrada Família",                    emoji:"⛪", city:"Barcelone",             country:"Espagne",             continent:"Europe",          wiki:"Sagrada_Família"},
+  {name:"Alhambra",                           emoji:"🏯", city:"Grenade",               country:"Espagne",             continent:"Europe",          wiki:"Alhambra"},
+  {name:"Casa Batlló",                        emoji:"🏠", city:"Barcelone",             country:"Espagne",             continent:"Europe",          wiki:"Casa_Batlló"},
+  {name:"Big Ben",                            emoji:"🕰️",city:"Londres",               country:"Royaume-Uni",         continent:"Europe",          wiki:"Big_Ben"},
+  {name:"Tower Bridge",                       emoji:"🌉", city:"Londres",               country:"Royaume-Uni",         continent:"Europe",          wiki:"Tower_Bridge"},
+  {name:"Stonehenge",                         emoji:"🪨", city:"Wiltshire",             country:"Royaume-Uni",         continent:"Europe",          wiki:"Stonehenge"},
+  {name:"Porte de Brandebourg",               emoji:"🚪", city:"Berlin",                country:"Allemagne",           continent:"Europe",          wiki:"Brandenburg_Gate"},
+  {name:"Château de Neuschwanstein",          emoji:"🏰", city:"Schwangau",             country:"Allemagne",           continent:"Europe",          wiki:"Neuschwanstein_Castle"},
+  {name:"Acropole",                           emoji:"🏛️",city:"Athènes",               country:"Grèce",               continent:"Europe",          wiki:"Acropolis_of_Athens"},
+  {name:"Parthénon",                          emoji:"🏛️",city:"Athènes",               country:"Grèce",               continent:"Europe",          wiki:"Parthenon"},
+  {name:"Tour de Belém",                      emoji:"🏰", city:"Lisbonne",              country:"Portugal",            continent:"Europe",          wiki:"Belém_Tower"},
+  {name:"Rijksmuseum",                        emoji:"🏛️",city:"Amsterdam",             country:"Pays-Bas",            continent:"Europe",          wiki:"Rijksmuseum"},
+  {name:"Atomium",                            emoji:"⚛️", city:"Bruxelles",             country:"Belgique",            continent:"Europe",          wiki:"Atomium"},
+  {name:"Pont Charles",                       emoji:"🌉", city:"Prague",                country:"Tchéquie",            continent:"Europe",          wiki:"Charles_Bridge"},
+  {name:"Château de Schönbrunn",              emoji:"🏰", city:"Vienne",                country:"Autriche",            continent:"Europe",          wiki:"Schönbrunn_Palace"},
+  {name:"Parlement de Budapest",              emoji:"🏛️",city:"Budapest",              country:"Hongrie",             continent:"Europe",          wiki:"Hungarian_Parliament_Building"},
+  {name:"Cathédrale Saint-Basile",            emoji:"⛪", city:"Moscou",                country:"Russie",              continent:"Europe",          wiki:"Saint_Basil's_Cathedral"},
+  {name:"Sainte-Sophie",                      emoji:"🕌", city:"Istanbul",              country:"Turquie",             continent:"Europe",          wiki:"Hagia_Sophia"},
+  {name:"Château de Blarney",                 emoji:"🏰", city:"Blarney",               country:"Irlande",             continent:"Europe",          wiki:"Blarney_Castle"},
+  {name:"Église en bois de Borgund",          emoji:"⛪", city:"Borgund",               country:"Norvège",             continent:"Europe",          wiki:"Borgund_Stave_Church"},
+  {name:"Château de Bran",                    emoji:"🏰", city:"Bran",                  country:"Roumanie",            continent:"Europe",          wiki:"Bran_Castle"},
+  {name:"Palais de Dioclétien",               emoji:"🏛️",city:"Split",                 country:"Croatie",             continent:"Europe",          wiki:"Diocletian's_Palace"},
+  // ── Asie ────────────────────────────────────────────────────────────────
+  {name:"Grande Muraille de Chine",           emoji:"🧱", city:"Pékin",                 country:"Chine",               continent:"Asie",            wiki:"Great_Wall_of_China"},
+  {name:"Cité interdite",                     emoji:"🏯", city:"Pékin",                 country:"Chine",               continent:"Asie",            wiki:"Forbidden_City"},
+  {name:"Taj Mahal",                          emoji:"🕌", city:"Agra",                  country:"Inde",                continent:"Asie",            wiki:"Taj_Mahal"},
+  {name:"Qutub Minar",                        emoji:"🕌", city:"Delhi",                 country:"Inde",                continent:"Asie",            wiki:"Qutb_Minar"},
+  {name:"Temple Kinkaku-ji",                  emoji:"⛩️",city:"Kyoto",                 country:"Japon",               continent:"Asie",            wiki:"Kinkaku-ji"},
+  {name:"Fushimi Inari-taisha",               emoji:"⛩️",city:"Kyoto",                 country:"Japon",               continent:"Asie",            wiki:"Fushimi_Inari-taisha"},
+  {name:"Angkor Wat",                         emoji:"⛩️",city:"Siem Reap",             country:"Cambodge",            continent:"Asie",            wiki:"Angkor_Wat"},
+  {name:"Temple de Borobudur",                emoji:"☸️", city:"Java",                  country:"Indonésie",           continent:"Asie",            wiki:"Borobudur"},
+  {name:"Temple de Prambanan",                emoji:"⛩️",city:"Java",                  country:"Indonésie",           continent:"Asie",            wiki:"Prambanan"},
+  {name:"Wat Arun",                           emoji:"🛕", city:"Bangkok",               country:"Thaïlande",           continent:"Asie",            wiki:"Wat_Arun"},
+  {name:"Wat Phra Kaew",                      emoji:"🛕", city:"Bangkok",               country:"Thaïlande",           continent:"Asie",            wiki:"Temple_of_the_Emerald_Buddha"},
+  {name:"Cité impériale de Hué",              emoji:"🏯", city:"Hué",                   country:"Vietnam",             continent:"Asie",            wiki:"Imperial_City,_Huế"},
+  {name:"Marina Bay Sands",                   emoji:"🏨", city:"Singapour",             country:"Singapour",           continent:"Asie",            wiki:"Marina_Bay_Sands"},
+  {name:"Tours Petronas",                     emoji:"🏙️",city:"Kuala Lumpur",           country:"Malaisie",            continent:"Asie",            wiki:"Petronas_Towers"},
+  {name:"Église San Agustin",                 emoji:"⛪", city:"Manille",               country:"Philippines",         continent:"Asie",            wiki:"San_Agustín_Church,_Manila"},
+  {name:"Palais de Gyeongbokgung",            emoji:"🏯", city:"Séoul",                 country:"Corée du Sud",        continent:"Asie",            wiki:"Gyeongbokgung"},
+  {name:"Mosquée Nasir-ol-Molk",              emoji:"🕌", city:"Chiraz",                country:"Iran",                continent:"Asie",            wiki:"Nasir_al-Mulk_Mosque"},
+  {name:"Pétra",                              emoji:"🏺", city:"Pétra",                 country:"Jordanie",            continent:"Asie",            wiki:"Petra"},
+  {name:"Mur occidental",                     emoji:"🕍", city:"Jérusalem",             country:"Israël",              continent:"Asie",            wiki:"Western_Wall"},
+  {name:"Al-Ukhdud",                          emoji:"🏛️",city:"Najran",                country:"Arabie saoudite",     continent:"Asie",            wiki:"Al-Ukhdud"},
+  {name:"Burj Khalifa",                       emoji:"🏙️",city:"Dubaï",                 country:"Émirats arabes unis", continent:"Asie",            wiki:"Burj_Khalifa"},
+  {name:"Taipei 101",                         emoji:"🏙️",city:"Taipei",                country:"Taïwan",              continent:"Asie",            wiki:"Taipei_101"},
+  {name:"Pagode Shwedagon",                   emoji:"🛕", city:"Yangon",                country:"Myanmar",             continent:"Asie",            wiki:"Shwedagon_Pagoda"},
+  {name:"Temple de Swayambhunath",            emoji:"🛕", city:"Katmandou",             country:"Népal",               continent:"Asie",            wiki:"Swayambhunath"},
+  {name:"Temple de la Dent",                  emoji:"🛕", city:"Kandy",                 country:"Sri Lanka",           continent:"Asie",            wiki:"Temple_of_the_Tooth"},
+  // ── Afrique ─────────────────────────────────────────────────────────────
+  {name:"Pyramides de Gizeh",                 emoji:"🔺", city:"Gizeh",                 country:"Égypte",              continent:"Afrique",         wiki:"Great_Pyramid_of_Giza"},
+  {name:"Sphinx de Gizeh",                    emoji:"🦁", city:"Gizeh",                 country:"Égypte",              continent:"Afrique",         wiki:"Great_Sphinx_of_Giza"},
+  {name:"Aït-Ben-Haddou",                     emoji:"🏯", city:"Ouarzazate",            country:"Maroc",               continent:"Afrique",         wiki:"Aït_Benhaddou"},
+  {name:"Mosquée Hassan II",                  emoji:"🕌", city:"Casablanca",            country:"Maroc",               continent:"Afrique",         wiki:"Hassan_II_Mosque"},
+  {name:"Mémorial du Martyr",                 emoji:"🗿", city:"Alger",                 country:"Algérie",             continent:"Afrique",         wiki:"Monument_of_the_Martyrs"},
+  {name:"Amphithéâtre d'El Jem",              emoji:"🏛️",city:"El Jem",                country:"Tunisie",             continent:"Afrique",         wiki:"El_Djem"},
+  {name:"Robben Island",                      emoji:"🏝️",city:"Le Cap",                country:"Afrique du Sud",      continent:"Afrique",         wiki:"Robben_Island"},
+  {name:"Union Buildings",                    emoji:"🏛️",city:"Pretoria",              country:"Afrique du Sud",      continent:"Afrique",         wiki:"Union_Buildings"},
+  {name:"Monument de la Renaissance africaine",emoji:"🗿",city:"Dakar",                country:"Sénégal",             continent:"Afrique",         wiki:"African_Renaissance_Monument"},
+  {name:"Grande Mosquée de Djenné",           emoji:"🕌", city:"Djenné",                country:"Mali",                continent:"Afrique",         wiki:"Great_Mosque_of_Djenné"},
+  {name:"Églises de Lalibela",                emoji:"⛪", city:"Lalibela",              country:"Éthiopie",            continent:"Afrique",         wiki:"Rock-hewn_churches_of_Lalibela"},
+  {name:"Great Zimbabwe",                     emoji:"🏛️",city:"Masvingo",              country:"Zimbabwe",            continent:"Afrique",         wiki:"Great_Zimbabwe"},
+  {name:"Mosquée nationale d'Abuja",          emoji:"🕌", city:"Abuja",                 country:"Nigeria",             continent:"Afrique",         wiki:"Nigerian_National_Mosque"},
+  {name:"Old Fort de Zanzibar",               emoji:"🏰", city:"Zanzibar",              country:"Tanzanie",            continent:"Afrique",         wiki:"Old_Fort_(Zanzibar_Town)"},
+  {name:"Cape Coast Castle",                  emoji:"🏰", city:"Cape Coast",            country:"Ghana",               continent:"Afrique",         wiki:"Cape_Coast_Castle"},
+  // ── Amérique du Nord ────────────────────────────────────────────────────
+  {name:"Statue de la Liberté",               emoji:"🗽", city:"New York",              country:"États-Unis",          continent:"Amérique du Nord",wiki:"Statue_of_Liberty"},
+  {name:"Empire State Building",              emoji:"🏢", city:"New York",              country:"États-Unis",          continent:"Amérique du Nord",wiki:"Empire_State_Building"},
+  {name:"Golden Gate Bridge",                 emoji:"🌉", city:"San Francisco",         country:"États-Unis",          continent:"Amérique du Nord",wiki:"Golden_Gate_Bridge"},
+  {name:"Mont Rushmore",                      emoji:"🗿", city:"Dakota du Sud",         country:"États-Unis",          continent:"Amérique du Nord",wiki:"Mount_Rushmore"},
+  {name:"Maison-Blanche",                     emoji:"🏛️",city:"Washington D.C.",       country:"États-Unis",          continent:"Amérique du Nord",wiki:"White_House"},
+  {name:"Chichén Itzá",                       emoji:"🔺", city:"Yucatán",               country:"Mexique",             continent:"Amérique du Nord",wiki:"Chichen_Itza"},
+  {name:"Teotihuacan",                        emoji:"🔺", city:"Mexico",                country:"Mexique",             continent:"Amérique du Nord",wiki:"Teotihuacan"},
+  {name:"CN Tower",                           emoji:"🗼", city:"Toronto",               country:"Canada",              continent:"Amérique du Nord",wiki:"CN_Tower"},
+  {name:"Château Frontenac",                  emoji:"🏰", city:"Québec",                country:"Canada",              continent:"Amérique du Nord",wiki:"Château_Frontenac"},
+  {name:"Capitole de La Havane",              emoji:"🏛️",city:"La Havane",             country:"Cuba",                continent:"Amérique du Nord",wiki:"El_Capitolio"},
+  // ── Amérique du Sud ─────────────────────────────────────────────────────
+  {name:"Christ Rédempteur",                  emoji:"✝️", city:"Rio de Janeiro",        country:"Brésil",              continent:"Amérique du Sud", wiki:"Christ_the_Redeemer_(statue)"},
+  {name:"Pain de Sucre",                      emoji:"⛰️", city:"Rio de Janeiro",        country:"Brésil",              continent:"Amérique du Sud", wiki:"Sugarloaf_Mountain"},
+  {name:"Machu Picchu",                       emoji:"🏔️",city:"Cusco",                 country:"Pérou",               continent:"Amérique du Sud", wiki:"Machu_Picchu"},
+  {name:"Lignes de Nazca",                    emoji:"🛸", city:"Nazca",                 country:"Pérou",               continent:"Amérique du Sud", wiki:"Nazca_Lines"},
+  {name:"Obélisque de Buenos Aires",          emoji:"🗼", city:"Buenos Aires",          country:"Argentine",           continent:"Amérique du Sud", wiki:"Obelisk_of_Buenos_Aires"},
+  {name:"Moai de l'île de Pâques",            emoji:"🗿", city:"Île de Pâques",         country:"Chili",               continent:"Amérique du Sud", wiki:"Moai"},
+  {name:"Sanctuaire de Las Lajas",            emoji:"⛪", city:"Ipiales",               country:"Colombie",            continent:"Amérique du Sud", wiki:"Las_Lajas_Sanctuary"},
+  {name:"Porte du Soleil",                    emoji:"🌅", city:"Tiwanaku",              country:"Bolivie",             continent:"Amérique du Sud", wiki:"Gate_of_the_Sun"},
+  {name:"Mitad del Mundo",                    emoji:"🌐", city:"Quito",                 country:"Équateur",            continent:"Amérique du Sud", wiki:"Ciudad_Mitad_del_Mundo"},
+  {name:"Palacio Salvo",                      emoji:"🏛️",city:"Montevideo",            country:"Uruguay",             continent:"Amérique du Sud", wiki:"Palacio_Salvo"},
+  // ── Océanie ─────────────────────────────────────────────────────────────
+  {name:"Opéra de Sydney",                    emoji:"🎭", city:"Sydney",                country:"Australie",           continent:"Océanie",         wiki:"Sydney_Opera_House"},
+  {name:"Harbour Bridge",                     emoji:"🌉", city:"Sydney",                country:"Australie",           continent:"Océanie",         wiki:"Sydney_Harbour_Bridge"},
+  {name:"Shrine of Remembrance",              emoji:"🏛️",city:"Melbourne",             country:"Australie",           continent:"Océanie",         wiki:"Shrine_of_Remembrance"},
+  {name:"Sky Tower",                          emoji:"🗼", city:"Auckland",              country:"Nouvelle-Zélande",    continent:"Océanie",         wiki:"Sky_Tower_(Auckland)"},
+  {name:"Beehive",                            emoji:"🏛️",city:"Wellington",            country:"Nouvelle-Zélande",    continent:"Océanie",         wiki:"New_Zealand_Parliament_Buildings"},
+  {name:"Stone Monoliths of Ngarchelong",     emoji:"🪨", city:"Ngarchelong",           country:"Palaos",              continent:"Océanie",         wiki:"Badrulchau"},
+  {name:"Sri Siva Subramaniya Temple",        emoji:"🛕", city:"Nadi",                  country:"Fidji",               continent:"Océanie",         wiki:"Sri_Siva_Subramaniya"},
+  {name:"Robert Louis Stevenson Museum",      emoji:"🏛️",city:"Apia",                  country:"Samoa",               continent:"Océanie",         wiki:"Vailima"},
+  {name:"Ha'amonga 'a Maui",                  emoji:"🪨", city:"Tongatapu",             country:"Tonga",               continent:"Océanie",         wiki:"Haʻamonga_ʻa_Maui"},
+  {name:"Chief Roi Mata's Domain",            emoji:"🌿", city:"Efate",                 country:"Vanuatu",             continent:"Océanie",         wiki:"Chief_Roi_Mata's_Domain"},
 ];
 
 const SERIES_SIZE = 20;
@@ -337,16 +406,19 @@ const SERIES_SIZE = 20;
 // ==================== PHOTOS Wikipedia ====================
 const photoCache = {};
 async function fetchPhotos(){
-  const titles = MONUMENTS.map(m=>encodeURIComponent(m.wiki)).join("|");
-  try{
-    const url=`https://en.wikipedia.org/w/api.php?action=query&titles=${titles}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
-    const data=await(await fetch(url)).json();
-    const pages=data.query.pages;
-    for(const id in pages){
-      const p=pages[id];
-      if(p.thumbnail) photoCache[p.title.replace(/ /g,"_")]=p.thumbnail.source;
-    }
-  }catch(e){}
+  const wikis = MONUMENTS.map(m=>m.wiki);
+  for(let i=0;i<wikis.length;i+=50){
+    const batch=wikis.slice(i,i+50).map(w=>encodeURIComponent(w)).join("|");
+    try{
+      const url=`https://en.wikipedia.org/w/api.php?action=query&titles=${batch}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
+      const data=await(await fetch(url)).json();
+      const pages=data.query.pages;
+      for(const id in pages){
+        const p=pages[id];
+        if(p.thumbnail) photoCache[p.title.replace(/ /g,"_")]=p.thumbnail.source;
+      }
+    }catch(e){}
+  }
 }
 function getPhoto(m){ return photoCache[m.wiki]||null; }
 function setPhoto(imgEl,fbEl,m){

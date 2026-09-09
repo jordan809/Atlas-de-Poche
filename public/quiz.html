@@ -1528,11 +1528,22 @@ function showTypeRecap(){
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
+  // En session de révision : retirer les items correctement répondus des erreurs sauvegardées
+  if(reviewPool) {
+    const newMistakesSet = new Set(errItems.map(m=>m.c));
+    const reviewedSet = new Set((lastRoundPool||[]).map(m=>m.c));
+    savedTypeErrors = savedTypeErrors.filter(s => !reviewedSet.has(s.c) || newMistakesSet.has(s.c));
+  }
   // Sauvegarder les erreurs
   if(errCount>0){
     const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
     savedTypeErrors = [...savedTypeErrors, ...newSaved];
     try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
+  } else if(reviewPool) {
+    try {
+      if(savedTypeErrors.length>0) localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors));
+      else localStorage.removeItem("atlasTypeErrors");
+    } catch(e) {}
   }
   const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");

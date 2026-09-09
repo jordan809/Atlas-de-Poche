@@ -263,6 +263,9 @@ a{text-decoration:none;}
   <button class="mode-btn" id="modeClavierBtn">⌨️ Clavier</button>
 </div>
 
+<div class="options-bar">
+  <button class="toggle active" id="autoAdvanceBtn">⚡ Auto-avance</button>
+</div>
 <div class="filter-bar" id="filterBar">
   <button class="filter-btn active" data-cont="">🌐 Tous</button>
   <button class="filter-btn" data-cont="Europe">🇪🇺 Europe</button>
@@ -461,6 +464,8 @@ let currentItem=null, answered=false;
 let score=0, streak=0, total=0, questionNum=0;
 let bag=[], seriesTotal=0;
 let hintLevel=0;
+let autoAdvanceOn=true;
+let autoAdvTimer=null;
 let selectedContinent="";
 
 function filteredPool(){
@@ -489,6 +494,7 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; }
 
 function nextQuestion(){
+  clearTimeout(autoAdvTimer);
   if(bag.length===0) refillBag();
   const q=bag.shift();
   currentItem=q;
@@ -543,7 +549,11 @@ function chooseOpt(btn,correct){
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
   total++;
   updateScore();
-  document.getElementById("nextBtn").classList.add("show");
+  if(autoAdvanceOn){
+    autoAdvTimer=setTimeout(()=>nextQuestion(), correct?800:2000);
+  } else {
+    document.getElementById("nextBtn").classList.add("show");
+  }
 }
 
 function updateScore(){
@@ -572,6 +582,12 @@ document.getElementById("hintProgBtn").onclick=()=>{
 };
 
 document.getElementById("nextBtn").onclick=()=>nextQuestion();
+
+// Auto-avance
+document.getElementById("autoAdvanceBtn").onclick=()=>{
+  autoAdvanceOn=!autoAdvanceOn;
+  document.getElementById("autoAdvanceBtn").classList.toggle("active",autoAdvanceOn);
+};
 
 // ==================== FILTRES CONTINENT ====================
 document.querySelectorAll(".filter-btn").forEach(btn=>{

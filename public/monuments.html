@@ -102,6 +102,16 @@ a{text-decoration:none;}
 .toggle:hover{background:rgba(255,255,255,0.2);}
 .toggle.hidden{display:none!important;}
 
+/* FILTER BAR (continents) */
+.filter-bar{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;padding:0 16px 14px;}
+.filter-btn{
+  background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.85);font-family:'Baloo 2',cursive;font-size:0.8rem;font-weight:700;
+  padding:6px 13px;border-radius:50px;cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.filter-btn.active{background:rgba(255,255,255,0.92);color:var(--ink);border-color:#fff;}
+.filter-btn:hover:not(.active){background:rgba(255,255,255,0.25);}
+
 /* QUIZ CARD */
 #quizSection{max-width:520px;margin:0 auto;padding:0 16px 32px;}
 .score-bar{
@@ -253,8 +263,16 @@ a{text-decoration:none;}
   <button class="mode-btn" id="modeClavierBtn">⌨️ Clavier</button>
 </div>
 
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-cont="">🌐 Tous</button>
+  <button class="filter-btn" data-cont="Europe">🇪🇺 Europe</button>
+  <button class="filter-btn" data-cont="Asie">🌏 Asie</button>
+  <button class="filter-btn" data-cont="Afrique">🌍 Afrique</button>
+  <button class="filter-btn" data-cont="Amérique du Nord">🌎 Amér. Nord</button>
+  <button class="filter-btn" data-cont="Amérique du Sud">🌎 Amér. Sud</button>
+  <button class="filter-btn" data-cont="Océanie">🌊 Océanie</button>
+</div>
 <div class="options-bar">
-  <button class="toggle active" id="autoAdvanceBtn">⚡ Auto-avance</button>
   <button class="toggle hidden" id="tblHint1Btn">🌍 Continent</button>
   <button class="toggle hidden" id="tblHint2Btn">🗺️ Pays</button>
   <button class="toggle hidden" id="tblHint3Btn">🏙️ Ville</button>
@@ -279,7 +297,7 @@ a{text-decoration:none;}
       <div class="hint-text" id="hintText"></div>
       <div id="optionsDiv" class="options"></div>
       <div class="feedback" id="feedback"></div>
-      <button class="next-btn" id="nextBtn">Question suivante →</button>
+      <button class="next-btn" id="nextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
     </div>
   </div>
 </section>
@@ -441,10 +459,14 @@ function setPhoto(imgEl,fbEl,m){
 let activeMode="quiz";
 let currentItem=null, answered=false;
 let score=0, streak=0, total=0, questionNum=0;
-let bag=[], seriesTotal=SERIES_SIZE;
-let hintLevel=0; // quiz hint level
-let autoAdvanceOn=true;
-let autoAdvTimer=null;
+let bag=[], seriesTotal=0;
+let hintLevel=0;
+let selectedContinent="";
+
+function filteredPool(){
+  if(!selectedContinent) return MONUMENTS;
+  return MONUMENTS.filter(m=>m.continent===selectedContinent);
+}
 
 function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
 function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,""); }
@@ -464,7 +486,7 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 })();
 
 // ==================== QUIZ ====================
-function refillBag(){ bag=shuffle(MONUMENTS).slice(0,SERIES_SIZE); seriesTotal=bag.length; questionNum=0; }
+function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; }
 
 function nextQuestion(){
   clearTimeout(autoAdvTimer);
@@ -522,11 +544,7 @@ function chooseOpt(btn,correct){
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
   total++;
   updateScore();
-  if(autoAdvanceOn){
-    autoAdvTimer=setTimeout(()=>nextQuestion(), correct?800:2000);
-  } else {
-    document.getElementById("nextBtn").classList.add("show");
-  }
+  document.getElementById("nextBtn").classList.add("show");
 }
 
 function updateScore(){
@@ -556,24 +574,27 @@ document.getElementById("hintProgBtn").onclick=()=>{
 
 document.getElementById("nextBtn").onclick=()=>nextQuestion();
 
-// Auto-avance
-document.getElementById("autoAdvanceBtn").onclick=()=>{
-  autoAdvanceOn=!autoAdvanceOn;
-  document.getElementById("autoAdvanceBtn").classList.toggle("active",autoAdvanceOn);
-};
+// ==================== FILTRES CONTINENT ====================
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedContinent=btn.dataset.cont;
+    if(activeMode==="quiz"){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
+    else renderClavier();
+  };
+});
 
 // ==================== MODE SWITCH ====================
 document.getElementById("modeQuizBtn").onclick=()=>enterMode("quiz");
 document.getElementById("modeClavierBtn").onclick=()=>enterMode("clavier");
 
 function enterMode(mode){
-  clearTimeout(autoAdvTimer);
   activeMode=mode;
   document.getElementById("modeQuizBtn").classList.toggle("active",mode==="quiz");
   document.getElementById("modeClavierBtn").classList.toggle("active",mode==="clavier");
   document.getElementById("quizSection").classList.toggle("hidden",mode!=="quiz");
   document.getElementById("clavierSection").classList.toggle("hidden",mode!=="clavier");
-  document.getElementById("autoAdvanceBtn").classList.toggle("hidden",mode!=="quiz");
   document.getElementById("tblHint1Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblHint2Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblHint3Btn").classList.toggle("hidden",mode!=="clavier");
@@ -582,11 +603,19 @@ function enterMode(mode){
   else renderClavier();
 }
 
+// Touche Entrée → question suivante
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && activeMode==="quiz" && answered){
+    e.preventDefault();
+    nextQuestion();
+  }
+});
+
 // ==================== CLAVIER ====================
 let tblList=[];
 
 function renderClavier(){
-  tblList=shuffle(MONUMENTS);
+  tblList=shuffle(filteredPool());
   const grid=document.getElementById("tblGrid");
   grid.innerHTML="";
   document.getElementById("tblCheckBtnMain").classList.remove("hidden");

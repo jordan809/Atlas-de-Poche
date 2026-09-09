@@ -489,7 +489,6 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; }
 
 function nextQuestion(){
-  clearTimeout(autoAdvTimer);
   if(bag.length===0) refillBag();
   const q=bag.shift();
   currentItem=q;

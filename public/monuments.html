@@ -408,14 +408,24 @@ const photoCache = {};
 async function fetchPhotos(){
   const wikis = MONUMENTS.map(m=>m.wiki);
   for(let i=0;i<wikis.length;i+=50){
-    const batch=wikis.slice(i,i+50).map(w=>encodeURIComponent(w)).join("|");
+    const batch=wikis.slice(i,i+50);
+    const titlesParam=batch.map(w=>encodeURIComponent(w)).join("|");
     try{
-      const url=`https://en.wikipedia.org/w/api.php?action=query&titles=${batch}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
+      const url=`https://en.wikipedia.org/w/api.php?action=query&titles=${titlesParam}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
       const data=await(await fetch(url)).json();
+      // Build map: Wikipedia normalized title → our original queried wiki key
+      const normToOur={};
+      if(data.query.normalized) for(const n of data.query.normalized){
+        normToOur[n.to]=n.from.replace(/ /g,"_");
+      }
       const pages=data.query.pages;
       for(const id in pages){
         const p=pages[id];
-        if(p.thumbnail) photoCache[p.title.replace(/ /g,"_")]=p.thumbnail.source;
+        if(!p.thumbnail) continue;
+        const src=p.thumbnail.source;
+        const wikiKey=p.title.replace(/ /g,"_");
+        photoCache[wikiKey]=src;                          // clé Wikipedia
+        if(normToOur[p.title]) photoCache[normToOur[p.title]]=src; // notre clé originale
       }
     }catch(e){}
   }
@@ -454,7 +464,7 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 })();
 
 // ==================== QUIZ ====================
-function refillBag(){ bag=shuffle(MONUMENTS).slice(0,SERIES_SIZE); seriesTotal=bag.length; }
+function refillBag(){ bag=shuffle(MONUMENTS).slice(0,SERIES_SIZE); seriesTotal=bag.length; questionNum=0; }
 
 function nextQuestion(){
   clearTimeout(autoAdvTimer);

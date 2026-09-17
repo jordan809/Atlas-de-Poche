@@ -1975,7 +1975,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
     row.className = "tbl-row";
     row.dataset.answer = answer;
     row._item = d;
-    const flagHtml = `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>`;
+    const flagHtml = showTableFlag ? `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>` : '';
     let countryHtml, capitalHtml;
     if(direction==="flag"){
       countryHtml = `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;

@@ -1718,7 +1718,14 @@ typeFlagToggle.onclick=()=>{
   showFlag=!showFlag;
   typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
   typeFlagToggle.classList.toggle("active", showFlag);
-  if(activeMode!=="study" && !typeTableMode) nextQuestion();
+  // Mettre à jour le drapeau de la question courante sans avancer
+  if(currentItem && activeMode!=="study" && !typeTableMode){
+    const flagEl = document.getElementById("qFlag");
+    if(flagEl && direction !== "flag"){
+      const pin = activeMode==="flags" ? "🌍" : "📍";
+      flagEl.innerHTML = showFlag ? flagImg(currentItem.f, 80) : `<span class="pin">${pin}</span>`;
+    }
+  }
 };
 document.getElementById("hintBtn").onclick = () => {
   const btn = document.getElementById("hintBtn");

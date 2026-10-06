@@ -486,6 +486,9 @@
     padding: 8px 10px; border-radius: 10px; text-align: center;
     background: #f0eefc; color: var(--ink);
   }
+  /* Capitale (aide) en bas de la case : même style que le nom du pays, place réservée même quand elle est cachée */
+  .tbl-row .tbl-hint { min-height: 34px; }
+  .tbl-row .tbl-hint:empty { visibility: hidden; }
   .tbl-row .tbl-input {
     width: 100%; font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
     padding: 8px 10px; border: 2px solid #ece9ff; background: #f7f6ff;
@@ -2020,7 +2023,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
     let countryHtml, capitalHtml;
     if(direction==="flag"){
       countryHtml = `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
-      capitalHtml = `<div class="tbl-hint" style="font-size:0.8rem;color:#888;min-height:1.2em;">${hintActive ? d.cap : ""}</div>`;
+      capitalHtml = `<div class="tbl-given tbl-hint">${hintActive ? d.cap : ""}</div>`;
     } else {
       countryHtml = direction==="cap"
         ? `<div class="tbl-given">${d.c}</div>`

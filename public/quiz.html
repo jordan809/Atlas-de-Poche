@@ -1720,7 +1720,8 @@ document.getElementById("hintBtn").onclick = () => {
       hint.textContent = isActive && item ? item.cap : "";
     });
   } else {
-    // Mode quiz/clavier : afficher/cacher la capitale sous le drapeau
+    // Mode quiz/clavier : 1er appui = affiche la capitale ; 2e appui (avant d'avoir répondu) = nouvelle question, pour ne pas tricher
+    if(!isActive && !answered){ nextQuestion(); return; }
     const mainEl = document.getElementById("qCountry");
     if(isActive){
       mainEl.textContent = currentItem ? currentItem.cap : "";

@@ -1746,6 +1746,13 @@ typeFlagToggle.onclick=()=>{
 };
 const hideNameToggle=document.getElementById("hideNameToggle");
 hideNameToggle.onclick=()=>{
+  // Désactiver Difficile avant d'avoir répondu = nouvelle question (sinon on pourrait tricher en révélant le nom)
+  if(hideName && !answered && currentItem && activeMode!=="study" && !typeTableMode && direction==="cap"){
+    hideName=false;
+    hideNameToggle.classList.remove("active");
+    nextQuestion();
+    return;
+  }
   hideName=!hideName;
   hideNameToggle.classList.toggle("active", hideName);
   // Le drapeau doit rester visible, sinon plus aucun indice

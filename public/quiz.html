@@ -1528,11 +1528,22 @@ function showTypeRecap(){
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
+  // En session de révision : retirer les items correctement répondus des erreurs sauvegardées
+  if(reviewPool) {
+    const newMistakesSet = new Set(errItems.map(m=>m.c));
+    const reviewedSet = new Set((lastRoundPool||[]).map(m=>m.c));
+    savedTypeErrors = savedTypeErrors.filter(s => !reviewedSet.has(s.c) || newMistakesSet.has(s.c));
+  }
   // Sauvegarder les erreurs
   if(errCount>0){
     const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
     savedTypeErrors = [...savedTypeErrors, ...newSaved];
     try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
+  } else if(reviewPool) {
+    try {
+      if(savedTypeErrors.length>0) localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors));
+      else localStorage.removeItem("atlasTypeErrors");
+    } catch(e) {}
   }
   const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
@@ -1707,7 +1718,14 @@ typeFlagToggle.onclick=()=>{
   showFlag=!showFlag;
   typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
   typeFlagToggle.classList.toggle("active", showFlag);
-  if(activeMode!=="study" && !typeTableMode) nextQuestion();
+  // Mettre à jour le drapeau de la question courante sans avancer
+  if(currentItem && activeMode!=="study" && !typeTableMode){
+    const flagEl = document.getElementById("qFlag");
+    if(flagEl && direction !== "flag"){
+      const pin = activeMode==="flags" ? "🌍" : "📍";
+      flagEl.innerHTML = showFlag ? flagImg(currentItem.f, 80) : `<span class="pin">${pin}</span>`;
+    }
+  }
 };
 document.getElementById("hintBtn").onclick = () => {
   const btn = document.getElementById("hintBtn");
@@ -1958,7 +1976,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
     row.className = "tbl-row";
     row.dataset.answer = answer;
     row._item = d;
-    const flagHtml = `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>`;
+    const flagHtml = showTableFlag ? `<div class="tbl-img-wrap">${flagImg(d.f, 60)}</div>` : '';
     let countryHtml, capitalHtml;
     if(direction==="flag"){
       countryHtml = `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;

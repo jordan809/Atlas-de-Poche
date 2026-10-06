@@ -758,6 +758,7 @@
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
     <button class="toggle hidden active" id="typeFlagToggle">🏳️ Drapeau visible</button>
     <button class="toggle hidden active" id="autoAdvanceToggle">⚡ Auto-avance</button>
+    <button class="toggle hidden" id="hideNameToggle">🔥 Difficile</button>
     <button class="toggle hidden" id="hintBtn">💡 Aide</button>
   </div>
 
@@ -1184,6 +1185,7 @@ let typeTableMode = false;          // mode Clavier : false = question par quest
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
 let lockFlagPos = false;            // garder les drapeaux à la même position (pas de mélange)
 let showFlag = true;               // afficher le drapeau (tous modes — toggle pour le cacher)
+let hideName = false;              // mode "Difficile" : le nom du pays est caché (seul le drapeau est montré)
 let autoAdvanceOn = true;          // avancer automatiquement si la réponse est correcte (quiz/clavier)
 let typeTableInProgress = false;
 let typeTablePool = null;           // clé "continent|direction" du tableau affiché
@@ -1375,7 +1377,7 @@ function nextQuestion(){
   } else if(direction==="cap"){
     promptEl.textContent=T().promptCap;
     flagEl.innerHTML=showFlag ? flagImg(q.f, 80) : `<span class="pin">📍</span>`;
-    mainEl.textContent=q.c;
+    mainEl.textContent=(hideName && showFlag) ? "" : q.c;
   } else if(direction==="flag"){
     promptEl.textContent="🚩 Quel est ce pays ?";
     flagEl.innerHTML=flagImg(q.f, 80);
@@ -1393,6 +1395,10 @@ function nextQuestion(){
   const cont=document.getElementById("qContinent");
   cont.textContent=q.k; cont.style.setProperty("--accent", COLORS[q.k]);
   cont.classList.toggle("hidden-hint", hard);
+  // "Deviner la capitale" et "Deviner le drapeau" : on n'indique pas le continent d'origine
+  const hideCont = (activeMode!=="flags") && (direction==="cap" || direction==="flag");
+  cont.classList.toggle("hidden", hideCont);
+  mainEl.style.marginBottom = hideCont ? "20px" : "";
 
   const isType = (activeMode==="type" || (activeMode==="flags" && flagsAnswerMode==="type"));
   document.getElementById("options").classList.toggle("hidden", isType);
@@ -1646,6 +1652,8 @@ function enterMode(mode){
   autoAdvanceOn = true;
   const aat = document.getElementById("autoAdvanceToggle");
   if(aat) aat.classList.add("active");
+  hideName = false;
+  const hgl = document.getElementById("hideNameToggle"); if(hgl) hgl.classList.remove("active");
   direction = "cap";
   const dtgl = document.getElementById("dirToggle"); if(dtgl) dtgl.textContent = T().dirCap;
   const hintBtn = document.getElementById("hintBtn"); if(hintBtn){ hintBtn.classList.add("hidden"); hintBtn.classList.remove("active"); hintBtn.textContent="💡 Aide"; }
@@ -1669,6 +1677,7 @@ function enterMode(mode){
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
   document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
+  document.getElementById("hideNameToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1699,6 +1708,7 @@ dirToggle.onclick=()=>{
   hintBtn.classList.remove("active");
   hintBtn.textContent = "💡 Aide";
   document.getElementById("typeFlagToggle").classList.toggle("hidden", direction === "flag");
+  document.getElementById("hideNameToggle").classList.toggle("hidden", direction === "flag");
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
 };
@@ -1710,6 +1720,7 @@ tableToggle.onclick=()=>{
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode); // mode tableau = pas de toggle drapeau (géré par typeTableFlagPosToggle)
   document.getElementById("autoAdvanceToggle").classList.toggle("hidden", typeTableMode);
+  document.getElementById("hideNameToggle").classList.toggle("hidden", typeTableMode || direction === "flag");
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
 };
@@ -1718,6 +1729,12 @@ typeFlagToggle.onclick=()=>{
   showFlag=!showFlag;
   typeFlagToggle.textContent = showFlag ? "🏳️ Drapeau visible" : "🙈 Drapeau caché";
   typeFlagToggle.classList.toggle("active", showFlag);
+  // Sans drapeau, le mode Difficile (nom caché) ne laisserait aucun indice : on le désactive
+  if(!showFlag && hideName){
+    hideName = false;
+    document.getElementById("hideNameToggle").classList.remove("active");
+    if(currentItem && direction==="cap") document.getElementById("qCountry").textContent = currentItem.c;
+  }
   // Mettre à jour le drapeau de la question courante sans avancer
   if(currentItem && activeMode!=="study" && !typeTableMode){
     const flagEl = document.getElementById("qFlag");
@@ -1725,6 +1742,22 @@ typeFlagToggle.onclick=()=>{
       const pin = activeMode==="flags" ? "🌍" : "📍";
       flagEl.innerHTML = showFlag ? flagImg(currentItem.f, 80) : `<span class="pin">${pin}</span>`;
     }
+  }
+};
+const hideNameToggle=document.getElementById("hideNameToggle");
+hideNameToggle.onclick=()=>{
+  hideName=!hideName;
+  hideNameToggle.classList.toggle("active", hideName);
+  // Le drapeau doit rester visible, sinon plus aucun indice
+  if(hideName && !showFlag){
+    showFlag = true;
+    typeFlagToggle.textContent = "🏳️ Drapeau visible";
+    typeFlagToggle.classList.add("active");
+    if(currentItem && direction==="cap") document.getElementById("qFlag").innerHTML = flagImg(currentItem.f, 80);
+  }
+  // Met à jour la question courante sans avancer
+  if(currentItem && activeMode!=="study" && !typeTableMode && direction==="cap"){
+    document.getElementById("qCountry").textContent = hideName ? "" : currentItem.c;
   }
 };
 document.getElementById("hintBtn").onclick = () => {

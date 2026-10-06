@@ -487,6 +487,7 @@
     background: #f0eefc; color: var(--ink);
   }
   /* Capitale (aide) en bas de la case : même style que le nom du pays, place réservée même quand elle est cachée */
+  #typeTableGrid.hide-names .tbl-name { display: none; }
   .tbl-row .tbl-hint { min-height: 34px; }
   .tbl-row .tbl-hint:empty { visibility: hidden; }
   .tbl-row .tbl-input {
@@ -1680,7 +1681,7 @@ function enterMode(mode){
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
   document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
-  document.getElementById("hideNameToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
+  document.getElementById("hideNameToggle").classList.toggle("hidden", isStudy || isPvp || isFlags);
 
   if(isStudy){ renderStudy(); }
   else if(isFlags){
@@ -1710,7 +1711,7 @@ dirToggle.onclick=()=>{
   hintBtn.classList.toggle("hidden", direction !== "flag");
   hintBtn.classList.remove("active");
   hintBtn.textContent = "💡 Aide";
-  document.getElementById("typeFlagToggle").classList.toggle("hidden", direction === "flag");
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", direction === "flag" || typeTableMode); // en mode tableau c'est "Avec drapeau" qui gère
   document.getElementById("hideNameToggle").classList.toggle("hidden", direction === "flag");
   if(activeMode==="type" && typeTableMode) renderTypeTable(true);
   else if(activeMode!=="study") startPlay();
@@ -1723,7 +1724,7 @@ tableToggle.onclick=()=>{
   document.getElementById("typeTable").classList.toggle("hidden", !typeTableMode);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", typeTableMode); // mode tableau = pas de toggle drapeau (géré par typeTableFlagPosToggle)
   document.getElementById("autoAdvanceToggle").classList.toggle("hidden", typeTableMode);
-  document.getElementById("hideNameToggle").classList.toggle("hidden", typeTableMode || direction === "flag");
+  document.getElementById("hideNameToggle").classList.toggle("hidden", direction === "flag");
   if(typeTableMode) renderTypeTable(true);
   else startPlay();
 };
@@ -1758,6 +1759,12 @@ hideNameToggle.onclick=()=>{
   }
   hideName=!hideName;
   hideNameToggle.classList.toggle("active", hideName);
+  // Mode tableau : on cache/affiche les noms de pays directement dans la grille, sans effacer les réponses saisies
+  if(activeMode==="type" && typeTableMode){
+    if(hideName && !showTableFlag) renderTypeTable(true); // sans drapeau il ne resterait aucun indice : renderTypeTable remet les drapeaux
+    else document.getElementById("typeTableGrid").classList.toggle("hide-names", hideName && direction==="cap");
+    return;
+  }
   // Le drapeau doit rester visible, sinon plus aucun indice
   if(hideName && !showFlag){
     showFlag = true;
@@ -2007,6 +2014,9 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   const grid = document.getElementById("typeTableGrid");
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
+  // Mode Difficile : les noms de pays sont cachés (seul le drapeau reste), sans toucher aux réponses déjà saisies
+  if(hideName && !showTableFlag){ showTableFlag = true; document.getElementById("typeTableFlagPosToggle").textContent = T().flagShow; }
+  grid.classList.toggle("hide-names", hideName && direction==="cap");
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
   checkBtn.textContent = T().verify;
@@ -2026,7 +2036,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
       capitalHtml = `<div class="tbl-given tbl-hint">${hintActive ? d.cap : ""}</div>`;
     } else {
       countryHtml = direction==="cap"
-        ? `<div class="tbl-given">${d.c}</div>`
+        ? `<div class="tbl-given tbl-name">${d.c}</div>`
         : `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().flagPlaceholder}">`;
       capitalHtml = direction==="cap"
         ? `<input class="tbl-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${T().placeholder}">`
@@ -2066,6 +2076,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
 
   checkBtn.onclick = () => {
     stopStopwatch();
+    grid.classList.remove("hide-names"); // on révèle les noms pour relire la correction
     let correct = 0, total = 0;
     const wrongItems = [];
     document.querySelectorAll("#typeTableGrid .tbl-row").forEach(row => {
@@ -2152,6 +2163,8 @@ document.getElementById("typeTableChronoBtn").onclick = () => {
 document.getElementById("typeTableFlagPosToggle").onclick = () => {
   showTableFlag = !showTableFlag;
   document.getElementById("typeTableFlagPosToggle").textContent = showTableFlag ? T().flagShow : T().flagHide;
+  // Sans drapeau, le mode Difficile (noms cachés) ne laisserait aucun indice : on le désactive
+  if(!showTableFlag && hideName){ hideName = false; document.getElementById("hideNameToggle").classList.remove("active"); }
   renderTypeTable(true);
 };
 document.getElementById("typeTableLockPosBtn").onclick = () => {

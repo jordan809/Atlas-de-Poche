@@ -153,7 +153,7 @@
   }
   .chip:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
   .chip.active { background: #fff; color: var(--ink); border-color: #fff; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-  /* En 1v1, une fois la partie créée/rejointe, le continent est verrouillé */
+  /* En multijoueur, une fois la partie créée/rejointe, le continent est verrouillé */
   .filters.locked .chip { pointer-events: none; opacity: 0.35; }
   .filters.locked .chip.active { opacity: 1; }
 
@@ -302,7 +302,7 @@
   .hidden { display: none !important; }
   footer { text-align: center; margin-top: 42px; color: #fff; font-weight: 600; font-size: 0.85rem; opacity: 0.9; }
 
-  /* ---------- Mode 1v1 ---------- */
+  /* ---------- Mode Multijoueur (base) ---------- */
   .pvp-wrap { max-width: 560px; margin: 0 auto; }
 
   .pvp-lobby {
@@ -430,6 +430,100 @@
   html.dark .pvp-input { background:#2a2545; border-color:#3d3568; color:#e8e2ff; }
   html.dark .pvp-room-code { background:#2a2545; }
   html.dark .pvp-reveal p { color:#e8e2ff; }
+
+  /* ---------- Mode Multijoueur ---------- */
+  .pvp-custom { display:flex; align-items:center; justify-content:center; gap:10px; margin:-8px 0 20px; }
+  .pvp-custom input { width:120px; font-family:'Baloo 2',cursive; font-weight:800; font-size:1.2rem; text-align:center; padding:8px 10px; border:2.5px solid #ece9ff; background:#f7f6ff; color:var(--bg1); border-radius:12px; outline:none; }
+  .pvp-custom input:focus { border-color:var(--bg1); }
+  .pvp-custom input.err { border-color:var(--bad); background:#fdeaee; }
+  .pvp-custom span { color:var(--ink-soft); font-weight:700; font-size:0.85rem; }
+  .pvp-round-btn.perso { width:auto; padding:9px 14px; }
+
+  .pvp-roster-lbl { color:var(--ink-soft); font-weight:800; font-size:0.82rem; text-transform:uppercase; letter-spacing:0.08em; margin-top:6px; }
+  .pvp-roster { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:10px 0 18px; }
+  .pvp-chip { background:#f0eeff; color:var(--bg1); font-weight:800; padding:7px 14px; border-radius:20px; font-size:0.92rem; animation:pvpChipIn 0.35s both; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pvp-chip.me { background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; }
+  .pvp-chip small { opacity:0.75; font-weight:700; }
+  .pvp-waitinfo { color:var(--ink-soft); font-weight:700; font-size:0.88rem; margin-bottom:6px; }
+
+  .pvp-hud { display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:12px 16px; margin-bottom:14px; box-shadow:0 8px 20px rgba(0,0,0,0.12); border-top:5px solid var(--bg1); }
+  .pvp-hud-me { flex:1; min-width:0; font-weight:800; font-size:0.95rem; color:var(--ink); text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pvp-hud-pts { font-weight:800; color:var(--ink-soft); font-size:0.85rem; }
+  .pvp-hud-pts b { font-family:'Baloo 2',cursive; font-size:1.7rem; color:var(--bg1); margin-right:2px; }
+  .pvp-hud-rank { font-weight:800; font-size:0.85rem; color:#fff; background:linear-gradient(135deg,var(--bg1),var(--bg2)); padding:4px 11px; border-radius:20px; }
+
+  .pvp-results { background:#fff; border-radius:26px; padding:28px 22px; box-shadow:0 20px 50px rgba(0,0,0,0.22); text-align:center; }
+  .pvp-res-head { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.35rem; color:var(--bg1); margin-bottom:14px; }
+  .pvp-ans { display:flex; align-items:center; gap:14px; background:#f7f6ff; border-radius:16px; padding:12px 14px; text-align:left; }
+  .pvp-ans-flag img { width:56px; height:auto; border-radius:6px; box-shadow:0 3px 10px rgba(0,0,0,0.2); display:block; }
+  .pvp-ans-txt { flex:1; min-width:0; font-weight:700; font-size:0.9rem; color:var(--ink); display:flex; flex-direction:column; gap:3px; }
+  .pvp-ans-txt .ok { color:var(--good); }
+  .pvp-ans-txt .ko { color:var(--bad); }
+  .pvp-ans-pts { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.7rem; color:var(--good); animation:pvpPop 0.5s 0.15s both; }
+  .pvp-ans-pts.zero { color:var(--ink-soft); }
+  .pvp-lasthint { margin:16px 0 4px; font-weight:700; color:var(--ink-soft); }
+  .pvp-lasthint .big { display:block; font-size:2.6rem; margin-bottom:4px; animation:pvpPop 0.6s both; }
+
+  .pvp-board { display:flex; flex-direction:column; gap:8px; margin:16px 0 6px; }
+  .pvp-row { display:grid; grid-template-columns:34px 1fr auto auto 40px; align-items:center; gap:8px; background:#f7f6ff; border-radius:14px; padding:11px 12px; font-weight:800; color:var(--ink); text-align:left; animation:pvpRowIn 0.45s both; animation-delay:calc(var(--i) * 110ms); }
+  .pvp-row.me { background:linear-gradient(135deg,rgba(106,92,255,0.16),rgba(255,93,143,0.16)); box-shadow:inset 0 0 0 2px var(--bg1); }
+  .pvp-row .rk { font-family:'Baloo 2',cursive; font-size:1.2rem; color:var(--bg1); text-align:center; }
+  .pvp-row.r1 .rk { color:#f5a623; }
+  .pvp-row .nm { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pvp-row .gain { font-size:0.8rem; color:var(--good); animation:pvpPop 0.5s both; animation-delay:calc(var(--i) * 110ms + 300ms); }
+  .pvp-row .gain.zero { color:var(--ink-soft); font-weight:700; }
+  .pvp-row .sc { font-family:'Baloo 2',cursive; font-size:1.3rem; color:var(--ink); min-width:30px; text-align:right; }
+  .pvp-row .mv { font-size:0.75rem; text-align:right; }
+  .pvp-row .mv.up { color:var(--good); }
+  .pvp-row .mv.down { color:var(--bad); }
+  .pvp-gap { color:var(--ink-soft); font-weight:800; letter-spacing:0.3em; line-height:0.6; }
+  .pvp-actions { margin-top:16px; }
+  .pvp-wait-host { color:var(--ink-soft); font-weight:700; font-size:0.92rem; }
+  .pvp-next-btn { width:100%; font-family:'Baloo 2',cursive; font-weight:800; font-size:1.1rem; padding:14px; border:none; border-radius:16px; cursor:pointer; background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; box-shadow:0 8px 20px rgba(106,92,255,0.4); transition:transform 0.15s ease; }
+  .pvp-next-btn:hover { transform:translateY(-2px); }
+
+  .pvp-exitbar { text-align:center; margin-top:14px; }
+  .pvp-exit-btn { font-family:'Baloo 2',cursive; font-weight:700; font-size:0.95rem; padding:10px 22px; border-radius:30px; cursor:pointer; background:#fff; color:var(--bg1); border:2.5px solid var(--bg1); transition:transform 0.15s ease; }
+  .pvp-exit-btn:hover { transform:translateY(-2px); }
+  .pvp-exit-btn.danger { color:var(--bad); border-color:var(--bad); }
+
+  .pvp-stopped { background:#fdeaee; color:var(--bad); font-weight:800; border-radius:14px; padding:10px 14px; margin-bottom:12px; }
+  .pvp-end-msg { font-weight:800; color:var(--ink); font-size:1.05rem; margin:14px 0 4px; opacity:0; transition:opacity 0.6s ease; }
+  .pvp-end-msg.show { opacity:1; }
+  .pvp-drum { color:var(--ink-soft); font-weight:700; min-height:24px; margin-top:6px; }
+  .pvp-podium { display:flex; align-items:flex-end; justify-content:center; gap:10px; margin:18px auto 6px; max-width:440px; min-height:280px; border-bottom:5px solid #ece9ff; }
+  .pod { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; min-width:0; }
+  .pod-who { text-align:center; margin-bottom:8px; max-width:100%; opacity:0; transform:translateY(26px) scale(0.85); transition:opacity 0.5s ease 0.4s, transform 0.6s cubic-bezier(.2,1.4,.4,1) 0.4s; }
+  .pod.show .pod-who { opacity:1; transform:none; }
+  .pod-medal { font-size:2.3rem; line-height:1; }
+  .pod-name { font-family:'Baloo 2',cursive; font-weight:800; font-size:1rem; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .pod-score { font-weight:800; color:var(--ink-soft); font-size:0.85rem; }
+  .pod-bar { width:100%; height:0; border-radius:14px 14px 0 0; display:flex; align-items:flex-start; justify-content:center; padding-top:10px; font-family:'Baloo 2',cursive; font-weight:800; font-size:2rem; color:#fff; overflow:hidden; transition:height 1s cubic-bezier(.2,.9,.3,1); }
+  .pod.show .pod-bar { height:var(--h); }
+  .pod-1 .pod-bar { background:linear-gradient(180deg,#ffd75e,#f5a623); }
+  .pod-2 .pod-bar { background:linear-gradient(180deg,#d6dbe6,#a3acc0); }
+  .pod-3 .pod-bar { background:linear-gradient(180deg,#e0a577,#b46f3b); }
+  .pod.me .pod-name { color:var(--bg1); }
+  .pod-1.show .pod-medal { animation:pvpMedal 0.9s ease 0.7s; }
+  .pvp-rest { margin-top:14px; opacity:0; transition:opacity 0.6s ease; }
+  .pvp-rest.show { opacity:1; }
+
+  @keyframes pvpChipIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:none} }
+  @keyframes pvpRowIn { from{opacity:0;transform:translateX(-34px)} to{opacity:1;transform:none} }
+  @keyframes pvpPop { 0%{opacity:0;transform:scale(0.3)} 70%{transform:scale(1.25)} 100%{opacity:1;transform:none} }
+  @keyframes pvpMedal { 0%,100%{transform:none} 25%{transform:translateY(-14px) rotate(-8deg)} 55%{transform:translateY(-6px) rotate(8deg)} }
+
+  html.dark .pvp-hud, html.dark .pvp-results { background:#1e1b2e; }
+  html.dark .pvp-hud-me, html.dark .pvp-row, html.dark .pvp-row .sc, html.dark .pvp-ans-txt, html.dark .pod-name, html.dark .pvp-end-msg { color:#e8e2ff; }
+  html.dark .pvp-row, html.dark .pvp-ans, html.dark .pvp-chip, html.dark .pvp-custom input { background:#2a2545; }
+  html.dark .pvp-custom input { border-color:#3d3568; color:#8b7eff; }
+  html.dark .pvp-chip { color:#cfc7ff; }
+  html.dark .pvp-chip.me { color:#fff; background:linear-gradient(135deg,var(--bg1),var(--bg2)); }
+  html.dark .pvp-res-head, html.dark .pod.me .pod-name { color:#8b7eff; }
+  html.dark .pvp-exit-btn { background:#1e1b2e; color:#8b7eff; border-color:#8b7eff; }
+  html.dark .pvp-exit-btn.danger { color:#ff6b84; border-color:#ff6b84; }
+  html.dark .pvp-podium { border-bottom-color:#3d3568; }
+  html.dark .pvp-stopped { background:#3a1f2a; }
 
   /* ---------- Sous-modes Drapeaux ---------- */
   .submodes {
@@ -757,7 +851,7 @@
     <button class="mode-btn" data-mode="quiz">🎯 Quiz</button>
     <button class="mode-btn" data-mode="type">⌨️ Clavier</button>
     <button class="mode-btn" data-mode="timed">⏱️ Défi</button>
-    <button class="mode-btn" data-mode="pvp">⚔️ 1v1</button>
+    <button class="mode-btn" data-mode="pvp">🌐 Multijoueur</button>
   </div>
 
   <div class="options-bar hidden" id="optionsBar">
@@ -856,8 +950,9 @@
 
       <!-- Lobby -->
       <div id="pvpLobby" class="pvp-lobby">
-        <h2>⚔️ Mode 1v1</h2>
-        <p>Joue contre un ami en temps réel !</p>
+        <h2 id="pvpTitleEl">🌐 Mode Multijoueur</h2>
+        <p id="pvpSubEl">Affronte tes amis en temps réel, à 2 joueurs ou plus !</p>
+        <input class="pvp-pseudo" id="pvpPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false">
         <div class="pvp-rounds-lbl">Nombre de manches</div>
         <div class="pvp-rounds" id="pvpRounds">
           <button class="pvp-round-btn active" data-rounds="10">10</button>
@@ -865,46 +960,39 @@
           <button class="pvp-round-btn" data-rounds="50">50</button>
           <button class="pvp-round-btn" data-rounds="100">100</button>
           <button class="pvp-round-btn" data-rounds="max">Max</button>
+          <button class="pvp-round-btn perso" data-rounds="custom" id="pvpCustomBtn">✏️ Perso</button>
+        </div>
+        <div class="pvp-custom hidden" id="pvpCustomWrap">
+          <input type="number" id="pvpCustomRounds" min="1" inputmode="numeric" placeholder="15">
+          <span id="pvpCustomHint">1 – 197</span>
         </div>
         <button class="pvp-big-btn create" id="pvpCreateBtn">🎮 Créer une partie</button>
-        <div class="pvp-sep">— ou —</div>
+        <div class="pvp-sep" id="pvpSepEl">— ou —</div>
         <div class="pvp-join-row">
           <input class="pvp-code-input" id="pvpCodeInput" maxlength="4" placeholder="CODE" autocomplete="off" spellcheck="false">
           <button class="pvp-big-btn join" id="pvpJoinBtn" style="flex-shrink:0; width:auto; padding:0 20px;">Rejoindre</button>
         </div>
       </div>
 
-      <!-- Join pseudo screen (P2 only) -->
-      <div id="pvpJoinScreen" class="pvp-lobby hidden">
-        <h2 id="pvpJoinTitle">🎮 Rejoindre la partie</h2>
-        <p id="pvpJoinSubtitle">Entre ton pseudo pour rejoindre !</p>
-        <input class="pvp-pseudo" id="pvpJoinPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false">
-        <button class="pvp-big-btn create" id="pvpJoinConfirmBtn">✅ Rejoindre</button>
-      </div>
-
-      <!-- Waiting -->
+      <!-- Salle d'attente -->
       <div id="pvpWaiting" class="pvp-waiting hidden">
         <div id="pvpWaitCodeWrap">
-          <p style="font-weight:700;color:var(--ink-soft);margin-bottom:8px;">Partage ce code à ton ami :</p>
+          <p id="pvpShareCodeP" style="font-weight:700;color:var(--ink-soft);margin-bottom:8px;">Partage ce code à tes amis :</p>
           <div class="pvp-room-code" id="pvpCodeDisplay">----</div>
         </div>
-        <p id="pvpWaitStatus">En attente de l'adversaire<span class="pvp-dots"></span></p>
-        <input class="pvp-pseudo hidden" id="pvpHostPseudo" maxlength="14" placeholder="✏️ Ton pseudo" autocomplete="off" spellcheck="false" style="margin-top:12px;">
+        <div class="pvp-waitinfo" id="pvpWaitInfo"></div>
+        <div class="pvp-roster-lbl" id="pvpRosterLbl">Joueurs (1)</div>
+        <div class="pvp-roster" id="pvpRoster"></div>
+        <p id="pvpWaitStatus">En attente d'autres joueurs<span class="pvp-dots"></span></p>
         <button class="pvp-big-btn create hidden" id="pvpStartBtn" style="margin-top:12px;">🚀 Lancer la partie</button>
       </div>
 
-      <!-- Game -->
+      <!-- Question -->
       <div id="pvpGame" class="hidden">
-        <div class="pvp-scoreboard">
-          <div class="pvp-player me">
-            <div class="pvp-name" id="pvpMyName">Toi</div>
-            <div class="pvp-pts" id="pvpMyScore">0</div>
-          </div>
-          <div style="display:flex;align-items:center;color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:1.4rem;">VS</div>
-          <div class="pvp-player them">
-            <div class="pvp-name" id="pvpTheirName">Adversaire</div>
-            <div class="pvp-pts" id="pvpTheirScore">0</div>
-          </div>
+        <div class="pvp-hud">
+          <div class="pvp-hud-me" id="pvpMyName">Toi</div>
+          <div class="pvp-hud-pts"><b id="pvpMyScore">0</b> pts</div>
+          <div class="pvp-hud-rank hidden" id="pvpMyRank"></div>
         </div>
 
         <div class="pvp-question-card">
@@ -917,32 +1005,39 @@
             <input class="pvp-input" id="pvpInputCapital" type="text" autocomplete="off" spellcheck="false" placeholder="🏛️ Capitale…">
           </div>
           <button class="pvp-submit" id="pvpSubmitBtn" style="width:100%;margin-top:14px;">Valider ✅</button>
-          <div class="pvp-reveal hidden" id="pvpReveal"></div>
         </div>
 
         <div class="pvp-status" id="pvpStatus"></div>
       </div>
 
-      <!-- End -->
+      <!-- Classement après chaque question -->
+      <div id="pvpResults" class="pvp-results hidden">
+        <div class="pvp-res-head" id="pvpResHead">🏅 Classement</div>
+        <div class="pvp-ans" id="pvpResAnswer"></div>
+        <div class="pvp-board" id="pvpBoard"></div>
+        <div class="pvp-lasthint hidden" id="pvpLastHint"></div>
+        <div class="pvp-actions" id="pvpResActions"></div>
+      </div>
+
+      <!-- Fin : podium -->
       <div id="pvpEnd" class="pvp-end hidden">
+        <div class="pvp-stopped hidden" id="pvpStoppedBanner">⛔ La partie a été arrêtée par l'hôte</div>
         <div class="pvp-trophy" id="pvpTrophy">🏆</div>
-        <h2 id="pvpEndTitle">Résultats</h2>
-        <div class="pvp-final-scores">
-          <div class="pvp-player me">
-            <div class="pvp-name" id="pvpEndMyName">Toi</div>
-            <div class="pvp-pts" id="pvpEndMyScore">0</div>
-          </div>
-          <div class="pvp-player them">
-            <div class="pvp-name" id="pvpEndTheirName">Adversaire</div>
-            <div class="pvp-pts" id="pvpEndTheirScore">0</div>
-          </div>
-        </div>
-        <button class="pvp-big-btn create" id="pvpReplayBtn" style="margin-top:8px;">🔄 Rejouer</button>
+        <h2 id="pvpEndTitle">Podium</h2>
+        <div class="pvp-drum" id="pvpDrum"></div>
+        <div class="pvp-podium" id="pvpPodium"></div>
+        <div class="pvp-end-msg" id="pvpEndMsg"></div>
+        <div class="pvp-rest" id="pvpRest"></div>
+        <button class="pvp-big-btn create" id="pvpReplayBtn" style="margin-top:14px;">🔄 Rejouer</button>
+      </div>
+
+      <!-- Quitter (joueur) / Arrêter la partie (hôte) -->
+      <div class="pvp-exitbar hidden" id="pvpExitBar">
+        <button class="pvp-exit-btn" id="pvpExitBtn">🚪 Quitter</button>
       </div>
 
     </div>
   </section>
-
   <footer>{nombre} pays · Bonne exploration 🧭</footer>
 </div>
 
@@ -1695,7 +1790,7 @@ function enterMode(mode){
     const fcb = document.getElementById("flagsShowContinentBtn"); if(fcb){ fcb.textContent = "🌍 Continent visible"; fcb.classList.add("active"); }
     enterFlagsSubMode(flagsSubMode);
   }
-  else if(isPvp){ pvpShowSection('pvpLobby'); }
+  else if(isPvp){ pvpEnterMode(); }
   else if(showTypeTable){ typeTableInProgress = false; renderTypeTable(); }
   else { startPlay(); }
 
@@ -2256,7 +2351,7 @@ const LANGS = {
     menuGlobe:"🌍 Globe interactif", menuSeas:"🌊 Mers & Océans", menuContact:"📬 Contact",
     // Modes
     modeStudy:"📖 Révision", modeQuiz:"🎯 Quiz", modeType:"⌨️ Clavier",
-    modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"⚔️ 1v1",
+    modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"🌐 Multijoueur",
     // Options bar
     dirCap:"🏛️ Deviner la capitale", dirCountry:"🌍 Deviner le pays",
     tableMode:"📋 Mode tableau",
@@ -2297,24 +2392,39 @@ const LANGS = {
     // Progress
     progress: (pct,s,a) => `Réussite : ${pct}% (${s}/${a})`,
     // PvP
-    pvpTitle:"⚔️ Mode 1v1",
-    pvpSubtitle:"Joue contre un ami en temps réel !",
-    pvpPseudoPlaceholder:"✏️ Ton pseudo", pvpJoinTitle:"🎮 Rejoindre la partie", pvpJoinSubtitle:"Entre ton pseudo pour rejoindre !", pvpJoinConfirm:"✅ Rejoindre",
-    pvpRoundsLabel:"Nombre de manches",
-    pvpCreate:"🎮 Créer une partie",
-    pvpJoin:"Rejoindre",
-    pvpShareCode:"Partage ce code à ton ami :",
-    pvpWaiting:"En attente de l'adversaire", pvpWaitingHost:"En attente que l'hôte lance la partie",
+    pvpTitle:"🌐 Mode Multijoueur",
+    pvpSubtitle:"Affronte tes amis en temps réel, à 2 joueurs ou plus !",
+    pvpPseudoPlaceholder:"✏️ Ton pseudo",
+    pvpRoundsLabel:"Nombre de manches", pvpCustom:"✏️ Perso",
+    pvpCreate:"🎮 Créer une partie", pvpJoin:"Rejoindre", pvpOr:"— ou —",
+    pvpShareCode:"Partage ce code à tes amis :",
+    pvpWaiting:"En attente d'autres joueurs", pvpWaitingHost:"En attente que l'hôte lance la partie",
+    pvpReadyToStart:"Tout le monde est là ? Lance la partie quand tu veux !",
+    pvpPlayers:(n)=>`Joueurs (${n})`,
+    pvpInfo:(n,f)=>`${n} manche${n>1?"s":""} · ${f}`,
+    pvpHostTag:"hôte", pvpYou:"toi", pvpDefaultName:"Joueur",
     pvpStart:"🚀 Lancer la partie",
     pvpCountryPlaceholder:"🌍 Nom du pays…",
     pvpCapitalPlaceholder:"🏛️ Capitale…",
     pvpSubmit:"Valider ✅",
-    pvpWin:"Tu as gagné !", pvpLose:"Tu as perdu…", pvpDraw:"Égalité !",
-    pvpReplay:"🔄 Rejouer",
-    pvpWaitAdversary:"⏳ En attente de l'adversaire…",
     pvpQuestion: (r,t) => `Question ${r} / ${t}`,
+    pvpAnswered:(a,n)=>`${a} / ${n} ont répondu`,
+    pvpWaitOthers:"⏳ Réponse envoyée !",
+    pvpRankTitle:(r,t)=>`🏅 Classement · question ${r} / ${t}`,
+    pvpLastDone:"🏁 Dernière question terminée !",
+    pvpLastHidden:"Le classement final va être dévoilé sur le podium…",
     pvpRevealCountry:"🌍 Pays", pvpRevealCapital:"🏛️ Capitale",
-    pvpNextRound:"➡️ Manche suivante",
+    pvpNextQ:"➡️ Question suivante", pvpShowPodium:"🏆 Dévoiler le podium",
+    pvpWaitNextQ:"En attendant que l'hôte passe à la question suivante",
+    pvpWaitPodium:"En attendant que l'hôte dévoile le podium",
+    pvpStop:"⛔ Arrêter la partie", pvpCancel:"⛔ Annuler la salle", pvpLeave:"🚪 Quitter",
+    pvpStopConfirm:"Arrêter la partie pour tout le monde ?", pvpCancelConfirm:"Fermer la salle ?", pvpLeaveConfirm:"Quitter la partie en cours ?",
+    pvpStopped:"⛔ La partie a été arrêtée par l'hôte", pvpRoomClosed:"La salle a été fermée par l'hôte.",
+    pvpPodiumTitle:"Podium", pvpDrum:"🥁 Roulement de tambour…",
+    pvpYourRank:(r,n)=>`Tu termines ${pvpOrd(r)} sur ${n} !`,
+    pvpReplay:"🔄 Rejouer",
+    pvpErrNet:"Connexion impossible, réessaie dans un instant.", pvpErrCode:"Entre un code à 4 lettres !",
+    pvpErrInvalid:"Code invalide !", pvpErrStarted:"Cette partie a déjà commencé !", pvpErrFull:"La salle est complète !",
     // Tooltips
     soundTitle:"Son", darkTitle:"Mode nuit",
   },
@@ -2325,7 +2435,7 @@ const LANGS = {
     intro:`Welcome to <strong>Atlas de poche</strong>, your free interactive atlas to learn world geography. Discover the <strong>195 countries</strong> and their capitals, then practice with <strong>review</strong>, <strong>quiz</strong>, <strong>keyboard</strong>, <strong>timed challenge</strong> and <strong>flags</strong> modes!`,
     menuGlobe:"🌍 Interactive Globe", menuSeas:"🌊 Seas & Oceans", menuContact:"📬 Contact",
     modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
-    modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"⚔️ 1v1",
+    modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"🌐 Multiplayer",
     dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
     tableMode:"📋 Table mode",
     flagShow:"🚩 With flag", flagHide:"🚫 Without flag",
@@ -2357,24 +2467,39 @@ const LANGS = {
     typeRecapTitle: (n) => n===0 ? "No mistakes, well done! 🎉" : `Round complete — ${n} mistake${n>1?"s":""} to review:`,
     reviewErrors: (n) => `🎯 Redo my ${n} mistake${n>1?"s":""}`,
     progress: (pct,s,a) => `Success: ${pct}% (${s}/${a})`,
-    pvpTitle:"⚔️ 1v1 Mode",
-    pvpSubtitle:"Play against a friend in real time!",
-    pvpPseudoPlaceholder:"✏️ Your nickname", pvpJoinTitle:"🎮 Join the game", pvpJoinSubtitle:"Enter your nickname to join!", pvpJoinConfirm:"✅ Join",
-    pvpRoundsLabel:"Number of rounds",
-    pvpCreate:"🎮 Create game",
-    pvpJoin:"Join",
-    pvpShareCode:"Share this code with your friend:",
-    pvpWaiting:"Waiting for opponent", pvpWaitingHost:"Waiting for host to start",
+    pvpTitle:"🌐 Multiplayer Mode",
+    pvpSubtitle:"Play against your friends in real time, 2 players or more!",
+    pvpPseudoPlaceholder:"✏️ Your nickname",
+    pvpRoundsLabel:"Number of rounds", pvpCustom:"✏️ Custom",
+    pvpCreate:"🎮 Create game", pvpJoin:"Join", pvpOr:"— or —",
+    pvpShareCode:"Share this code with your friends:",
+    pvpWaiting:"Waiting for other players", pvpWaitingHost:"Waiting for the host to start the game",
+    pvpReadyToStart:"Everyone's here? Start the game whenever you like!",
+    pvpPlayers:(n)=>`Players (${n})`,
+    pvpInfo:(n,f)=>`${n} round${n>1?"s":""} · ${f}`,
+    pvpHostTag:"host", pvpYou:"you", pvpDefaultName:"Player",
     pvpStart:"🚀 Start game",
     pvpCountryPlaceholder:"🌍 Country name…",
     pvpCapitalPlaceholder:"🏛️ Capital…",
     pvpSubmit:"Submit ✅",
-    pvpWin:"You won!", pvpLose:"You lost…", pvpDraw:"Draw!",
-    pvpReplay:"🔄 Play again",
-    pvpWaitAdversary:"⏳ Waiting for opponent…",
     pvpQuestion: (r,t) => `Question ${r} / ${t}`,
+    pvpAnswered:(a,n)=>`${a} / ${n} answered`,
+    pvpWaitOthers:"⏳ Answer sent!",
+    pvpRankTitle:(r,t)=>`🏅 Leaderboard · question ${r} / ${t}`,
+    pvpLastDone:"🏁 Last question done!",
+    pvpLastHidden:"The final ranking will be revealed on the podium…",
     pvpRevealCountry:"🌍 Country", pvpRevealCapital:"🏛️ Capital",
-    pvpNextRound:"➡️ Next round",
+    pvpNextQ:"➡️ Next question", pvpShowPodium:"🏆 Reveal the podium",
+    pvpWaitNextQ:"Waiting for the host to move on to the next question",
+    pvpWaitPodium:"Waiting for the host to reveal the podium",
+    pvpStop:"⛔ Stop the game", pvpCancel:"⛔ Cancel the room", pvpLeave:"🚪 Leave",
+    pvpStopConfirm:"Stop the game for everyone?", pvpCancelConfirm:"Close the room?", pvpLeaveConfirm:"Leave the current game?",
+    pvpStopped:"⛔ The game was stopped by the host", pvpRoomClosed:"The room was closed by the host.",
+    pvpPodiumTitle:"Podium", pvpDrum:"🥁 Drumroll…",
+    pvpYourRank:(r,n)=>`You finished ${pvpOrd(r)} out of ${n}!`,
+    pvpReplay:"🔄 Play again",
+    pvpErrNet:"Connection failed, please try again in a moment.", pvpErrCode:"Enter a 4-letter code!",
+    pvpErrInvalid:"Invalid code!", pvpErrStarted:"This game has already started!", pvpErrFull:"The room is full!",
     soundTitle:"Sound", darkTitle:"Night mode",
   },
   es: {
@@ -2384,7 +2509,7 @@ const LANGS = {
     intro:`Bienvenido a <strong>Atlas de poche</strong>, tu atlas interactivo y gratuito para aprender geografía. Descubre los <strong>195 países del mundo</strong> y sus capitales, luego practica con los modos <strong>repaso</strong>, <strong>quiz</strong>, <strong>teclado</strong>, <strong>desafío</strong> y <strong>banderas</strong>!`,
     menuGlobe:"🌍 Globo interactivo", menuSeas:"🌊 Mares & Océanos", menuContact:"📬 Contacto",
     modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
-    modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"⚔️ 1v1",
+    modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"🌐 Multijugador",
     dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
     tableMode:"📋 Modo tabla",
     flagShow:"🚩 Con bandera", flagHide:"🚫 Sin bandera",
@@ -2416,24 +2541,39 @@ const LANGS = {
     typeRecapTitle: (n) => n===0 ? "¡Sin errores, genial! 🎉" : `Ronda terminada — ${n} error${n>1?"es":""} para repasar:`,
     reviewErrors: (n) => `🎯 Repetir mis ${n} error${n>1?"es":""}`,
     progress: (pct,s,a) => `Acierto: ${pct}% (${s}/${a})`,
-    pvpTitle:"⚔️ Modo 1v1",
-    pvpSubtitle:"¡Juega contra un amigo en tiempo real!",
-    pvpPseudoPlaceholder:"✏️ Tu apodo", pvpJoinTitle:"🎮 Unirse a la partida", pvpJoinSubtitle:"¡Escribe tu apodo para unirte!", pvpJoinConfirm:"✅ Unirse",
-    pvpRoundsLabel:"Número de rondas",
-    pvpCreate:"🎮 Crear partida",
-    pvpJoin:"Unirse",
-    pvpShareCode:"Comparte este código con tu amigo:",
-    pvpWaiting:"Esperando al adversario", pvpWaitingHost:"Esperando que el anfitrión inicie",
+    pvpTitle:"🌐 Modo Multijugador",
+    pvpSubtitle:"¡Juega con tus amigos en tiempo real, 2 jugadores o más!",
+    pvpPseudoPlaceholder:"✏️ Tu apodo",
+    pvpRoundsLabel:"Número de rondas", pvpCustom:"✏️ Otro",
+    pvpCreate:"🎮 Crear partida", pvpJoin:"Unirse", pvpOr:"— o —",
+    pvpShareCode:"Comparte este código con tus amigos:",
+    pvpWaiting:"Esperando a otros jugadores", pvpWaitingHost:"Esperando a que el anfitrión inicie la partida",
+    pvpReadyToStart:"¿Ya estáis todos? ¡Inicia la partida cuando quieras!",
+    pvpPlayers:(n)=>`Jugadores (${n})`,
+    pvpInfo:(n,f)=>`${n} ronda${n>1?"s":""} · ${f}`,
+    pvpHostTag:"anfitrión", pvpYou:"tú", pvpDefaultName:"Jugador",
     pvpStart:"🚀 Iniciar partida",
     pvpCountryPlaceholder:"🌍 Nombre del país…",
     pvpCapitalPlaceholder:"🏛️ Capital…",
     pvpSubmit:"Validar ✅",
-    pvpWin:"¡Ganaste!", pvpLose:"Perdiste…", pvpDraw:"¡Empate!",
-    pvpReplay:"🔄 Jugar de nuevo",
-    pvpWaitAdversary:"⏳ Esperando al adversario…",
     pvpQuestion: (r,t) => `Pregunta ${r} / ${t}`,
+    pvpAnswered:(a,n)=>`${a} / ${n} han respondido`,
+    pvpWaitOthers:"⏳ ¡Respuesta enviada!",
+    pvpRankTitle:(r,t)=>`🏅 Clasificación · pregunta ${r} / ${t}`,
+    pvpLastDone:"🏁 ¡Última pregunta terminada!",
+    pvpLastHidden:"La clasificación final se revelará en el podio…",
     pvpRevealCountry:"🌍 País", pvpRevealCapital:"🏛️ Capital",
-    pvpNextRound:"➡️ Siguiente ronda",
+    pvpNextQ:"➡️ Siguiente pregunta", pvpShowPodium:"🏆 Revelar el podio",
+    pvpWaitNextQ:"Esperando a que el anfitrión pase a la siguiente pregunta",
+    pvpWaitPodium:"Esperando a que el anfitrión revele el podio",
+    pvpStop:"⛔ Detener la partida", pvpCancel:"⛔ Cancelar la sala", pvpLeave:"🚪 Salir",
+    pvpStopConfirm:"¿Detener la partida para todos?", pvpCancelConfirm:"¿Cerrar la sala?", pvpLeaveConfirm:"¿Salir de la partida en curso?",
+    pvpStopped:"⛔ El anfitrión ha detenido la partida", pvpRoomClosed:"El anfitrión ha cerrado la sala.",
+    pvpPodiumTitle:"Podio", pvpDrum:"🥁 Redoble de tambor…",
+    pvpYourRank:(r,n)=>`¡Terminas ${pvpOrd(r)} de ${n}!`,
+    pvpReplay:"🔄 Jugar de nuevo",
+    pvpErrNet:"No se pudo conectar, inténtalo de nuevo en un momento.", pvpErrCode:"¡Escribe un código de 4 letras!",
+    pvpErrInvalid:"¡Código no válido!", pvpErrStarted:"¡Esta partida ya ha empezado!", pvpErrFull:"¡La sala está llena!",
     soundTitle:"Sonido", darkTitle:"Modo noche",
   }
 };
@@ -2501,27 +2641,16 @@ function applyLang(){
     if(divs[2]) divs[2].innerHTML = t.timedDesc;
     const tsb = document.getElementById("timedStartBtn"); if(tsb) tsb.textContent = t.timedStart;
   }
-  // PvP lobby
-  const pvpH2 = document.querySelector('#pvpLobby h2'); if(pvpH2) pvpH2.textContent = t.pvpTitle;
-  const pvpP  = document.querySelector('#pvpLobby p');  if(pvpP)  pvpP.textContent  = t.pvpSubtitle;
-  const pvpPseudo = document.getElementById("pvpPseudo"); if(pvpPseudo) pvpPseudo.placeholder = t.pvpPseudoPlaceholder;
+  // Multijoueur
+  const setTxt = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const setPh = (id, v) => { const el = document.getElementById(id); if(el) el.placeholder = v; };
+  setTxt("pvpTitleEl", t.pvpTitle); setTxt("pvpSubEl", t.pvpSubtitle); setPh("pvpPseudo", t.pvpPseudoPlaceholder);
   const pvpRL = document.querySelector(".pvp-rounds-lbl"); if(pvpRL) pvpRL.textContent = t.pvpRoundsLabel;
-  const pvpCr = document.getElementById("pvpCreateBtn"); if(pvpCr) pvpCr.textContent = t.pvpCreate;
-  const pvpJn = document.getElementById("pvpJoinBtn"); if(pvpJn) pvpJn.textContent = t.pvpJoin;
-  const pvpJT = document.getElementById("pvpJoinTitle"); if(pvpJT) pvpJT.textContent = t.pvpJoinTitle;
-  const pvpJS = document.getElementById("pvpJoinSubtitle"); if(pvpJS) pvpJS.textContent = t.pvpJoinSubtitle;
-  const pvpJP = document.getElementById("pvpJoinPseudo"); if(pvpJP) pvpJP.placeholder = t.pvpPseudoPlaceholder;
-  const pvpJC = document.getElementById("pvpJoinConfirmBtn"); if(pvpJC) pvpJC.textContent = t.pvpJoinConfirm;
-  // PvP waiting
-  const pvpSC = document.querySelector('#pvpWaitCodeWrap p'); if(pvpSC) pvpSC.textContent = t.pvpShareCode;
-  const pvpWS = document.getElementById("pvpWaitStatus"); if(pvpWS && pvpWS.textContent.includes("ttente")) pvpWS.innerHTML = t.pvpWaiting+'<span class="pvp-dots"></span>';
-  const pvpSt = document.getElementById("pvpStartBtn"); if(pvpSt) pvpSt.textContent = t.pvpStart;
-  // PvP game inputs
-  const pvpIC = document.getElementById("pvpInputCountry"); if(pvpIC) pvpIC.placeholder = t.pvpCountryPlaceholder;
-  const pvpIK = document.getElementById("pvpInputCapital"); if(pvpIK) pvpIK.placeholder = t.pvpCapitalPlaceholder;
-  const pvpSB = document.getElementById("pvpSubmitBtn"); if(pvpSB) pvpSB.textContent = t.pvpSubmit;
-  // PvP replay
-  const pvpRp = document.getElementById("pvpReplayBtn"); if(pvpRp) pvpRp.textContent = t.pvpReplay;
+  setTxt("pvpCustomBtn", t.pvpCustom); setTxt("pvpCreateBtn", t.pvpCreate); setTxt("pvpJoinBtn", t.pvpJoin); setTxt("pvpSepEl", t.pvpOr);
+  setTxt("pvpShareCodeP", t.pvpShareCode); setTxt("pvpStartBtn", t.pvpStart);
+  setPh("pvpInputCountry", t.pvpCountryPlaceholder); setPh("pvpInputCapital", t.pvpCapitalPlaceholder);
+  setTxt("pvpSubmitBtn", t.pvpSubmit); setTxt("pvpReplayBtn", t.pvpReplay); setTxt("pvpStoppedBanner", t.pvpStopped);
+  if(window.pvpRefreshLang) window.pvpRefreshLang();
   // Tooltips
   const snd = document.getElementById("soundToggle"); if(snd) snd.title = t.soundTitle;
   const drk = document.getElementById("darkToggle"); if(drk) drk.title = t.darkTitle;
@@ -2561,334 +2690,597 @@ renderRecords();
 renderStudy();
 applyLang();
 
-// ---------- Mode 1v1 ----------
+// ---------- Mode Multijoueur ----------
+// Une salle Firebase (REST + SSE) : l'hôte pilote la partie (phase "question" / "results" / fin),
+// chaque joueur n'écrit que sa propre réponse -> pas de conflit d'écriture, scores recalculés par tous.
 const DB = "https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app";
+const PVP_TIME = 20;          // secondes par question
+const PVP_GRACE = 4;          // marge avant que l'hôte clôture une manche si quelqu'un ne répond pas
+const PVP_MAX_PLAYERS = 12;
 
-let pvpRoom = null;       // code de la salle
-let pvpRole = null;       // "p1" ou "p2"
+// Identifiant du joueur (propre à l'onglet)
+const pvpPid = (()=>{
+  try{ let id = sessionStorage.getItem('pvpPid'); if(!id){ id = Math.random().toString(36).slice(2,10); sessionStorage.setItem('pvpPid', id); } return id; }
+  catch(e){ return Math.random().toString(36).slice(2,10); }
+})();
+
+let pvpRoom = null;           // code de la salle
 let pvpIsHost = false;
-let pvpSSE = null;
-let pvpCurrentRound = -1;
+let pvpES = null;             // flux temps réel (EventSource)
+let pvpData = null;           // dernière version connue de la salle
+let pvpScreen = 'pvpLobby';
+let pvpShown = {round:-2, phase:''};
 let pvpQuestions = [];
 let pvpSubmitted = false;
-let pvpRoundChoice = 10;  // 10 | 30 | 50 | 100 | 'max'
-let pvpTimerId = null;
-const PVP_TIME = 20;      // secondes par question
+let pvpQStart = 0;
+let pvpTimerId = null, pvpHostTimer = null, pvpAdvanced = -1;
+let pvpRoundChoice = 10;      // 10 | 30 | 50 | 100 | 'max' | 'custom'
+let pvpPodiumTimers = [];
+let pvpResultsSig = '';
+
+const pvpT = k => { const v = T()[k]; return v !== undefined ? v : LANGS.fr[k]; };
+const pvpEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function pvpOrd(n){
+  if(currentLang === 'en'){ const s=['th','st','nd','rd'], v=n%100; return n + (s[(v-20)%10] || s[v] || s[0]); }
+  if(currentLang === 'es') return n + '.º';
+  return n === 1 ? '1er' : n + 'e';
+}
 
 // Tous les pays du continent choisi (sert à plafonner le nombre de manches)
 function pvpAvailable(){ return activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter); }
+function pvpToArray(x){
+  if(Array.isArray(x)) return x.filter(Boolean);
+  if(x && typeof x === 'object') return Object.keys(x).sort((a,b)=>a-b).map(k=>x[k]);
+  return [];
+}
+function pvpPlayers(room){
+  const p = room.players || {};
+  return Object.keys(p).filter(k=>p[k]).map(pid=>({pid, name:String(p[pid].name || '?').slice(0,16), joined:p[pid].joinedAt || 0}))
+    .sort((a,b)=>a.joined-b.joined || (a.pid<b.pid?-1:1));
+}
+function pvpAnswersOf(room, r){
+  const a = room.answers && room.answers[r];
+  return a && typeof a === 'object' ? a : {};
+}
+// Classement après la manche `upTo` (incluse). Égalité de points : le plus rapide devant.
+function pvpStandings(room, upTo){
+  const rows = pvpPlayers(room).map(p=>({pid:p.pid, name:p.name, joined:p.joined, score:0, time:0, gain:0}));
+  for(let r=0; r<=upTo; r++){
+    const a = pvpAnswersOf(room, r);
+    rows.forEach(row=>{
+      const x = a[row.pid];
+      if(x){ row.score += x.pts || 0; row.time += x.t || 0; if(r === upTo) row.gain = x.pts || 0; }
+      else row.time += PVP_TIME * 1000;
+    });
+  }
+  rows.sort((x,y)=> y.score-x.score || x.time-y.time || x.joined-y.joined);
+  rows.forEach((x,i)=>x.rank = i+1);
+  return rows;
+}
 
-// Pseudo saisi par le joueur (avec valeur de secours)
-function pvpGetPseudo(def){ return def; }
-function pvpName(room, role){ return (role==='p1' ? room.p1name : room.p2name) || (role==='p1' ? 'Joueur 1' : 'Joueur 2'); }
-
-// Chrono de 20 s par question
-function pvpStopTimer(){ if(pvpTimerId){ clearInterval(pvpTimerId); pvpTimerId=null; } }
+// ----- Chrono par question -----
+function pvpStopTimer(){ if(pvpTimerId){ clearInterval(pvpTimerId); pvpTimerId = null; } }
 function pvpStartTimer(){
   pvpStopTimer();
-  let t = PVP_TIME;
   const fill = document.getElementById('pvpTimerFill');
   const txt = document.getElementById('pvpTimerText');
   const wrap = document.getElementById('pvpTimer');
-  wrap.style.display=''; txt.style.display='';
-  fill.style.width='100%'; fill.style.background='#1fae6a'; txt.textContent = t+' s';
-  pvpTimerId = setInterval(()=>{
-    t--;
-    txt.textContent = Math.max(t,0)+' s';
-    fill.style.width = Math.max(t,0)/PVP_TIME*100 + '%';
-    if(t<=5) fill.style.background='#ef3e5b';
-    if(t<=0){ pvpStopTimer(); if(!pvpSubmitted) pvpSubmit(); }
-  }, 1000);
+  wrap.style.display = ''; txt.style.display = '';
+  fill.style.transition = 'none'; fill.style.width = '100%'; fill.style.background = '#1fae6a';
+  void fill.offsetWidth; fill.style.transition = '';
+  const tick = () => {
+    const left = Math.max(0, PVP_TIME - (Date.now() - pvpQStart) / 1000);
+    const s = Math.ceil(left);
+    txt.textContent = s + ' s';
+    fill.style.width = (left / PVP_TIME * 100) + '%';
+    fill.style.background = s <= 5 ? '#ef3e5b' : '#1fae6a';
+    if(left <= 0){ pvpStopTimer(); if(!pvpSubmitted) pvpSubmit(); }
+  };
+  tick();
+  pvpTimerId = setInterval(tick, 250);
 }
 
-// Sélecteur du nombre de manches
+// ----- Sélecteur du nombre de manches (10 / 30 / 50 / 100 / Max / Perso) -----
+function pvpUpdateCustomMax(){
+  const max = pvpAvailable().length;
+  document.getElementById('pvpCustomRounds').max = max;
+  document.getElementById('pvpCustomHint').textContent = '1 – ' + max;
+}
 document.querySelectorAll('.pvp-round-btn').forEach(b=>{
   b.onclick = ()=>{
     document.querySelectorAll('.pvp-round-btn').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
-    pvpRoundChoice = b.dataset.rounds === 'max' ? 'max' : parseInt(b.dataset.rounds, 10);
+    const v = b.dataset.rounds;
+    pvpRoundChoice = (v === 'max' || v === 'custom') ? v : parseInt(v, 10);
+    document.getElementById('pvpCustomWrap').classList.toggle('hidden', v !== 'custom');
+    if(v === 'custom'){ pvpUpdateCustomMax(); setTimeout(()=>document.getElementById('pvpCustomRounds').focus({preventScroll:true}), 30); }
   };
 });
 
-const pvpOpponent = () => pvpRole === "p1" ? "p2" : "p1";
+// ----- Accès base de données -----
+async function dbGet(path){ const r = await fetch(`${DB}/${path}.json`); if(!r.ok) throw new Error('db ' + r.status); return r.json(); }
+async function dbSet(path, data){ const r = await fetch(`${DB}/${path}.json`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); if(!r.ok) throw new Error('db ' + r.status); return r; }
+async function dbPatch(path, data){ const r = await fetch(`${DB}/${path}.json`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); if(!r.ok) throw new Error('db ' + r.status); return r; }
+async function dbDel(path){ return fetch(`${DB}/${path}.json`, {method:'DELETE'}); }
 
-async function dbGet(path){ const r = await fetch(`${DB}/${path}.json`); return r.json(); }
-async function dbSet(path,data){ return fetch(`${DB}/${path}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
-async function dbPatch(path,data){ return fetch(`${DB}/${path}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
-
-function dbListen(path, cb){
-  if(pvpSSE) pvpSSE.close();
-  pvpSSE = new EventSource(`${DB}/${path}.json`);
-  pvpSSE.addEventListener('put', async () => { const d=await dbGet(path); if(d) cb(d); });
-  pvpSSE.addEventListener('patch', async () => { const d=await dbGet(path); if(d) cb(d); });
+// Flux temps réel : on reconstruit la salle localement à partir des événements (pas de relecture à chaque changement)
+function pvpSetIn(root, parts, val){
+  let n = root;
+  for(let i = 0; i < parts.length - 1; i++){
+    if(n[parts[i]] == null || typeof n[parts[i]] !== 'object') n[parts[i]] = {};
+    n = n[parts[i]];
+  }
+  const k = parts[parts.length - 1];
+  if(val === null) delete n[k]; else n[k] = val;
+}
+function pvpStopListen(){ if(pvpES){ pvpES.close(); pvpES = null; } }
+function pvpListen(code){
+  pvpStopListen();
+  let local = null;
+  const es = new EventSource(`${DB}/rooms/${code}.json`);
+  pvpES = es;
+  const handle = (kind, ev) => {
+    let msg; try{ msg = JSON.parse(ev.data); }catch(e){ return; }
+    const parts = (msg.path || '/').split('/').filter(Boolean);
+    if(kind === 'put'){
+      if(!parts.length) local = msg.data;
+      else { if(local == null || typeof local !== 'object') local = {}; pvpSetIn(local, parts, msg.data); }
+    } else {
+      if(local == null || typeof local !== 'object') local = {};
+      Object.keys(msg.data || {}).forEach(k => pvpSetIn(local, parts.concat(k.split('/')), msg.data[k]));
+    }
+    if(es !== pvpES) return;
+    pvpOnUpdate(local);
+  };
+  es.addEventListener('put', ev => handle('put', ev));
+  es.addEventListener('patch', ev => handle('patch', ev));
 }
 
 function pvpCode(){ return Array.from({length:4}, ()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join(''); }
-
-function pvpShowSection(id){
-  ['pvpLobby','pvpJoinScreen','pvpWaiting','pvpGame','pvpEnd'].forEach(s=>document.getElementById(s).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+async function pvpNewCode(){
+  for(let i = 0; i < 8; i++){ const c = pvpCode(); if(!(await dbGet(`rooms/${c}`))) return c; }
+  return pvpCode();
+}
+function pvpUniqueName(name, players){
+  const taken = new Set(Object.values(players || {}).filter(Boolean).map(p => String(p.name || '').toLowerCase()));
+  let n = name, i = 2;
+  while(taken.has(n.toLowerCase())) n = name + ' ' + (i++);
+  return n.slice(0, 16);
 }
 
+// ----- Écrans -----
+function pvpShowSection(id){
+  pvpScreen = id;
+  ['pvpLobby','pvpWaiting','pvpGame','pvpResults','pvpEnd'].forEach(s=>document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id === 'pvpLobby') pvpUpdateCustomMax();
+  pvpUpdateExitBar();
+  if(id !== 'pvpLobby') pvpScrollToGame();
+}
+// Sur téléphone l'en-tête est haut : on remonte/descend la page pour que l'écran de jeu soit bien visible
+function pvpScrollToGame(){
+  if(activeMode !== 'pvp') return;
+  setTimeout(() => {
+    const el = document.getElementById('pvp');
+    const y = el.getBoundingClientRect().top + window.scrollY - 68;
+    window.scrollTo({top:Math.max(0, y), behavior:'smooth'});
+  }, 60);
+}
+// Bouton du bas : l'hôte peut annuler la salle / arrêter la partie à tout moment, un joueur peut quitter
+function pvpUpdateExitBar(){
+  const bar = document.getElementById('pvpExitBar'), btn = document.getElementById('pvpExitBtn');
+  const inGame = !!pvpRoom && ['pvpWaiting','pvpGame','pvpResults'].includes(pvpScreen);
+  bar.classList.toggle('hidden', !inGame);
+  if(!inGame) return;
+  btn.textContent = pvpIsHost ? pvpT(pvpScreen === 'pvpWaiting' ? 'pvpCancel' : 'pvpStop') : pvpT('pvpLeave');
+  btn.classList.toggle('danger', pvpIsHost);
+}
+// Retour dans le mode depuis un autre mode : on reste là où on en était
+function pvpEnterMode(){ pvpShowSection(pvpRoom ? pvpScreen : 'pvpLobby'); }
+
+// ----- Création / adhésion -----
 async function pvpCreate(){
-  const code = pvpCode();
-  pvpRoom = code; pvpRole = 'p1'; pvpIsHost = true; pvpSubmitted = false;
-
-  // Génère les questions : nombre de manches choisi, plafonné au nb de pays du continent
   const avail = pvpAvailable();
-  const rounds = pvpRoundChoice === 'max' ? avail.length : Math.min(pvpRoundChoice, avail.length);
-  pvpQuestions = shuffle(avail).slice(0, rounds).map(d=>({c:d.c,cap:d.cap,f:d.f}));
+  let rounds;
+  if(pvpRoundChoice === 'max') rounds = avail.length;
+  else if(pvpRoundChoice === 'custom'){
+    const inp = document.getElementById('pvpCustomRounds');
+    const v = parseInt(inp.value, 10);
+    if(!(v >= 1)){ inp.classList.add('err'); inp.focus(); return; }
+    inp.classList.remove('err');
+    rounds = Math.min(v, avail.length);
+  } else rounds = Math.min(pvpRoundChoice, avail.length);
 
-  await dbSet(`rooms/${code}`, {
-    status:'waiting',
-    p1:{score:0,done:false,ac:'',ak:''},
-    p2:null,
-    p1name: pvpGetPseudo('Joueur 1'),
-    round:-1,
-    questions: pvpQuestions,
-    filter: activeFilter,
-    hard: hard,
-    createdAt: Date.now()
-  });
-
-  // Écran d'attente côté hôte : code visible, bouton Lancer caché tant que personne n'a rejoint
-  document.getElementById('pvpCodeDisplay').textContent = code;
-  document.getElementById('pvpWaitCodeWrap').classList.remove('hidden');
-  document.getElementById('pvpStartBtn').classList.add('hidden');
-  document.getElementById('pvpWaitStatus').innerHTML = T().pvpWaiting+"<span class='pvp-dots'></span>";
-  filtersEl.classList.add('locked'); // continent figé pour toute la partie
-  pvpShowSection('pvpWaiting');
-  dbListen(`rooms/${code}`, pvpOnUpdate);
+  const btn = document.getElementById('pvpCreateBtn'); btn.disabled = true;
+  try{
+    const code = await pvpNewCode();
+    const questions = shuffle(avail).slice(0, rounds).map(d=>({c:d.c, cap:d.cap, f:d.f}));
+    const name = (document.getElementById('pvpPseudo').value || '').trim().slice(0,14) || (pvpT('pvpDefaultName') + ' 1');
+    await dbSet(`rooms/${code}`, {
+      status:'waiting', host:pvpPid,
+      players:{ [pvpPid]:{name, joinedAt:Date.now()} },
+      round:-1, phase:'',
+      questions, filter:activeFilter, createdAt:Date.now()
+    });
+    pvpRoom = code; pvpIsHost = true; pvpQuestions = questions;
+    pvpShown = {round:-2, phase:''}; pvpAdvanced = -1; pvpData = null;
+    document.getElementById('pvpCodeDisplay').textContent = code;
+    filtersEl.classList.add('locked'); // continent figé pour toute la partie
+    pvpShowSection('pvpWaiting');
+    pvpListen(code);
+  }catch(e){ alert(pvpT('pvpErrNet')); }
+  finally{ btn.disabled = false; }
 }
 
 async function pvpJoin(){
   const code = document.getElementById('pvpCodeInput').value.trim().toUpperCase();
-  if(code.length !== 4){ alert('Entre un code à 4 lettres !'); return; }
+  if(code.length !== 4){ alert(pvpT('pvpErrCode')); return; }
+  const btn = document.getElementById('pvpJoinBtn'); btn.disabled = true;
+  try{
+    const room = await dbGet(`rooms/${code}`);
+    if(!room){ alert(pvpT('pvpErrInvalid')); return; }
+    if(room.status !== 'waiting'){ alert(pvpT('pvpErrStarted')); return; }
+    const players = room.players || {};
+    const n = Object.keys(players).length;
+    if(n >= PVP_MAX_PLAYERS){ alert(pvpT('pvpErrFull')); return; }
 
-  const room = await dbGet(`rooms/${code}`);
-  if(!room){ alert('Code invalide !'); return; }
-  if(room.status !== 'waiting'){ alert('Cette partie a déjà commencé !'); return; }
-  if(room.p2){ alert('La salle est complète !'); return; }
-
-  // Stocker le code temporairement et afficher l'écran pseudo
-  pvpRoom = code;
-  pvpShowSection('pvpJoinScreen');
-  setTimeout(()=>document.getElementById('pvpJoinPseudo').focus({preventScroll:true}), 80);
-}
-
-async function pvpJoinConfirm(){
-  const code = pvpRoom;
-  const room = await dbGet(`rooms/${code}`);
-  if(!room || room.status !== 'waiting' || room.p2){ alert('La salle n\'est plus disponible !'); pvpShowSection('pvpLobby'); return; }
-
-  pvpRole = 'p2'; pvpIsHost = false; pvpSubmitted = false;
-  pvpQuestions = room.questions;
-
-  // Appliquer le filtre et la difficulté de l'hôte
-  if(room.filter){
-    activeFilter = room.filter;
-    document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
-  }
-  filtersEl.classList.add('locked');
-  if(room.hard !== undefined){
-    hard = room.hard;
-    const hardBtn = document.getElementById("hardToggle");
-    if(hardBtn) hardBtn.classList.toggle("active", hard);
-  }
-
-  const pseudo = document.getElementById('pvpJoinPseudo').value.trim() || 'Joueur 2';
-  await dbPatch(`rooms/${code}`, {
-    p2:{score:0,done:false,ac:'',ak:''},
-    p2name: pseudo
-  });
-
-  // Attendre que l'hôte lance
-  document.getElementById('pvpWaitCodeWrap').classList.add('hidden');
-  document.getElementById('pvpStartBtn').classList.add('hidden');
-  document.getElementById('pvpWaitStatus').innerHTML = T().pvpWaitingHost+"<span class='pvp-dots'></span>";
-  pvpShowSection('pvpWaiting');
-  dbListen(`rooms/${code}`, pvpOnUpdate);
-}
-
-// L'hôte lance la partie quand il le souhaite
-async function pvpStart(){
-  const pseudo = (document.getElementById('pvpHostPseudo').value||'').trim() || 'Joueur 1';
-  await dbPatch(`rooms/${pvpRoom}`, {
-    p1name: pseudo,
-    status:'playing',
-    round:0,
-    p1:{score:0,done:false,ac:'',ak:''},
-    p2:{score:0,done:false,ac:'',ak:''}
-  });
-}
-
-function pvpOnUpdate(room){
-  if(room.status === 'waiting'){
-    // L'hôte voit que le joueur 2 a rejoint → il peut lancer
-    if(pvpIsHost && room.p2){
-      document.getElementById('pvpWaitStatus').innerHTML = `✅ <strong>${pvpName(room,'p2')}</strong> a rejoint !`;
-      document.getElementById('pvpHostPseudo').classList.remove('hidden');
-      document.getElementById('pvpStartBtn').classList.remove('hidden');
-      document.getElementById('pvpHostPseudo').focus({preventScroll:true});
+    pvpQuestions = pvpToArray(room.questions);
+    // Appliquer le continent de l'hôte
+    if(room.filter){
+      activeFilter = room.filter;
+      document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
     }
+    filtersEl.classList.add('locked');
+    const base = (document.getElementById('pvpPseudo').value || '').trim().slice(0,14) || (pvpT('pvpDefaultName') + ' ' + (n+1));
+    await dbSet(`rooms/${code}/players/${pvpPid}`, {name:pvpUniqueName(base, players), joinedAt:Date.now()});
+    pvpRoom = code; pvpIsHost = false;
+    pvpShown = {round:-2, phase:''}; pvpAdvanced = -1; pvpData = null;
+    document.getElementById('pvpCodeDisplay').textContent = code;
+    pvpShowSection('pvpWaiting');
+    pvpListen(code);
+  }catch(e){ alert(pvpT('pvpErrNet')); }
+  finally{ btn.disabled = false; }
+}
+
+// L'hôte lance la partie quand il le souhaite (au moins 2 joueurs)
+async function pvpStart(){
+  if(!pvpIsHost || !pvpData || pvpPlayers(pvpData).length < 2) return;
+  const btn = document.getElementById('pvpStartBtn'); btn.disabled = true;
+  try{ await dbPatch(`rooms/${pvpRoom}`, {status:'playing', round:0, phase:'question'}); }
+  catch(e){ btn.disabled = false; alert(pvpT('pvpErrNet')); }
+}
+
+// ----- Mise à jour reçue du serveur -----
+function pvpOnUpdate(room){
+  if(!pvpRoom) return;
+  if(!room){
+    // Salle supprimée : fermée par l'hôte (sauf si la partie était déjà terminée)
+    if(!pvpIsHost && pvpShown.phase !== 'finished'){ const m = pvpT('pvpRoomClosed'); pvpReset(); alert(m); }
     return;
   }
-  if(room.status === 'playing'){
-    const r = room.round;
-    if(r >= 0 && r !== pvpCurrentRound){
-      pvpCurrentRound = r;
-      pvpSubmitted = false;
-      pvpShowQuestion(room);
-    }
-    // Met à jour les scores
-    document.getElementById('pvpMyScore').textContent    = room[pvpRole]?.score ?? 0;
-    document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
+  pvpData = room;
+  if(room.status === 'waiting'){ pvpRenderWaiting(room); return; }
+  if(!pvpQuestions.length) pvpQuestions = pvpToArray(room.questions);
 
-    // Si l'adversaire a soumis et moi aussi → montrer résultats et passer
-    const me = room[pvpRole], them = room[pvpOpponent()];
-    if(me?.done && them?.done && pvpCurrentRound === r){
-      pvpShowReveal(room);
+  if(room.status === 'playing'){
+    const r = room.round, ph = room.phase || 'question';
+    if(pvpShown.round !== r || pvpShown.phase !== ph){
+      pvpShown = {round:r, phase:ph};
+      if(ph === 'question') pvpShowQuestion(room);
+      else pvpShowResults(room, true);
+    } else if(ph === 'question'){
+      pvpUpdateHud(room);
+      pvpRefreshProgress(room);
+    } else {
+      pvpShowResults(room, false); // une réponse tardive peut modifier le classement
     }
-  }
-  if(room.status === 'finished'){
-    pvpShowEnd(room);
+    if(pvpIsHost && ph === 'question') pvpHostCheckAdvance(room);
+  } else if(room.status === 'finished'){
+    if(pvpShown.phase !== 'finished'){
+      pvpShown = {round:room.round, phase:'finished'};
+      pvpShowEnd(room);
+    }
   }
 }
 
+// ----- Salle d'attente -----
+function pvpRenderWaiting(room){
+  if(document.getElementById('pvpWaiting').classList.contains('hidden')) pvpShowSection('pvpWaiting');
+  document.getElementById('pvpCodeDisplay').textContent = pvpRoom;
+  const total = pvpToArray(room.questions).length;
+  const filt = room.filter && room.filter !== 'Tous' ? room.filter : T().filterAll;
+  document.getElementById('pvpWaitInfo').textContent = pvpT('pvpInfo')(total, filt);
+  const list = pvpPlayers(room);
+  document.getElementById('pvpRosterLbl').textContent = pvpT('pvpPlayers')(list.length);
+  const roster = document.getElementById('pvpRoster');
+  const known = new Set([...roster.children].map(c => c.dataset.pid));
+  roster.innerHTML = list.map(p => {
+    const tag = (p.pid === room.host ? ' <small>' + pvpEsc(pvpT('pvpHostTag')) + '</small>' : '') + (p.pid === pvpPid ? ' <small>(' + pvpEsc(pvpT('pvpYou')) + ')</small>' : '');
+    const anim = known.has(p.pid) ? ' style="animation:none"' : '';
+    return `<span class="pvp-chip${p.pid === pvpPid ? ' me' : ''}" data-pid="${pvpEsc(p.pid)}"${anim}>${pvpEsc(p.name)}${tag}</span>`;
+  }).join('');
+  const status = document.getElementById('pvpWaitStatus');
+  const startBtn = document.getElementById('pvpStartBtn');
+  const dots = "<span class='pvp-dots'></span>";
+  if(pvpIsHost){
+    const ready = list.length >= 2;
+    startBtn.classList.remove('hidden');
+    startBtn.disabled = !ready;
+    startBtn.style.opacity = ready ? '' : '0.5';
+    status.innerHTML = ready ? pvpEsc(pvpT('pvpReadyToStart')) : pvpEsc(pvpT('pvpWaiting')) + dots;
+  } else {
+    startBtn.classList.add('hidden');
+    status.innerHTML = pvpEsc(pvpT('pvpWaitingHost')) + dots;
+  }
+  pvpUpdateExitBar();
+}
+
+// ----- Question -----
+function pvpUpdateHud(room){
+  const r = room.round;
+  const rows = pvpStandings(room, r - 1);
+  const me = rows.find(x => x.pid === pvpPid);
+  document.getElementById('pvpMyName').textContent = me ? me.name : '';
+  document.getElementById('pvpMyScore').textContent = me ? me.score : 0;
+  const rk = document.getElementById('pvpMyRank');
+  if(r > 0 && me){ rk.textContent = pvpOrd(me.rank) + ' / ' + rows.length; rk.classList.remove('hidden'); }
+  else rk.classList.add('hidden');
+}
+function pvpRefreshProgress(room){
+  const r = room.round;
+  const n = pvpPlayers(room).length;
+  const a = Object.keys(pvpAnswersOf(room, r)).length;
+  document.getElementById('pvpStatus').textContent =
+    (pvpSubmitted ? pvpT('pvpWaitOthers') + ' ' : '') + (a > 0 ? pvpT('pvpAnswered')(a, n) : '');
+}
 function pvpShowQuestion(room){
-  filtersEl.classList.add('locked'); // continent figé pendant la partie (les 2 joueurs)
+  filtersEl.classList.add('locked'); // continent figé pendant la partie (tous les joueurs)
   pvpShowSection('pvpGame');
-  const q = pvpQuestions[pvpCurrentRound];
-  document.getElementById('pvpRoundLbl').textContent = T().pvpQuestion(pvpCurrentRound+1, pvpQuestions.length);
+  const r = room.round, q = pvpQuestions[r];
+  if(!q) return;
+  pvpSubmitted = false;
+  document.getElementById('pvpRoundLbl').textContent = pvpT('pvpQuestion')(r + 1, pvpQuestions.length);
   document.getElementById('pvpFlag').innerHTML = flagImg(q.f, 80);
-  document.getElementById('pvpInputCountry').value = '';
-  document.getElementById('pvpInputCapital').value = '';
-  document.getElementById('pvpInputCountry').disabled = false;
-  document.getElementById('pvpInputCapital').disabled = false;
-  document.getElementById('pvpInputCountry').className = 'pvp-input';
-  document.getElementById('pvpInputCapital').className = 'pvp-input';
+  ['pvpInputCountry','pvpInputCapital'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = ''; el.disabled = false; el.className = 'pvp-input';
+  });
   document.getElementById('pvpSubmitBtn').disabled = false;
-  document.getElementById('pvpReveal').classList.add('hidden');
   document.getElementById('pvpStatus').textContent = '';
-  document.getElementById('pvpMyScore').textContent    = room[pvpRole]?.score ?? 0;
-  document.getElementById('pvpTheirScore').textContent = room[pvpOpponent()]?.score ?? 0;
-  document.getElementById('pvpMyName').textContent    = pvpName(room, pvpRole);
-  document.getElementById('pvpTheirName').textContent = pvpName(room, pvpOpponent());
-  document.getElementById('pvpTimer').style.display = '';
-  document.getElementById('pvpTimerText').style.display = '';
+  pvpUpdateHud(room);
+  pvpRefreshProgress(room);
+  pvpQStart = Date.now();
   pvpStartTimer();
-  setTimeout(()=>document.getElementById('pvpInputCountry').focus({preventScroll:true}),30);
+  if(pvpIsHost){
+    clearTimeout(pvpHostTimer);
+    pvpHostTimer = setTimeout(() => pvpHostForceResults(r), (PVP_TIME + PVP_GRACE) * 1000);
+  }
+  setTimeout(() => document.getElementById('pvpInputCountry').focus({preventScroll:true}), 30);
 }
 
 async function pvpSubmit(){
-  if(pvpSubmitted) return;
+  if(pvpSubmitted || !pvpData || pvpData.status !== 'playing' || (pvpData.phase || 'question') !== 'question') return;
   pvpSubmitted = true;
-  const q = pvpQuestions[pvpCurrentRound];
+  pvpStopTimer();
+  const r = pvpShown.round, q = pvpQuestions[r];
   const ac = document.getElementById('pvpInputCountry').value.trim();
   const ak = document.getElementById('pvpInputCapital').value.trim();
   const okC = norm(ac) === norm(q.c);
   const okK = norm(ak) === norm(q.cap);
-
-  // Calcul des points
-  const room = await dbGet(`rooms/${pvpRoom}`);
-  const prevScore = room[pvpRole]?.score ?? 0;
-  const gained = (okC?1:0)+(okK?1:0);
+  const pts = (okC ? 1 : 0) + (okK ? 1 : 0);
+  const t = Math.min(PVP_TIME * 1000, Date.now() - pvpQStart);
 
   document.getElementById('pvpInputCountry').disabled = true;
   document.getElementById('pvpInputCapital').disabled = true;
-  document.getElementById('pvpInputCountry').classList.add(okC?'correct':'wrong');
-  document.getElementById('pvpInputCapital').classList.add(okK?'correct':'wrong');
+  document.getElementById('pvpInputCountry').classList.add(okC ? 'correct' : 'wrong');
+  document.getElementById('pvpInputCapital').classList.add(okK ? 'correct' : 'wrong');
   document.getElementById('pvpSubmitBtn').disabled = true;
-  document.getElementById('pvpStatus').textContent = T().pvpWaitAdversary;
+  pvpRefreshProgress(pvpData);
 
-  await dbPatch(`rooms/${pvpRoom}/${pvpRole}`, {
-    score: prevScore + gained,
-    done: true,
-    ac, ak
-  });
+  const path = `rooms/${pvpRoom}/answers/${r}/${pvpPid}`;
+  try{ await dbSet(path, {ac, ak, pts, t}); }
+  catch(e){ try{ await dbSet(path, {ac, ak, pts, t}); }catch(e2){} } // 2e essai en cas de coupure brève
 }
 
-function pvpShowReveal(room){
-  pvpStopTimer();
-  document.getElementById('pvpTimer').style.display='none';
-  document.getElementById('pvpTimerText').style.display='none';
-  const q = pvpQuestions[pvpCurrentRound];
-  const them = room[pvpOpponent()];
-  const themName = pvpName(room, pvpOpponent());
-  const okC = norm(them?.ac??'') === norm(q.c);
-  const okK = norm(them?.ak??'') === norm(q.cap);
-  const revealEl = document.getElementById('pvpReveal');
-  const nextBtn = pvpIsHost
-    ? `<button id="pvpNextRoundBtn" style="margin-top:10px;width:100%;padding:12px;font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;border:none;border-radius:14px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;cursor:pointer;">${T().pvpNextRound}</button>`
-    : `<p style="margin-top:8px;color:var(--ink-soft);font-size:0.85rem;">${T().pvpWaitingHost}<span class="pvp-dots"></span></p>`;
-  revealEl.innerHTML = `
-    <p>${T().pvpRevealCountry} : <strong>${q.c}</strong> — ${themName} : <span class="${okC?'ok':'ko'}">${them?.ac||'—'}</span></p>
-    <p>${T().pvpRevealCapital} : <strong>${q.cap}</strong> — ${themName} : <span class="${okK?'ok':'ko'}">${them?.ak||'—'}</span></p>
-    ${nextBtn}`;
-  revealEl.classList.remove('hidden');
-  document.getElementById('pvpStatus').textContent = '';
-  if(pvpIsHost){
-    document.getElementById('pvpNextRoundBtn').onclick = async ()=>{
-      const r = pvpCurrentRound;
-      const nextRound = r+1;
-      if(nextRound >= pvpQuestions.length){
-        await dbPatch(`rooms/${pvpRoom}`,{status:'finished'});
-      } else {
-        const roomNow = await dbGet(`rooms/${pvpRoom}`);
-        await dbPatch(`rooms/${pvpRoom}`,{
-          round: nextRound,
-          p1:{score:roomNow.p1.score, done:false, ac:'', ak:''},
-          p2:{score:roomNow.p2.score, done:false, ac:'', ak:''}
-        });
-      }
-    };
+// L'hôte passe au classement dès que tout le monde a répondu (ou après le délai de grâce)
+function pvpHostCheckAdvance(room){
+  const r = room.round;
+  if(pvpAdvanced === r) return;
+  const n = pvpPlayers(room).length;
+  if(Object.keys(pvpAnswersOf(room, r)).length >= n) pvpHostForceResults(r);
+}
+function pvpHostForceResults(r){
+  if(!pvpIsHost || !pvpData || pvpData.status !== 'playing' || pvpData.round !== r || (pvpData.phase || 'question') !== 'question' || pvpAdvanced === r) return;
+  pvpAdvanced = r;
+  clearTimeout(pvpHostTimer);
+  dbPatch(`rooms/${pvpRoom}`, {phase:'results'}).catch(()=>{ pvpAdvanced = -1; });
+}
+
+// ----- Classement après chaque question -----
+function pvpRowHtml(row, i, prevRank, withGain){
+  const me = row.pid === pvpPid;
+  let mv = '';
+  if(prevRank && prevRank[row.pid] != null){
+    const d = prevRank[row.pid] - row.rank;
+    if(d > 0) mv = `<span class="mv up">▲${d}</span>`; else if(d < 0) mv = `<span class="mv down">▼${-d}</span>`;
   }
+  const gain = withGain ? `<span class="gain${row.gain ? '' : ' zero'}">${row.gain ? '+' + row.gain : '0'}</span>` : '<span></span>';
+  return `<div class="pvp-row r${row.rank}${me ? ' me' : ''}" style="--i:${i}"><span class="rk">${row.rank}</span><span class="nm">${pvpEsc(row.name)}${me ? ' <small>(' + pvpEsc(pvpT('pvpYou')) + ')</small>' : ''}</span>${gain}<span class="sc">${row.score}</span>${mv || '<span></span>'}</div>`;
 }
+function pvpShowResults(room, animate){
+  const r = room.round, total = pvpQuestions.length, isLast = r + 1 >= total;
+  const q = pvpQuestions[r];
+  if(!q) return;
+  const sig = r + ':' + Object.keys(pvpAnswersOf(room, r)).length + ':' + pvpPlayers(room).length;
+  if(!animate && sig === pvpResultsSig) return;
+  pvpResultsSig = sig;
+  if(animate){ pvpStopTimer(); clearTimeout(pvpHostTimer); pvpShowSection('pvpResults'); }
 
-function pvpShowEnd(room){
-  pvpStopTimer();
-  pvpShowSection('pvpEnd');
-  const myScore    = room[pvpRole]?.score ?? 0;
-  const theirScore = room[pvpOpponent()]?.score ?? 0;
-  document.getElementById('pvpEndMyScore').textContent    = myScore;
-  document.getElementById('pvpEndTheirScore').textContent = theirScore;
-  document.getElementById('pvpEndMyName').textContent    = pvpName(room, pvpRole);
-  document.getElementById('pvpEndTheirName').textContent = pvpName(room, pvpOpponent());
-  if(myScore > theirScore){
-    document.getElementById('pvpTrophy').textContent = '🏆';
-    document.getElementById('pvpEndTitle').textContent = T().pvpWin;
-    confetti(60); soundFanfare();
-  } else if(theirScore > myScore){
-    document.getElementById('pvpTrophy').textContent = '😅';
-    document.getElementById('pvpEndTitle').textContent = T().pvpLose;
-    soundWrong();
+  const a = pvpAnswersOf(room, r)[pvpPid];
+  const okC = !!a && norm(a.ac || '') === norm(q.c);
+  const okK = !!a && norm(a.ak || '') === norm(q.cap);
+  const pts = a ? (a.pts || 0) : 0;
+  const mine = (ok, typed) => `<span class="${ok ? 'ok' : 'ko'}">${ok ? '✅' : '❌ ' + pvpEsc(typed || '—')}</span>`;
+  document.getElementById('pvpResHead').textContent = isLast ? pvpT('pvpLastDone') : pvpT('pvpRankTitle')(r + 1, total);
+  document.getElementById('pvpResAnswer').innerHTML =
+    `<div class="pvp-ans-flag">${flagImg(q.f, 48)}</div>` +
+    `<div class="pvp-ans-txt"><div>${pvpEsc(pvpT('pvpRevealCountry'))} : <strong>${pvpEsc(q.c)}</strong> ${mine(okC, a && a.ac)}</div>` +
+    `<div>${pvpEsc(pvpT('pvpRevealCapital'))} : <strong>${pvpEsc(q.cap)}</strong> ${mine(okK, a && a.ak)}</div></div>` +
+    `<div class="pvp-ans-pts${pts ? '' : ' zero'}">+${pts}</div>`;
+
+  const board = document.getElementById('pvpBoard');
+  const hint = document.getElementById('pvpLastHint');
+  if(isLast){
+    // Dernière question : pas de classement, il sera dévoilé sur le podium
+    board.classList.add('hidden');
+    hint.innerHTML = `<span class="big">🥁</span>${pvpEsc(pvpT('pvpLastHidden'))}`;
+    hint.classList.remove('hidden');
   } else {
-    document.getElementById('pvpTrophy').textContent = '🤝';
-    document.getElementById('pvpEndTitle').textContent = T().pvpDraw;
+    hint.classList.add('hidden');
+    board.classList.remove('hidden');
+    const rows = pvpStandings(room, r);
+    const prev = r > 0 ? Object.fromEntries(pvpStandings(room, r - 1).map(x => [x.pid, x.rank])) : null;
+    const top = rows.slice(0, 5);
+    let html = top.map((row, i) => pvpRowHtml(row, i, prev, true)).join('');
+    const me = rows.find(x => x.pid === pvpPid);
+    if(me && me.rank > 5) html += `<div class="pvp-gap">⋮</div>` + pvpRowHtml(me, top.length, prev, true);
+    board.innerHTML = html;
+    if(!animate) board.querySelectorAll('.pvp-row, .gain').forEach(el => el.style.animation = 'none');
   }
+
+  const actions = document.getElementById('pvpResActions');
+  if(pvpIsHost){
+    if(!actions.querySelector('.pvp-next-btn') || animate){
+      actions.innerHTML = `<button class="pvp-next-btn" id="pvpNextBtn">${pvpEsc(pvpT(isLast ? 'pvpShowPodium' : 'pvpNextQ'))}</button>`;
+      document.getElementById('pvpNextBtn').onclick = async () => {
+        const btn = document.getElementById('pvpNextBtn'); btn.disabled = true;
+        try{
+          if(isLast) await dbPatch(`rooms/${pvpRoom}`, {status:'finished'});
+          else await dbPatch(`rooms/${pvpRoom}`, {round:r + 1, phase:'question'});
+        }catch(e){ btn.disabled = false; alert(pvpT('pvpErrNet')); }
+      };
+    }
+  } else {
+    // Joueur : l'hôte garde la main sur le rythme de la partie
+    actions.innerHTML = `<p class="pvp-wait-host">${pvpEsc(pvpT(isLast ? 'pvpWaitPodium' : 'pvpWaitNextQ'))}<span class="pvp-dots"></span></p>`;
+  }
+  if(animate){ if(pts > 0) soundCorrect(); else soundWrong(); }
 }
 
-function pvpReset(){
-  pvpStopTimer();
-  if(pvpSSE){ pvpSSE.close(); pvpSSE = null; }
-  pvpRoom = null; pvpRole = null; pvpIsHost = false;
-  pvpCurrentRound = -1; pvpSubmitted = false;
-  document.getElementById('pvpCodeInput').value = '';
-  document.getElementById('pvpJoinPseudo').value = '';
-  document.getElementById('pvpHostPseudo').value = '';
-  document.getElementById('pvpHostPseudo').classList.add('hidden');
-  filtersEl.classList.remove('locked');
-  pvpShowSection('pvpLobby');
+// ----- Fin de partie : podium animé (3e, puis 2e, puis 1er) -----
+function soundDrum(){ for(let i = 0; i < 9; i++) setTimeout(() => beep(100 + i * 6, 0.09, 'triangle', 0.1 + i * 0.01), i * 90); }
+function pvpClearPodiumTimers(){ pvpPodiumTimers.forEach(clearTimeout); pvpPodiumTimers = []; }
+function pvpShowEnd(room){
+  pvpStopTimer(); clearTimeout(pvpHostTimer);
+  pvpClearPodiumTimers();
+  pvpShowSection('pvpEnd');
+  // Manches comptées : toutes celles dont le classement a été affiché (si l'hôte arrête en cours de question, la manche en cours ne compte pas)
+  const upTo = room.phase === 'results' ? room.round : room.round - 1;
+  const rows = pvpStandings(room, upTo);
+  document.getElementById('pvpStoppedBanner').classList.toggle('hidden', !room.stopped);
+  document.getElementById('pvpEndTitle').textContent = pvpT('pvpPodiumTitle');
+  const podium = document.getElementById('pvpPodium'), msg = document.getElementById('pvpEndMsg');
+  const rest = document.getElementById('pvpRest'), drum = document.getElementById('pvpDrum');
+  const trophy = document.getElementById('pvpTrophy');
+  msg.classList.remove('show'); msg.textContent = '';
+  rest.classList.remove('show'); rest.innerHTML = '';
+  podium.innerHTML = '';
+  const replayBtn = document.getElementById('pvpReplayBtn');
+  if(upTo < 0 || !rows.length){
+    podium.style.display = 'none'; drum.textContent = ''; trophy.textContent = '🏁';
+    replayBtn.classList.remove('hidden');
+    return;
+  }
+  replayBtn.classList.add('hidden');
+  podium.style.display = '';
+  trophy.textContent = '🏆';
+
+  const top = rows.slice(0, 3);
+  const order = top.length >= 3 ? [1, 0, 2] : top.length === 2 ? [1, 0] : [0];   // 2e | 1er | 3e
+  const heights = [175, 128, 92];
+  const medals = ['🥇', '🥈', '🥉'];
+  const cols = {};
+  order.forEach(i => {
+    const p = top[i];
+    const col = document.createElement('div');
+    col.className = 'pod pod-' + (i + 1) + (p.pid === pvpPid ? ' me' : '');
+    col.innerHTML = `<div class="pod-who"><div class="pod-medal">${medals[i]}</div><div class="pod-name">${pvpEsc(p.name)}</div><div class="pod-score">${p.score} pts</div></div><div class="pod-bar" style="--h:${heights[i]}px">${i + 1}</div>`;
+    podium.appendChild(col);
+    cols[i] = col;
+  });
+
+  // Ordre de révélation : 3e, puis 2e, puis 1er
+  const reveal = top.map((_, i) => i).reverse();
+  drum.textContent = pvpT('pvpDrum');
+  reveal.forEach((idx, k) => {
+    const at = 1300 + k * 2800;
+    pvpPodiumTimers.push(setTimeout(soundDrum, Math.max(at - 1000, 0)));
+    pvpPodiumTimers.push(setTimeout(() => {
+      cols[idx].classList.add('show');
+      if(idx === 0){ drum.textContent = ''; confetti(80); soundFanfare(); }
+      else beep(idx === 2 ? 392 : 523, 0.35, 'triangle', 0.18);
+    }, at));
+  });
+  const done = 1300 + (reveal.length - 1) * 2800 + 1500;
+  pvpPodiumTimers.push(setTimeout(() => {
+    replayBtn.classList.remove('hidden');
+    const me = rows.find(x => x.pid === pvpPid);
+    if(me){ msg.textContent = pvpT('pvpYourRank')(me.rank, rows.length); msg.classList.add('show'); }
+    if(rows.length > 3){
+      rest.innerHTML = '<div class="pvp-board">' + rows.slice(3).map((row, i) => pvpRowHtml(row, i, null, false)).join('') + '</div>';
+      rest.classList.add('show');
+    }
+  }, done));
 }
+
+// ----- Quitter / arrêter -----
+function pvpReset(){
+  pvpStopTimer(); clearTimeout(pvpHostTimer); pvpClearPodiumTimers();
+  pvpStopListen();
+  const code = pvpRoom, wasHost = pvpIsHost;
+  pvpRoom = null; pvpIsHost = false; pvpData = null; pvpQuestions = [];
+  pvpShown = {round:-2, phase:''}; pvpSubmitted = false; pvpAdvanced = -1; pvpResultsSig = '';
+  document.getElementById('pvpCodeInput').value = '';
+  filtersEl.classList.remove('locked');
+  document.getElementById('pvpPodium').innerHTML = '';
+  pvpShowSection('pvpLobby');
+  // L'hôte nettoie la salle un peu plus tard (le temps que les autres voient le podium)
+  if(code && wasHost) setTimeout(() => { dbDel(`rooms/${code}`).catch(()=>{}); }, 120000);
+}
+document.getElementById('pvpExitBtn').onclick = async () => {
+  if(!pvpRoom) return;
+  const code = pvpRoom, waiting = !pvpData || pvpData.status === 'waiting';
+  try{
+    if(pvpIsHost){
+      if(!confirm(pvpT(waiting ? 'pvpCancelConfirm' : 'pvpStopConfirm'))) return;
+      if(waiting){ pvpReset(); await dbDel(`rooms/${code}`); }
+      else await dbPatch(`rooms/${code}`, {status:'finished', stopped:true});
+    } else {
+      if(!waiting && !confirm(pvpT('pvpLeaveConfirm'))) return;
+      pvpReset();
+      await dbDel(`rooms/${code}/players/${pvpPid}`);
+    }
+  }catch(e){}
+};
+
+// Langue changée en cours de partie : on rafraîchit les textes visibles
+window.pvpRefreshLang = function(){
+  if(!pvpRoom || !pvpData) { pvpUpdateExitBar(); return; }
+  if(pvpData.status === 'waiting') pvpRenderWaiting(pvpData);
+  else if(pvpShown.phase === 'question'){ document.getElementById('pvpRoundLbl').textContent = pvpT('pvpQuestion')(pvpShown.round + 1, pvpQuestions.length); pvpRefreshProgress(pvpData); }
+  else if(pvpShown.phase === 'results'){ pvpResultsSig = ''; pvpShowResults(pvpData, false); }
+  pvpUpdateExitBar();
+};
 
 document.getElementById('pvpCreateBtn').onclick = pvpCreate;
 document.getElementById('pvpStartBtn').onclick  = pvpStart;
 document.getElementById('pvpJoinBtn').onclick   = pvpJoin;
-document.getElementById('pvpCodeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpJoin(); });
-document.getElementById('pvpJoinConfirmBtn').onclick = pvpJoinConfirm;
-document.getElementById('pvpJoinPseudo').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpJoinConfirm(); });
+document.getElementById('pvpCodeInput').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpJoin(); });
+document.getElementById('pvpCustomRounds').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpCreate(); });
+document.getElementById('pvpCustomRounds').addEventListener('input', e=>e.target.classList.remove('err'));
 document.getElementById('pvpSubmitBtn').onclick  = pvpSubmit;
-document.getElementById('pvpInputCapital').addEventListener('keydown', e=>{ if(e.key==='Enter') pvpSubmit(); });
+document.getElementById('pvpInputCountry').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('pvpInputCapital').focus(); } });
+document.getElementById('pvpInputCapital').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpSubmit(); });
 document.getElementById('pvpReplayBtn').onclick  = pvpReset;
 
 // ---------- PWA : enregistrement du service worker ----------

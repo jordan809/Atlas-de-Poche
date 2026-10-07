@@ -10,6 +10,9 @@
   var pollTimer    = null;
   var volDragging  = false;
   var volDragTimer = null;
+  // iOS Safari does not support the Web Playback SDK — use Web API remote-only mode
+  var iosMode = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
   var SP_LOGO = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>';
 
@@ -37,16 +40,33 @@
   async function getToken() {
     var t = getTokens();
     if (!t) return null;
-    if ((Date.now() - t.ts) / 1000 < t.expires_in - 60) return t.access_token;
+    // Still valid?
+    if (t.access_token && (Date.now() - (t.ts || 0)) / 1000 < (t.expires_in || 3600) - 60) {
+      return t.access_token;
+    }
+    // Refresh
+    if (!t.refresh_token) { sDel('tok'); return null; }
     try {
       var r = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: t.refresh_token, client_id: CLIENT_ID })
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: t.refresh_token,
+          client_id: CLIENT_ID
+        })
       });
-      if (!r.ok) { sDel('tok'); return null; }
+      if (!r.ok) {
+        var err = await r.json().catch(function(){ return {}; });
+        // Only clear tokens if the refresh token itself is truly invalid
+        if (err.error === 'invalid_grant' || r.status === 400) sDel('tok');
+        return null;
+      }
       var d = await r.json();
-      sSet('tok', Object.assign({}, d, { refresh_token: d.refresh_token || t.refresh_token, ts: Date.now() }));
+      sSet('tok', Object.assign({}, d, {
+        refresh_token: d.refresh_token || t.refresh_token,
+        ts: Date.now()
+      }));
       return d.access_token;
     } catch { return null; }
   }
@@ -59,7 +79,7 @@
     try {
       var r = await fetch('https://api.spotify.com/v1' + path, opts);
       if (r.status === 204 || r.status === 202) return {};
-      if (r.status === 401) { sDel('tok'); updateUI(false); return null; }
+      // 401 = token issue, but don't wipe tokens — let getToken handle refresh next call
       if (r.ok) return r.json().catch(function() { return {}; });
     } catch {}
     return null;
@@ -209,10 +229,11 @@
         client_id: CLIENT_ID, code_verifier: sGet('v')
       })
     });
-    if (!r.ok) return;
+    if (!r.ok) return false;
     var d = await r.json();
     sSet('tok', Object.assign({}, d, { ts: Date.now() }));
     sDel('v');
+    return true;
   }
 
   function logout() {
@@ -223,8 +244,9 @@
     setTrackUI(null, false);
   }
 
-  // ── SDK ───────────────────────────────────────────────────────────────────
+  // ── SDK (desktop only) ────────────────────────────────────────────────────
   function loadSDK() {
+    if (iosMode) return;
     if (document.getElementById('sp-sdk') || window.Spotify) return;
     var s = document.createElement('script');
     s.id = 'sp-sdk';
@@ -236,6 +258,13 @@
     var token = await getToken();
     if (!token) { updateUI(false); return; }
     updateUI(true);
+
+    if (iosMode) {
+      // iOS: Web API remote-control only (no in-browser audio)
+      startPoll();
+      return;
+    }
+
     window.onSpotifyWebPlaybackSDKReady = createPlayer;
     loadSDK();
     if (window.Spotify) createPlayer();
@@ -266,13 +295,36 @@
     });
 
     player.addListener('not_ready', function() { deviceId = null; });
-    player.addListener('authentication_error', function() { logout(); });
+
+    // On authentication error: only disconnect the SDK player, keep tokens intact
+    player.addListener('authentication_error', function() {
+      if (player) { try { player.disconnect(); } catch {} player = null; }
+      // Retry init after a short delay (token might have refreshed)
+      setTimeout(initPlayer, 3000);
+    });
+
     player.addListener('account_error', function() {
-      alert('Spotify Premium requis pour la lecture dans le navigateur.');
-      logout();
+      // Premium required for in-browser playback — fall back to remote control
+      if (player) { try { player.disconnect(); } catch {} player = null; }
+      startPoll();
     });
 
     player.connect();
+  }
+
+  // ── Polling (iOS / fallback) ───────────────────────────────────────────────
+  function startPoll() {
+    clearInterval(pollTimer);
+    syncStateAPI();
+    pollTimer = setInterval(syncStateAPI, 5000);
+  }
+
+  async function syncStateAPI() {
+    var state = await api('GET', '/me/player');
+    if (!state || !state.item) return;
+    var t = state.item;
+    setTrackUI(t.name + (t.artists[0] ? '  •  ' + t.artists[0].name : ''), state.is_playing);
+    if (!volDragging && state.device) setVolUI(state.device.volume_percent);
   }
 
   async function syncState() {
@@ -292,19 +344,23 @@
   // ── Controls ──────────────────────────────────────────────────────────────
   function togglePlay() {
     if (player) { player.togglePlay(); return; }
-    getToken().then(function(tok) {
+    getToken().then(async function(tok) {
       if (!tok) return;
-      fetch('https://api.spotify.com/v1/me/player', { headers: { Authorization: 'Bearer ' + tok } })
-        .then(function(r) { return r.json(); })
-        .then(function(s) { api('PUT', s.is_playing ? '/me/player/pause' : '/me/player/play'); });
+      var s = await api('GET', '/me/player');
+      if (s) { await api('PUT', s.is_playing ? '/me/player/pause' : '/me/player/play'); syncStateAPI(); }
     });
   }
-  function next() { if (player) player.nextTrack(); else api('POST', '/me/player/next'); }
-  function prev() { if (player) player.previousTrack(); else api('POST', '/me/player/previous'); }
+  function next() {
+    if (player) { player.nextTrack(); return; }
+    api('POST', '/me/player/next').then(function() { setTimeout(syncStateAPI, 600); });
+  }
+  function prev() {
+    if (player) { player.previousTrack(); return; }
+    api('POST', '/me/player/previous').then(function() { setTimeout(syncStateAPI, 600); });
+  }
   function setVol(v) {
-    var frac = v / 100;
     if (player) {
-      player.setVolume(frac).catch(function() {
+      player.setVolume(v / 100).catch(function() {
         api('PUT', '/me/player/volume?volume_percent=' + Math.round(v));
       });
     } else {
@@ -315,18 +371,17 @@
   // ── Pending code (same-tab fallback) ──────────────────────────────────────
   async function checkPendingCode() {
     var code = localStorage.getItem('sp_pending_code');
-    if (!code) return;
+    if (!code) return false;
     localStorage.removeItem('sp_pending_code');
-    await exchange(code);
-    await initPlayer();
+    return await exchange(code);
   }
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async function() {
     injectCSS();
     buildUI();
-    await checkPendingCode();
-    if (getTokens()) await initPlayer();
+    var exchanged = await checkPendingCode();
+    if (exchanged || getTokens()) await initPlayer();
   });
 
 })();

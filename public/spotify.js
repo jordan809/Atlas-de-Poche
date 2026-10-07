@@ -155,6 +155,9 @@
     document.getElementById('spPlay').onclick = function() { togglePlay(); };
     document.getElementById('spNext').onclick = function() { next(); };
 
+    // Affiche le bandeau immédiatement si tokens déjà stockés (avant validation)
+    if (getTokens()) updateUI(true);
+
     var volEl   = document.getElementById('spVol');
     var volTip  = document.getElementById('spVolTip');
     var volWrap = volEl.parentElement;
@@ -378,6 +381,34 @@
     buildUI();
     var exchanged = await checkPendingCode();
     if (exchanged || getTokens()) await initPlayer();
+  });
+
+  // Tokens arrivés depuis un autre onglet (iPad : l'app Spotify ouvre un nouvel onglet)
+  window.addEventListener('storage', function(e) {
+    if (e.key === 'sp_tok' && e.newValue) {
+      var btn = document.getElementById('spBtn');
+      if (btn && !btn.classList.contains('connected')) initPlayer();
+    }
+    // Code d'échange arrivé depuis un autre onglet
+    if (e.key === 'sp_pending_code' && e.newValue) {
+      checkPendingCode().then(function(ok) { if (ok) initPlayer(); });
+    }
+  });
+
+  // Page restaurée depuis le cache navigation (retour arrière)
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+      var btn = document.getElementById('spBtn');
+      if (btn && !btn.classList.contains('connected') && getTokens()) initPlayer();
+    }
+  });
+
+  // Retour sur cet onglet après avoir fait l'auth sur un autre
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') {
+      var btn = document.getElementById('spBtn');
+      if (btn && !btn.classList.contains('connected') && getTokens()) initPlayer();
+    }
   });
 
 })();

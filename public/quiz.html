@@ -1901,11 +1901,7 @@ const PLAY_MODES = new Set(["quiz","type","timed"]);
 document.querySelectorAll(".mode-btn").forEach(btn=>{
   btn.onclick=()=>{
     const mode = btn.dataset.mode;
-    if(mode === activeMode && PLAY_MODES.has(mode)){
-      resetPlayOptions();
-    } else {
-      enterMode(mode);
-    }
+    enterMode(mode);
     if(PLAY_MODES.has(mode)){
       const ob = document.getElementById("optionsBar");
       if(ob) setTimeout(()=>ob.scrollIntoView({behavior:"smooth", block:"start"}), 50);

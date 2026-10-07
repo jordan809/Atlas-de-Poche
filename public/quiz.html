@@ -444,6 +444,10 @@
   .pvp-chip { background:#f0eeff; color:var(--bg1); font-weight:800; padding:7px 14px; border-radius:20px; font-size:0.92rem; animation:pvpChipIn 0.35s both; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .pvp-chip.me { background:linear-gradient(135deg,var(--bg1),var(--bg2)); color:#fff; }
   .pvp-chip small { opacity:0.75; font-weight:700; }
+  .pvp-chip.kickable { cursor:pointer; }
+  .pvp-chip.kickable:hover { background:#fdeaee; color:#d32f2f; }
+  .pvp-chip.kickable::after { content:" ✕"; opacity:0; font-size:0.75rem; }
+  .pvp-chip.kickable:hover::after { opacity:1; }
   .pvp-waitinfo { color:var(--ink-soft); font-weight:700; font-size:0.88rem; margin-bottom:6px; }
 
   .pvp-hud { display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:12px 16px; margin-bottom:14px; box-shadow:0 8px 20px rgba(0,0,0,0.12); border-top:5px solid var(--bg1); }
@@ -2911,6 +2915,7 @@ pvpWireRounds('pvpModalRounds', 'pvpModalCustomWrap', 'pvpModalCustom', 'pvpModa
 async function dbGet(path){ const r = await fetch(`${DB}/${path}.json`); if(!r.ok) throw new Error('db ' + r.status); return r.json(); }
 async function dbSet(path, data){ const r = await fetch(`${DB}/${path}.json`, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); if(!r.ok) throw new Error('db ' + r.status); return r; }
 async function dbPatch(path, data){ const r = await fetch(`${DB}/${path}.json`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}); if(!r.ok) throw new Error('db ' + r.status); return r; }
+async function dbDelete(path){ const r = await fetch(`${DB}/${path}.json`, {method:'DELETE'}); if(!r.ok) throw new Error('db ' + r.status); return r; }
 async function dbDel(path){ return fetch(`${DB}/${path}.json`, {method:'DELETE'}); }
 
 // Flux temps réel : on reconstruit la salle localement à partir des événements (pas de relecture à chaque changement)
@@ -3134,8 +3139,14 @@ function pvpRenderWaiting(room){
   roster.innerHTML = list.map(p => {
     const tag = (p.pid === room.host ? ' <small>' + pvpEsc(pvpT('pvpHostTag')) + '</small>' : '') + (p.pid === pvpPid ? ' <small>(' + pvpEsc(pvpT('pvpYou')) + ')</small>' : '');
     const anim = known.has(p.pid) ? ' style="animation:none"' : '';
-    return `<span class="pvp-chip${p.pid === pvpPid ? ' me' : ''}" data-pid="${pvpEsc(p.pid)}"${anim}>${pvpEsc(p.name)}${tag}</span>`;
+    const kickable = pvpIsHost && p.pid !== pvpPid ? ' kickable' : '';
+    return `<span class="pvp-chip${p.pid === pvpPid ? ' me' : ''}${kickable}" data-pid="${pvpEsc(p.pid)}"${anim}>${pvpEsc(p.name)}${tag}</span>`;
   }).join('');
+  if(pvpIsHost){
+    roster.querySelectorAll('.pvp-chip.kickable').forEach(chip => {
+      chip.onclick = () => pvpKick(chip.dataset.pid);
+    });
+  }
   const status = document.getElementById('pvpWaitStatus');
   const startBtn = document.getElementById('pvpStartBtn');
   const dots = "<span class='pvp-dots'></span>";
@@ -3150,6 +3161,11 @@ function pvpRenderWaiting(room){
     status.innerHTML = pvpEsc(pvpT('pvpWaitingHost')) + dots;
   }
   pvpUpdateExitBar();
+}
+
+async function pvpKick(pid){
+  if(!pvpIsHost || !pvpRoom || pid === pvpPid) return;
+  try{ await dbDelete(`rooms/${pvpRoom}/players/${pid}`); }catch(e){}
 }
 
 // ----- Question -----

@@ -1090,6 +1090,14 @@
         </div>
       </div>
 
+      <!-- Expulsé par l'hôte -->
+      <div class="pvp-modal hidden" id="pvpKickedModal">
+        <div class="pvp-modal-card">
+          <h3>🚫 Vous avez été expulsé</h3>
+          <p id="pvpKickedMsg">L'hôte vous a retiré de la partie.</p>
+        </div>
+      </div>
+
       <!-- Quitter (joueur) / Arrêter la partie (hôte) -->
       <div class="pvp-exitbar hidden" id="pvpExitBar">
         <button class="pvp-exit-btn" id="pvpExitBtn">🚪 Quitter</button>
@@ -3090,6 +3098,7 @@ function pvpOnUpdate(room){
     return;
   }
   pvpData = room;
+  if(room.status === 'waiting' && !pvpIsHost && !(room.players || {})[pvpPid]){ pvpShowKicked(); return; }
   if(room.status === 'waiting'){ pvpRenderWaiting(room); return; }
   if(room.questions !== pvpQRaw){ pvpQRaw = room.questions; pvpQuestions = pvpToArray(room.questions); }
 
@@ -3166,6 +3175,20 @@ function pvpRenderWaiting(room){
 async function pvpKick(pid){
   if(!pvpIsHost || !pvpRoom || pid === pvpPid) return;
   try{ await dbDelete(`rooms/${pvpRoom}/players/${pid}`); }catch(e){}
+}
+
+let pvpKickedTimer = null;
+function pvpShowKicked(){
+  pvpReset();
+  const modal = document.getElementById('pvpKickedModal');
+  modal.classList.remove('hidden');
+  const dismiss = () => {
+    clearTimeout(pvpKickedTimer);
+    modal.classList.add('hidden');
+    pvpShowSection('pvpLobby');
+  };
+  modal.onclick = (e) => { if(e.target === modal) dismiss(); };
+  pvpKickedTimer = setTimeout(dismiss, 5000);
 }
 
 // ----- Question -----

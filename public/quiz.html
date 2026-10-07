@@ -80,7 +80,7 @@
     background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
   }
 
-  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 30px 22px 60px; }
+  .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 30px 22px 28px; }
 
   /* ---------- Header ---------- */
   header { text-align: center; margin-bottom: 26px; color: #fff; }
@@ -1869,8 +1869,48 @@ function enterMode(mode){
 
 }
 
+function resetPlayOptions(){
+  showFlag = true;
+  direction = "cap";
+  autoAdvanceOn = true;
+  hideName = false;
+  const ftgl = document.getElementById("typeFlagToggle");
+  if(ftgl){ ftgl.textContent = "🏳️ Drapeau visible"; ftgl.classList.add("active"); }
+  const aat = document.getElementById("autoAdvanceToggle");
+  if(aat) aat.classList.add("active");
+  const hgl = document.getElementById("hideNameToggle"); if(hgl) hgl.classList.remove("active");
+  const dtgl = document.getElementById("dirToggle");
+  if(dtgl){ dtgl.textContent = T().dirCap; dtgl.classList.remove("hidden"); }
+  const hintBtn = document.getElementById("hintBtn");
+  if(hintBtn){ hintBtn.classList.add("hidden"); hintBtn.classList.remove("active"); hintBtn.textContent="💡 Aide"; }
+  document.getElementById("typeFlagToggle").classList.toggle("hidden", activeMode==="type" && typeTableMode);
+  // Re-render current question display without advancing
+  if(currentItem && activeMode!=="study" && !typeTableMode){
+    const flagEl = document.getElementById("qFlag");
+    const mainEl = document.getElementById("qCountry");
+    const promptEl = document.getElementById("qPrompt");
+    if(promptEl) promptEl.textContent = T().promptCap;
+    if(flagEl){ flagEl.innerHTML = flagImg(currentItem.f, 80); flagEl.style.animation="none"; void flagEl.offsetWidth; flagEl.style.animation=""; }
+    if(mainEl) mainEl.textContent = currentItem.c;
+    const isType = (activeMode==="type");
+    if(!answered && !isType) buildOptions(currentItem);
+  }
+}
+
+const PLAY_MODES = new Set(["quiz","type","timed"]);
 document.querySelectorAll(".mode-btn").forEach(btn=>{
-  btn.onclick=()=>enterMode(btn.dataset.mode);
+  btn.onclick=()=>{
+    const mode = btn.dataset.mode;
+    if(mode === activeMode && PLAY_MODES.has(mode)){
+      resetPlayOptions();
+    } else {
+      enterMode(mode);
+    }
+    if(PLAY_MODES.has(mode)){
+      const ob = document.getElementById("optionsBar");
+      if(ob) setTimeout(()=>ob.scrollIntoView({behavior:"smooth", block:"start"}), 50);
+    }
+  };
 });
 
 // ---------- Options toolbar ----------

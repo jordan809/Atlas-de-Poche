@@ -30,32 +30,34 @@
   <small id="sub">Tu peux fermer cette fenêtre.</small>
 </div>
 <script>
-  var code  = new URLSearchParams(location.search).get('code');
-  var error = new URLSearchParams(location.search).get('error');
+  var params = new URLSearchParams(location.search);
+  var code   = params.get('code');
+  var state  = params.get('state');
+  var error  = params.get('error');
 
   if (error) {
     document.getElementById('ico').textContent = '❌';
     document.getElementById('msg').textContent = 'Connexion annulée.';
-    setTimeout(function() { window.close(); }, 2000);
+    setTimeout(function() {
+      var ret = null;
+      try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch {}
+      location.replace(ret || '/');
+    }, 1500);
   } else if (code) {
     document.getElementById('ico').textContent = '✅';
     document.getElementById('msg').textContent = 'Connecté !';
-    if (window.opener && window.opener._spDone) {
-      window.opener._spDone(code);
-      setTimeout(function() { window.close(); }, 800);
-    } else {
-      // Same-tab fallback: store code and redirect back
-      localStorage.setItem('sp_pending_code', code);
-      var ret = null;
-      try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch {}
-      localStorage.removeItem('sp_ret');
-      document.getElementById('sub').textContent = 'Redirection en cours…';
-      location.replace(ret || '/');
-    }
+    document.getElementById('sub').textContent = 'Redirection en cours…';
+    localStorage.setItem('sp_pending_code', code);
+    // Return URL: prefer state param (Spotify passes it back unchanged), fall back to localStorage
+    var ret = null;
+    try { ret = state ? decodeURIComponent(state) : null; } catch {}
+    if (!ret) { try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch {} }
+    localStorage.removeItem('sp_ret');
+    setTimeout(function() { location.replace(ret || '/'); }, 400);
   } else {
     document.getElementById('ico').textContent = '❓';
     document.getElementById('msg').textContent = 'Paramètre manquant.';
-    setTimeout(function() { window.close(); }, 2000);
+    setTimeout(function() { location.replace('/'); }, 1500);
   }
 </script>
 </body>

@@ -205,19 +205,15 @@
     var v = genVerifier();
     var c = await genChallenge(v);
     sSet('v', v);
-    sSet('ret', location.href);
+    // Pass return URL both in localStorage and in state param (belt-and-suspenders)
+    var ret = location.href;
+    sSet('ret', ret);
     var params = new URLSearchParams({
       client_id: CLIENT_ID, response_type: 'code', redirect_uri: REDIRECT,
-      scope: SCOPES, code_challenge_method: 'S256', code_challenge: c
+      scope: SCOPES, code_challenge_method: 'S256', code_challenge: c,
+      state: encodeURIComponent(ret)
     });
-    var url = 'https://accounts.spotify.com/authorize?' + params;
-    var popup = window.open(url, 'sp-auth', 'width=460,height=620,popup=1');
-    if (!popup || popup.closed) { location.href = url; return; }
-    window._spDone = async function(code) {
-      if (!popup.closed) popup.close();
-      await exchange(code);
-      await initPlayer();
-    };
+    location.href = 'https://accounts.spotify.com/authorize?' + params;
   }
 
   async function exchange(code) {

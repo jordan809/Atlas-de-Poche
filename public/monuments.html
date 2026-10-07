@@ -27,7 +27,7 @@ a{text-decoration:none;}
 .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:30px 22px 24px;}
 
 /* En-tête (même style que les autres pages) */
-header{text-align:center;margin-bottom:6px;color:#fff;}
+header{text-align:center;margin-bottom:26px;color:#fff;}
 .eyebrow{display:inline-block;background:rgba(255,255,255,0.22);backdrop-filter:blur(4px);letter-spacing:0.28em;text-transform:uppercase;font-size:0.72rem;font-weight:700;padding:6px 16px;border-radius:30px;margin-bottom:14px;color:#fff;text-decoration:none;cursor:pointer;transition:background 0.2s ease,transform 0.15s ease;}
 a.eyebrow:hover{background:rgba(255,255,255,0.38);transform:translateY(-1px);}
 h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(2.2rem,6.4vw,3.8rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18);}
@@ -147,6 +147,22 @@ html.dark .tbl-input.wrong{background:#2e1820;border-color:var(--bad);}
 .tbl-check-btn{display:block;margin:22px auto 0;font-family:'Baloo 2',cursive;font-weight:700;font-size:1.1rem;padding:14px 48px;border:none;border-radius:40px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.4);transition:transform 0.15s ease;}
 .tbl-check-btn:hover{transform:translateY(-2px);}
 
+/* RÉVISION */
+#reviseSection{max-width:960px;margin:0 auto;}
+.rev-count{text-align:center;color:#fff;font-weight:800;font-size:0.9rem;margin-bottom:6px;opacity:0.95;}
+.rev-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem;line-height:1.3;color:#fff;display:flex;align-items:center;gap:8px;text-shadow:0 2px 8px rgba(0,0,0,0.2);margin:22px 0 12px;}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.rev-card{background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 24px rgba(0,0,0,0.2);}
+html.dark .rev-card{background:#1e1b2e;}
+.rev-photo-wrap{width:100%;height:150px;overflow:hidden;background:linear-gradient(135deg,#2b2350,#6a5cff);display:flex;align-items:center;justify-content:center;}
+.rev-photo{width:100%;height:100%;object-fit:cover;display:block;}
+.rev-emoji-fb{font-size:3.5rem;display:none;}
+.rev-body{padding:12px 14px 14px;}
+.rev-name{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;line-height:1.3;color:var(--ink);}
+html.dark .rev-name{color:#e8e2ff;}
+.rev-place{font-size:0.85rem;color:var(--ink-soft);font-weight:700;margin-top:3px;line-height:1.45;}
+html.dark .rev-place{color:#a89fd8;}
+
 /* Résultat */
 .score-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
 .score-modal{background:#fff;border-radius:28px;padding:36px 32px;text-align:center;max-width:340px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.35);}
@@ -204,11 +220,12 @@ html.dark .score-big{color:#8b7eff;}
   </header>
 
   <div class="modes" id="modesBar">
+    <button class="mode-btn" id="modeReviseBtn">📖 Révision</button>
     <button class="mode-btn active" id="modeQuizBtn">🎯 Quiz</button>
     <button class="mode-btn" id="modeClavierBtn">⌨️ Clavier</button>
   </div>
 
-  <div class="options-bar">
+  <div class="options-bar" id="autoBar">
     <button class="toggle active" id="autoAdvanceBtn">⚡ Auto-avance</button>
   </div>
   <div class="filter-bar" id="filterBar">
@@ -248,6 +265,12 @@ html.dark .score-big{color:#8b7eff;}
       <button class="next-btn" id="nextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
     </div>
   </div>
+</section>
+
+<!-- RÉVISION -->
+<section id="reviseSection" class="hidden">
+  <div class="rev-count" id="revCount"></div>
+  <div id="revContent"></div>
 </section>
 
 <!-- CLAVIER -->
@@ -549,13 +572,16 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
     btn.classList.add("active");
     selectedContinent=btn.dataset.cont;
     if(activeMode==="quiz"){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
-    else renderClavier();
+    else if(activeMode==="clavier") renderClavier();
+    else renderRevision();
   };
 });
 
 // ==================== MODE SWITCH ====================
+// Seul le bouton Quiz fait défiler la page (pour voir tout le jeu) ; Révision et Clavier ne font pas défiler
+document.getElementById("modeReviseBtn").onclick=()=>enterMode("revision");
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToEl(document.getElementById("quizSection"), 64); };
-document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); scrollToEl(document.getElementById("modesBar"), 66); };
+document.getElementById("modeClavierBtn").onclick=()=>enterMode("clavier");
 
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);
@@ -564,17 +590,59 @@ function scrollToEl(el, offset){
 
 function enterMode(mode){
   activeMode=mode;
+  document.getElementById("modeReviseBtn").classList.toggle("active",mode==="revision");
   document.getElementById("modeQuizBtn").classList.toggle("active",mode==="quiz");
   document.getElementById("modeClavierBtn").classList.toggle("active",mode==="clavier");
   document.getElementById("quizSection").classList.toggle("hidden",mode!=="quiz");
   document.getElementById("clavierSection").classList.toggle("hidden",mode!=="clavier");
+  document.getElementById("reviseSection").classList.toggle("hidden",mode!=="revision");
+  document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz");
   document.getElementById("tblHint1Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblHint2Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblHint3Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
   // On ne régénère rien si le mode est déjà prêt : la question en cours est conservée
-  if(mode==="quiz"){ if(!currentItem){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); } }
+  if(mode==="revision") renderRevision();
+  else if(mode==="quiz"){ if(!currentItem){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); } }
   else if(!tblList.length) renderClavier();
+}
+
+// ==================== RÉVISION ====================
+// Tous les monuments (photo, nom, ville, pays), filtrables par continent comme dans le jeu des drapeaux
+const CONT_EMOJI={"Europe":"🇪🇺","Asie":"🌏","Afrique":"🌍","Amérique du Nord":"🌎","Amérique du Sud":"🌎","Océanie":"🌊"};
+function revCard(m){
+  const card=document.createElement("div"); card.className="rev-card";
+  const pw=document.createElement("div"); pw.className="rev-photo-wrap";
+  const img=document.createElement("img"); img.className="rev-photo"; img.loading="lazy"; img.alt=m.name;
+  const efb=document.createElement("span"); efb.className="rev-emoji-fb";
+  pw.appendChild(img); pw.appendChild(efb);
+  setPhoto(img,efb,m);
+  const body=document.createElement("div"); body.className="rev-body";
+  const name=document.createElement("div"); name.className="rev-name"; name.textContent=m.name;
+  const place=document.createElement("div"); place.className="rev-place"; place.textContent="🏙️ "+m.city+"  ·  🗺️ "+m.country;
+  body.appendChild(name); body.appendChild(place);
+  card.appendChild(pw); card.appendChild(body);
+  card._item=m;
+  return card;
+}
+function renderRevision(){
+  const pool=filteredPool();
+  document.getElementById("revCount").textContent=pool.length+" monument"+(pool.length>1?"s":"");
+  const byName=(a,b)=>a.country.localeCompare(b.country,"fr")||a.name.localeCompare(b.name,"fr");
+  const conts=selectedContinent?[selectedContinent]:Object.keys(CONT_EMOJI);
+  const out=document.getElementById("revContent");
+  out.innerHTML="";
+  conts.forEach(c=>{
+    const items=pool.filter(m=>m.continent===c).sort(byName);
+    if(!items.length) return;
+    if(!selectedContinent){
+      const t=document.createElement("div"); t.className="rev-title"; t.textContent=CONT_EMOJI[c]+" "+c+" ("+items.length+")";
+      out.appendChild(t);
+    }
+    const grid=document.createElement("div"); grid.className="rev-grid";
+    items.forEach(m=>grid.appendChild(revCard(m)));
+    out.appendChild(grid);
+  });
 }
 
 // Touche Entrée → question suivante
@@ -627,6 +695,7 @@ function renderClavier(){
     input.className="tbl-input"; input.type="text";
     input.autocomplete="off"; input.spellcheck=false;
     input.placeholder="Nom du monument…";
+    input.addEventListener("focus",()=>input.scrollIntoView({behavior:"smooth",block:"center"}));
 
     body.appendChild(hdisp);
     body.appendChild(hbtn);
@@ -714,11 +783,14 @@ fetchPhotos().then(()=>{
     const img=c.querySelector(".tbl-photo"), fb=c.querySelector(".tbl-emoji-fb");
     if(img&&fb&&c._item) setPhoto(img,fb,c._item);
   });
+  document.querySelectorAll("#revContent .rev-card").forEach(c=>{
+    const img=c.querySelector(".rev-photo"), fb=c.querySelector(".rev-emoji-fb");
+    if(img&&fb&&c._item) setPhoto(img,fb,c._item);
+  });
 });
 refillBag();
 nextQuestion();
-// À l'arrivée : on descend un peu pour centrer le jeu, tout en gardant les boutons visibles en haut
-window.addEventListener("load",()=>setTimeout(()=>scrollToEl(document.getElementById("modesBar"), 66),250));
+// (Aucun défilement automatique à l'arrivée sur la page)
 </script>
 </body>
 </html>

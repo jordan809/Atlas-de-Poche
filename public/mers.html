@@ -20,12 +20,12 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   html{min-height:100%;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%) no-repeat;}
   html.dark{background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat;}
-  body{font-family:'Nunito',sans-serif;color:var(--ink);background:transparent;min-height:100vh;-webkit-font-smoothing:antialiased;}
+  body{font-family:'Nunito',sans-serif;line-height:1.5;color:var(--ink);background:transparent;min-height:100vh;-webkit-font-smoothing:antialiased;}
   .bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none;background:linear-gradient(135deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);}
   html.dark .bg{background:linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%);}
-  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 16px 80px;}
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:30px 22px 80px;}
 
-  header{text-align:center;margin-bottom:24px;color:#fff;}
+  header{text-align:center;margin-bottom:26px;color:#fff;}
   .menu{position:fixed;top:14px;left:16px;z-index:100;}
   .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;letter-spacing:0.03em;box-shadow:0 4px 14px rgba(0,0,0,0.2);transition:transform 0.2s ease,background 0.2s ease;display:flex;align-items:center;gap:8px;}
   .menu-btn:hover{transform:scale(1.05);background:rgba(255,255,255,0.4);}
@@ -54,30 +54,27 @@
   .vocab-section-title{scroll-margin-top:72px;}
 
   /* Onglets */
-  .tabs{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
-  .tab-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:10px 26px;border:none;border-radius:50px;cursor:pointer;background:rgba(255,255,255,0.22);backdrop-filter:blur(6px);color:#fff;transition:background 0.2s,transform 0.15s;}
-  .tab-btn:hover{background:rgba(255,255,255,0.38);transform:scale(1.04);}
-  .tab-btn.active{background:#fff;color:var(--bg1);box-shadow:0 6px 20px rgba(0,0,0,0.18);}
+  .tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:22px auto 14px;width:fit-content;max-width:100%;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);padding:6px;border-radius:50px;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+  .tab-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:10px 24px;border:none;background:transparent;color:#fff;cursor:pointer;border-radius:40px;transition:all 0.2s ease;}
+  .tab-btn.active{background:#fff;color:var(--bg1);box-shadow:0 4px 12px rgba(0,0,0,0.18);}
 
   /* Filtres niveau 1 */
-  .filter-bar{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
-  .filter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 16px;border:2px solid rgba(255,255,255,0.45);border-radius:50px;cursor:pointer;background:transparent;color:#fff;transition:background 0.15s,border-color 0.15s;}
-  .filter-chip.active{background:rgba(255,255,255,0.28);border-color:#fff;}
-  .filter-chip:hover{background:rgba(255,255,255,0.18);}
+  .filter-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+  .filter-chip,.subfilter-chip,.game-filter-chip,.game-subfilter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.86rem;padding:7px 17px;border:2px solid rgba(255,255,255,0.7);background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;border-radius:40px;transition:all 0.18s ease;}
+  .filter-chip:hover,.subfilter-chip:hover,.game-filter-chip:hover,.game-subfilter-chip:hover{background:rgba(255,255,255,0.3);transform:translateY(-2px);}
+  .filter-chip.active,.subfilter-chip.active,.game-filter-chip.active,.game-subfilter-chip.active{background:#fff;color:var(--ink);border-color:#fff;transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.2);}
 
   /* Filtres niveau 2 (sous-mers parent) */
   .subfilter-bar{display:none;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;padding:10px 0 4px;}
   .subfilter-bar.visible{display:flex;}
-  .subfilter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.78rem;padding:5px 14px;border:2px solid rgba(255,255,255,0.35);border-radius:50px;cursor:pointer;background:rgba(0,0,0,0.12);color:rgba(255,255,255,0.85);transition:background 0.15s,border-color 0.15s;}
-  .subfilter-chip.active{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.8);color:#fff;}
-  .subfilter-chip:hover{background:rgba(255,255,255,0.16);}
   .subfilter-label{font-size:0.75rem;color:rgba(255,255,255,0.7);font-weight:600;align-self:center;white-space:nowrap;}
 
   /* ── RÉVISION ── */
   #revSection{display:none;}
   #revSection.on{display:block;}
   .ocean-group{margin-bottom:32px;}
-  .ocean-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.15rem;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px;text-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .ocean-title,.vocab-section-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.2rem;line-height:1.3;color:#fff;display:flex;align-items:center;gap:8px;text-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .ocean-title{margin-bottom:8px;}
 
   /* Groupe parent (sous-mers regroupées sous leur mer mère) */
   .parent-group{margin-bottom:18px;}
@@ -95,7 +92,7 @@
   html.dark .rev-card{background:#1e1b2e;}
   .rev-top{display:flex;align-items:center;gap:10px;}
   .rev-icon{font-size:1.7rem;flex-shrink:0;}
-  .rev-name{font-family:'Baloo 2',cursive;font-weight:800;font-size:1rem;color:var(--ink);}
+  .rev-name{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;line-height:1.3;color:var(--ink);}
   html.dark .rev-name{color:#e8e2ff;}
   .rev-badge{font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px;display:inline-block;margin-top:1px;}
   .badge-principale{background:#e0f0ff;color:#0077b6;}
@@ -118,15 +115,9 @@
   /* ── JEU ── */
   #gameSection{display:none;}
   #gameSection.on{display:block;}
-  .game-filter-bar{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
-  .game-filter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 16px;border:2px solid rgba(255,255,255,0.45);border-radius:50px;cursor:pointer;background:transparent;color:#fff;transition:background 0.15s,border-color 0.15s;}
-  .game-filter-chip.active{background:rgba(255,255,255,0.28);border-color:#fff;}
-  .game-filter-chip:hover{background:rgba(255,255,255,0.18);}
+  .game-filter-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
   .game-subfilter-bar{display:none;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;padding:6px 0 2px;}
   .game-subfilter-bar.visible{display:flex;}
-  .game-subfilter-chip{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.78rem;padding:5px 14px;border:2px solid rgba(255,255,255,0.35);border-radius:50px;cursor:pointer;background:rgba(0,0,0,0.12);color:rgba(255,255,255,0.85);transition:background 0.15s,border-color 0.15s;}
-  .game-subfilter-chip.active{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.8);color:#fff;}
-  .game-subfilter-chip:hover{background:rgba(255,255,255,0.16);}
 
   .game-card{background:#fff;border-radius:22px;padding:30px 26px;box-shadow:0 16px 40px rgba(0,0,0,0.18);text-align:center;}
   html.dark .game-card{background:#1e1b2e;}
@@ -149,15 +140,14 @@
   .g-feedback{min-height:26px;font-weight:800;font-size:0.95rem;margin-bottom:12px;}
   .fb-good{color:var(--good);}
   .fb-bad{color:var(--bad);}
-  .next-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);transition:transform 0.15s;display:none;}
-  .next-btn:hover{transform:translateY(-2px);}
+  .next-btn,.restart-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.05rem;margin-top:12px;padding:13px 38px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:40px;cursor:pointer;box-shadow:0 8px 20px rgba(106,92,255,0.4);transition:opacity 0.15s ease,transform 0.15s ease;}
+  .next-btn{display:none;}
+  .next-btn:hover,.restart-btn:hover{transform:translateY(-2px) scale(1.03);}
   .score-end{display:none;text-align:center;padding:8px 0;}
   .score-end .se-icon{font-size:3.5rem;margin-bottom:10px;}
   .score-end .se-txt{font-family:'Baloo 2',cursive;font-weight:800;font-size:2rem;color:var(--ink);margin-bottom:4px;}
   html.dark .score-end .se-txt{color:#e8e2ff;}
   .score-end .se-sub{color:var(--ink-soft);font-size:0.9rem;margin-bottom:22px;}
-  .restart-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:12px 32px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.35);transition:transform 0.15s;}
-  .restart-btn:hover{transform:translateY(-2px);}
   /* ── VOCABULAIRE ── */
   #vocabSection{display:none;}
   #vocabSection.on{display:block;}
@@ -171,7 +161,7 @@
   html.dark .vocab-card{background:#1e1b2e;}
   .vocab-card-top{display:flex;align-items:center;gap:12px;}
   .vocab-icon{font-size:2.2rem;flex-shrink:0;}
-  .vocab-term{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;color:var(--ink);}
+  .vocab-term{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.05rem;line-height:1.3;color:var(--ink);}
   html.dark .vocab-term{color:#e8e2ff;}
   .vocab-en{font-size:0.78rem;font-weight:700;color:var(--ink-soft);font-style:italic;}
   html.dark .vocab-en{color:#a89fd8;}
@@ -182,18 +172,20 @@
   .vocab-img{width:100%;height:140px;object-fit:cover;border-radius:10px;margin-top:4px;display:block;}
   .vocab-img-wrap{position:relative;border-radius:10px;overflow:hidden;margin-top:6px;}
   .vocab-img-credit{position:absolute;bottom:0;right:0;background:rgba(0,0,0,0.45);color:#fff;font-size:0.65rem;padding:2px 6px;border-radius:6px 0 0 0;}
-  .vocab-section-title{
-    font-family:'Baloo 2',cursive;font-weight:800;font-size:1.1rem;
-    color:#fff;margin:22px 0 12px;
-    display:flex;align-items:center;gap:8px;
-    text-shadow:0 2px 8px rgba(0,0,0,0.2);
-  }
+  .vocab-section-title{margin:22px 0 12px;}
 
   .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
   .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
   .dark-toggle:hover,.sound-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
   html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
-  @media(max-width:520px){.opts{grid-template-columns:1fr;}.game-card{padding:22px 14px;}.rev-grid{grid-template-columns:1fr;}}
+  @media(max-width:520px){
+    .opts{grid-template-columns:1fr;}.game-card{padding:22px 14px;}.rev-grid{grid-template-columns:1fr;}
+    .wrap{padding-top:70px;}
+    .menu-btn{font-size:0.82rem;padding:0 14px;height:38px;}
+    .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;}
+    .top-right-btns{top:10px;right:12px;gap:6px;}
+    .menu{top:10px;left:12px;}
+  }
 </style>
 </head>
 <body>
@@ -222,7 +214,7 @@
     <a href="/contact.html">📬 Contact</a>
   </div>
 </div>
-<div class="wrap" style="padding-top:60px;">
+<div class="wrap">
   <header>
     <a class="eyebrow" href="/">Atlas de poche</a>
     <h1>🌊 Mers &amp; Océans</h1>

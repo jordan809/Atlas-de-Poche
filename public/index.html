@@ -198,12 +198,16 @@
   @media (min-width: 641px) and (max-width: 1000px) {
     .cards { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
   }
+
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  @media(max-width:520px){.top-right-btns{top:10px;right:12px;gap:6px;}}
 </style>
 </head>
 <body>
 <script>
   try { sessionStorage.setItem('atlasNav', '1'); } catch(e) {}
 </script>
+<div class="top-right-btns"></div>
 
 <div class="home-top">
   <div class="home-badge">🌍 La géographie en s'amusant</div>
@@ -315,5 +319,6 @@
   </a>
 
 </div>
+<script src="/spotify.js"></script>
 </body>
 </html>

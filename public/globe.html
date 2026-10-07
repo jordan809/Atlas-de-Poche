@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
-  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
+  try { if (!sessionStorage.getItem('atlasNav') && !localStorage.getItem('sp_pending_code')) location.replace('/index.html'); } catch (e) {}
 </script>
 <title>Globe interactif — Atlas de poche</title>
 <meta name="description" content="Carte du monde interactive : découvre les pays ou joue à les deviner.">
@@ -590,7 +590,7 @@
   window.__state = ()=>({mode, current: current&&current.c, hasTarget: !!target});
 })();
 </script>
-<script src="/spotify.js"></script>
+<script src="/spotify.js?v=3"></script>
 </body>
 </html>
 

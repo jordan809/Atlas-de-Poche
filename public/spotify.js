@@ -220,19 +220,27 @@
   }
 
   async function exchange(code) {
-    var r = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code', code: code, redirect_uri: REDIRECT,
-        client_id: CLIENT_ID, code_verifier: sGet('v')
-      })
-    });
-    if (!r.ok) return false;
-    var d = await r.json();
-    sSet('tok', Object.assign({}, d, { ts: Date.now() }));
-    sDel('v');
-    return true;
+    var verifier = sGet('v') || '';
+    try {
+      var r = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code', code: code, redirect_uri: REDIRECT,
+          client_id: CLIENT_ID, code_verifier: verifier
+        })
+      });
+      if (!r.ok) {
+        var err = await r.json().catch(function(){ return {}; });
+        // invalid_grant = code déjà utilisé. Si un autre onglet a déjà storé les tokens, pas de souci
+        if ((err.error === 'invalid_grant' || r.status === 400) && !getTokens()) sDel('tok');
+        return false;
+      }
+      var d = await r.json();
+      sSet('tok', Object.assign({}, d, { ts: Date.now() }));
+      sDel('v');
+      return true;
+    } catch { return false; }
   }
 
   function logout() {
@@ -371,8 +379,14 @@
   async function checkPendingCode() {
     var code = localStorage.getItem('sp_pending_code');
     if (!code) return false;
-    localStorage.removeItem('sp_pending_code');
-    return await exchange(code);
+    // Ne supprime le code qu'après un échange réussi
+    // (si la page navigue ailleurs en cours d'échange, la prochaine page pourra réessayer)
+    var ok = await exchange(code);
+    if (ok || getTokens()) {
+      localStorage.removeItem('sp_pending_code');
+      return true;
+    }
+    return false;
   }
 
   // ── Boot ──────────────────────────────────────────────────────────────────

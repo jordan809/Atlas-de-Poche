@@ -59,21 +59,27 @@
 
   /* Header */
   header { text-align: center; margin-bottom: 36px; color: #fff; }
-  .back-link {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: rgba(255,255,255,0.85); font-weight: 700; font-size: 0.9rem;
-    text-decoration: none; margin-bottom: 24px;
-    background: rgba(255,255,255,0.2); backdrop-filter: blur(6px);
-    padding: 8px 18px; border-radius: 30px;
-    transition: background 0.2s ease;
+  .eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 30px;
+    margin-bottom: 14px;
+    color: #fff; text-decoration: none; cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
   }
-  .back-link:hover { background: rgba(255,255,255,0.35); }
+  a.eyebrow:hover { background: rgba(255,255,255,0.38); transform: translateY(-1px); }
   h1 {
     font-family: 'Baloo 2', cursive; font-weight: 800;
-    font-size: clamp(2rem, 6vw, 3rem); line-height: 1;
+    font-size: clamp(2.2rem, 6.4vw, 3.8rem); line-height: 1;
     text-shadow: 0 4px 20px rgba(0,0,0,0.18);
   }
-  .sub { margin-top: 10px; font-size: 1rem; font-weight: 600; opacity: 0.95; }
+  .sub { margin-top: 10px; font-size: 1.05rem; font-weight: 600; opacity: 0.95; }
 
   /* Card */
   .card {
@@ -134,30 +140,72 @@
   }
   html.dark input:focus, html.dark textarea:focus { border-color: #8b7eff; }
 
-  .dark-toggle {
-    position: fixed; top: 14px; right: 16px; z-index: 100;
-    font-size: 1.3rem; width: 42px; height: 42px;
-    border: none; border-radius: 50%; cursor: pointer;
-    background: rgba(255,255,255,0.25); backdrop-filter: blur(6px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .dark-toggle:hover { transform: scale(1.12); background: rgba(255,255,255,0.4); }
-  html.dark .dark-toggle { background: rgba(0,0,0,0.35); }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
+  .dark-toggle:hover,.sound-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;letter-spacing:0.03em;box-shadow:0 4px 14px rgba(0,0,0,0.2);transition:transform 0.2s ease,background 0.2s ease;display:flex;align-items:center;gap:8px;}
+  .menu-btn:hover{transform:scale(1.05);background:rgba(255,255,255,0.4);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu-panel::-webkit-scrollbar{display:none;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;transition:background 0.15s ease;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-panel a.active{background:#ede9ff;color:var(--bg1);}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  .menu-lang{display:flex;flex-direction:column;gap:2px;padding:2px 0;}
+  .lang-btn{display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:11px;border:none;cursor:pointer;background:transparent;color:var(--ink);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;text-align:left;width:100%;transition:background 0.15s ease;}
+  .lang-btn:hover{background:#f0edff;}
+  .lang-btn.active{background:#ede9ff;color:var(--bg1);}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  html.dark .menu-btn:hover{background:rgba(0,0,0,0.5);}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
 
   @media (max-width: 520px) {
     .card { padding: 26px 20px; }
+    .wrap { padding-top: 70px; }
+    .menu-btn { font-size: 0.82rem; padding: 0 14px; height: 38px; }
+    .dark-toggle, .sound-toggle { width: 38px; height: 38px; font-size: 1.1rem; }
+    .top-right-btns { top: 10px; right: 12px; gap: 6px; }
+    .menu { top: 10px; left: 12px; }
   }
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
-<button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛 Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <div class="menu-divider"></div>
+    <div class="menu-lang" id="menuLang">
+      <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+    </div>
+    <div class="menu-divider"></div>
+    <a href="/contact.html" class="active">📬 Contact</a>
+  </div>
+</div>
 
 <div class="wrap">
   <header>
-    <div><a class="back-link" href="/">← Retour</a></div>
+    <a class="eyebrow" href="/">Atlas de poche</a>
     <h1>📬 Nous contacter</h1>
     <p class="sub">Une question, une suggestion ? On te répond !</p>
   </header>
@@ -188,6 +236,19 @@
 </div>
 
 <script>
+  // Menu
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  // Son (préférence partagée avec les autres pages)
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = localStorage.getItem('soundOn') !== '0';
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
+
   // Dark mode
   const darkToggle = document.getElementById("darkToggle");
   let darkOn = localStorage.getItem("darkMode") === "1";

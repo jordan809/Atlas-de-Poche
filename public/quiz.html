@@ -2793,6 +2793,7 @@ let pvpScreen = 'pvpLobby';
 let pvpShown = {round:-2, phase:''};
 let pvpQuestions = [];
 let pvpSubmitted = false;
+let pvpSavedName = '';
 let pvpQStart = 0;
 let pvpTimerId = null, pvpHostTimer = null, pvpAdvanced = -1;
 let pvpRoundChoice = 10;      // 10 | 30 | 50 | 100 | 'max' | 'custom'
@@ -2985,7 +2986,13 @@ function pvpUpdateExitBar(){
   btn.classList.toggle('danger', pvpIsHost);
 }
 // Retour dans le mode depuis un autre mode : on reste là où on en était
-function pvpEnterMode(){ pvpShowSection(pvpRoom ? pvpScreen : 'pvpLobby'); }
+function pvpEnterMode(){
+  if(!pvpRoom && pvpSavedName){
+    const inp = document.getElementById('pvpPseudo');
+    if(inp && !inp.value.trim()) inp.value = pvpSavedName;
+  }
+  pvpShowSection(pvpRoom ? pvpScreen : 'pvpLobby');
+}
 
 // ----- Création / adhésion -----
 // Pseudo obligatoire : champ vide -> on le signale et on refuse
@@ -3004,6 +3011,7 @@ function pvpNeedPseudo(inp){
 async function pvpCreate(){
   const name = pvpNeedPseudo(document.getElementById('pvpPseudo'));
   if(!name) return;
+  pvpSavedName = name;
   const avail = pvpAvailable();
   const rounds = pvpRoundsFrom(pvpRoundChoice, document.getElementById('pvpCustomRounds'), avail);
   if(rounds == null) return;
@@ -3039,10 +3047,14 @@ async function pvpJoin(){
     if(room.status !== 'waiting'){ alert(pvpT('pvpErrStarted')); return; }
     if(Object.keys(room.players || {}).length >= PVP_MAX_PLAYERS){ alert(pvpT('pvpErrFull')); return; }
     pvpPendingCode = code;
-    document.getElementById('pvpJoinSubtitle').textContent = pvpT('pvpJoinSubtitle')(code);
-    document.getElementById('pvpJoinPseudo').value = '';
-    pvpShowSection('pvpJoinScreen');
-    setTimeout(() => document.getElementById('pvpJoinPseudo').focus({preventScroll:true}), 120);
+    if(pvpSavedName){
+      await pvpJoinConfirm();
+    } else {
+      document.getElementById('pvpJoinSubtitle').textContent = pvpT('pvpJoinSubtitle')(code);
+      document.getElementById('pvpJoinPseudo').value = '';
+      pvpShowSection('pvpJoinScreen');
+      setTimeout(() => document.getElementById('pvpJoinPseudo').focus({preventScroll:true}), 120);
+    }
   }catch(e){ alert(pvpT('pvpErrNet')); }
   finally{ btn.disabled = false; }
 }
@@ -3050,7 +3062,8 @@ async function pvpJoin(){
 // Étape 2 : le pseudo (obligatoire), puis on entre dans la salle
 async function pvpJoinConfirm(){
   const code = pvpPendingCode;
-  const base = pvpNeedPseudo(document.getElementById('pvpJoinPseudo'));
+  const inp = document.getElementById('pvpJoinPseudo');
+  const base = pvpSavedName || pvpNeedPseudo(inp);
   if(!code || !base) return;
   const btn = document.getElementById('pvpJoinConfirmBtn'); btn.disabled = true;
   try{
@@ -3067,6 +3080,7 @@ async function pvpJoinConfirm(){
       document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
     }
     filtersEl.classList.add('locked');
+    pvpSavedName = base;
     await dbSet(`rooms/${code}/players/${pvpPid}`, {name:pvpUniqueName(base, players), joinedAt:Date.now()});
     pvpRoom = code; pvpIsHost = false; pvpPendingCode = null;
     pvpShown = {round:-2, phase:''}; pvpAdvanced = -1; pvpData = null; pvpRoomGone = false; pvpQRaw = null;

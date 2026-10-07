@@ -3036,8 +3036,10 @@ async function pvpCreate(){
   finally{ btn.disabled = false; }
 }
 
-// Étape 1 pour rejoindre : le code. On vérifie la salle, puis on demande le pseudo.
+// Rejoindre : pseudo + code saisis dans le lobby, tout en une étape
 async function pvpJoin(){
+  const name = pvpNeedPseudo(document.getElementById('pvpPseudo'));
+  if(!name) return;
   const code = document.getElementById('pvpCodeInput').value.trim().toUpperCase();
   if(code.length !== 4){ alert(pvpT('pvpErrCode')); return; }
   const btn = document.getElementById('pvpJoinBtn'); btn.disabled = true;
@@ -3045,43 +3047,17 @@ async function pvpJoin(){
     const room = await dbGet(`rooms/${code}`);
     if(!room){ alert(pvpT('pvpErrInvalid')); return; }
     if(room.status !== 'waiting'){ alert(pvpT('pvpErrStarted')); return; }
-    if(Object.keys(room.players || {}).length >= PVP_MAX_PLAYERS){ alert(pvpT('pvpErrFull')); return; }
-    pvpPendingCode = code;
-    if(pvpSavedName){
-      await pvpJoinConfirm();
-    } else {
-      document.getElementById('pvpJoinSubtitle').textContent = pvpT('pvpJoinSubtitle')(code);
-      document.getElementById('pvpJoinPseudo').value = '';
-      pvpShowSection('pvpJoinScreen');
-      setTimeout(() => document.getElementById('pvpJoinPseudo').focus({preventScroll:true}), 120);
-    }
-  }catch(e){ alert(pvpT('pvpErrNet')); }
-  finally{ btn.disabled = false; }
-}
-
-// Étape 2 : le pseudo (obligatoire), puis on entre dans la salle
-async function pvpJoinConfirm(){
-  const code = pvpPendingCode;
-  const inp = document.getElementById('pvpJoinPseudo');
-  const base = pvpSavedName || pvpNeedPseudo(inp);
-  if(!code || !base) return;
-  const btn = document.getElementById('pvpJoinConfirmBtn'); btn.disabled = true;
-  try{
-    const room = await dbGet(`rooms/${code}`);
-    if(!room){ alert(pvpT('pvpErrInvalid')); pvpShowSection('pvpLobby'); return; }
-    if(room.status !== 'waiting'){ alert(pvpT('pvpErrStarted')); pvpShowSection('pvpLobby'); return; }
     const players = room.players || {};
-    if(Object.keys(players).length >= PVP_MAX_PLAYERS){ alert(pvpT('pvpErrFull')); pvpShowSection('pvpLobby'); return; }
+    if(Object.keys(players).length >= PVP_MAX_PLAYERS){ alert(pvpT('pvpErrFull')); return; }
 
     pvpQuestions = pvpToArray(room.questions);
-    // Appliquer le continent de l'hôte
     if(room.filter){
       activeFilter = room.filter;
       document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
     }
     filtersEl.classList.add('locked');
-    pvpSavedName = base;
-    await dbSet(`rooms/${code}/players/${pvpPid}`, {name:pvpUniqueName(base, players), joinedAt:Date.now()});
+    pvpSavedName = name;
+    await dbSet(`rooms/${code}/players/${pvpPid}`, {name:pvpUniqueName(name, players), joinedAt:Date.now()});
     pvpRoom = code; pvpIsHost = false; pvpPendingCode = null;
     pvpShown = {round:-2, phase:''}; pvpAdvanced = -1; pvpData = null; pvpRoomGone = false; pvpQRaw = null;
     document.getElementById('pvpCodeDisplay').textContent = code;

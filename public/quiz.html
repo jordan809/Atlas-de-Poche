@@ -3170,8 +3170,7 @@ function pvpUpdateHud(room){
   document.getElementById('pvpMyName').textContent = me ? me.name : '';
   document.getElementById('pvpMyScore').textContent = me ? me.score : 0;
   const rk = document.getElementById('pvpMyRank');
-  if(r > 0 && me){ rk.textContent = pvpOrd(me.rank) + ' / ' + rows.length; rk.classList.remove('hidden'); }
-  else rk.classList.add('hidden');
+  rk.classList.add('hidden');
 }
 function pvpRefreshProgress(room){
   const r = room.round;
@@ -3208,7 +3207,6 @@ function pvpShowQuestion(room){
 async function pvpSubmit(){
   if(pvpSubmitted || !pvpData || pvpData.status !== 'playing' || (pvpData.phase || 'question') !== 'question') return;
   pvpSubmitted = true;
-  pvpStopTimer();
   const r = pvpShown.round, q = pvpQuestions[r];
   const ac = document.getElementById('pvpInputCountry').value.trim();
   const ak = document.getElementById('pvpInputCapital').value.trim();

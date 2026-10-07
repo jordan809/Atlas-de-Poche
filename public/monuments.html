@@ -220,8 +220,8 @@ html.dark .score-big{color:#8b7eff;}
   </header>
 
   <div class="modes" id="modesBar">
-    <button class="mode-btn" id="modeReviseBtn">📖 Révision</button>
-    <button class="mode-btn active" id="modeQuizBtn">🎯 Quiz</button>
+    <button class="mode-btn active" id="modeReviseBtn">📖 Révision</button>
+    <button class="mode-btn" id="modeQuizBtn">🎯 Quiz</button>
     <button class="mode-btn" id="modeClavierBtn">⌨️ Clavier</button>
   </div>
 
@@ -433,7 +433,7 @@ function setPhoto(imgEl,fbEl,m){
 }
 
 // ==================== ÉTAT ====================
-let activeMode="quiz";
+let activeMode="revision";
 let currentItem=null, answered=false;
 let score=0, streak=0, total=0, questionNum=0;
 let bag=[], seriesTotal=0;
@@ -579,9 +579,9 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 
 // ==================== MODE SWITCH ====================
 // Seul le bouton Quiz fait défiler la page (pour voir tout le jeu) ; Révision et Clavier ne font pas défiler
-document.getElementById("modeReviseBtn").onclick=()=>enterMode("revision");
+document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); window.scrollTo({top:0,behavior:"smooth"}); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToEl(document.getElementById("quizSection"), 64); };
-document.getElementById("modeClavierBtn").onclick=()=>enterMode("clavier");
+document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); window.scrollTo({top:0,behavior:"smooth"}); };
 
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);

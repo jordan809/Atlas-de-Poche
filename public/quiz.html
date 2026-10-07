@@ -1683,7 +1683,7 @@ function enterMode(mode){
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
-  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);
+  document.getElementById("autoAdvanceToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable || mode==="timed");
   document.getElementById("hideNameToggle").classList.toggle("hidden", isStudy || isPvp || isFlags);
 
   if(isStudy){ renderStudy(); }
@@ -1751,8 +1751,23 @@ typeFlagToggle.onclick=()=>{
     }
   }
 };
+// Mode tableau : le tableau est-il encore en cours (pas encore corrigé) ?
+function tableOpen(){ return activeMode==="type" && typeTableMode && !document.getElementById("typeTableCheckBtn").classList.contains("hidden"); }
+// Mode tableau : tire une toute nouvelle série (ignore "position fixe" pour que la série change vraiment)
+function newTableSeries(){
+  const lk = lockFlagPos; lockFlagPos = false;
+  renderTypeTable(true);
+  lockFlagPos = lk;
+}
 const hideNameToggle=document.getElementById("hideNameToggle");
 hideNameToggle.onclick=()=>{
+  // Mode tableau : 2e appui sur Difficile avant d'avoir corrigé = nouvelle série (même principe que dans les autres modes)
+  if(hideName && tableOpen() && direction==="cap"){
+    hideName=false;
+    hideNameToggle.classList.remove("active");
+    newTableSeries();
+    return;
+  }
   // Désactiver Difficile avant d'avoir répondu = nouvelle question (sinon on pourrait tricher en révélant le nom)
   if(hideName && !answered && currentItem && activeMode!=="study" && !typeTableMode && direction==="cap"){
     hideName=false;
@@ -1785,6 +1800,8 @@ document.getElementById("hintBtn").onclick = () => {
   btn.classList.toggle("active");
   const isActive = btn.classList.contains("active");
   if(activeMode==="type" && typeTableMode){
+    // 2e appui sur Aide avant d'avoir corrigé = nouvelle série, pour ne pas tricher
+    if(!isActive && tableOpen()){ newTableSeries(); return; }
     // Mode tableau : afficher/cacher les capitales dans chaque ligne
     document.querySelectorAll("#typeTableGrid .tbl-hint").forEach(hint => {
       const item = hint.closest(".tbl-row")._item;

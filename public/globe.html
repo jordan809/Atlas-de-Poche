@@ -325,6 +325,7 @@
   const zoom = d3.zoom().scaleExtent([1, 14]).on('zoom', (ev)=>{
     g.attr('transform', ev.transform);
     cullCountries(ev.transform);
+    if(dotEls) dotEls.attr('r', 3.4 / ev.transform.k);   // les points des micro-États gardent la même taille à l'écran
     document.body.classList.add('moving');
     clearTimeout(movingTimer);
     movingTimer = setTimeout(()=> document.body.classList.remove('moving'), 160);
@@ -335,6 +336,7 @@
     W = window.innerWidth; H = window.innerHeight;
     svg.attr('width', W).attr('height', H);
     projection.fitSize([W, H], { type:'FeatureCollection', features: countries.features });
+    if(typeof focusCache !== 'undefined') focusCache.clear();
   }
 
   function drawMap(){
@@ -363,7 +365,7 @@
       .attr('class','dot-marker')
       .attr('cx', it => projection([it.lng, it.lat])[0])
       .attr('cy', it => projection([it.lng, it.lat])[1])
-      .attr('r', 3.2)
+      .attr('r', 3.4 / d3.zoomTransform(svg.node()).k)
       .on('mousemove', (ev,it)=>{
         if(mode!=='discover') return;
         tipEl.textContent = it.d.c;
@@ -390,10 +392,37 @@
   }
 
   // Zoom centré sur un pays, avec assez de marge pour voir les voisins.
+  // Pays avec des territoires très éloignés (Alaska/Hawaï, outre-mer, îles du Pacifique…) :
+  // on cadre sur le territoire principal et ses îles proches, sinon la boîte englobante couvre presque toute la carte.
+  const MAIN_ONLY = new Set(['United States of America','France','Netherlands','Portugal','Spain','Chile','Ecuador','Denmark','Russia','New Zealand','Fiji','South Africa']);
+  const focusCache = new Map();
+  function focusBounds(feature){
+    const full = path.bounds(feature);
+    const g = feature.geometry;
+    if(!MAIN_ONLY.has(feature.properties.ADMIN) || !g || g.type !== 'MultiPolygon') return full;
+    const cached = focusCache.get(feature);
+    if(cached) return cached;
+    const parts = g.coordinates.map(c => { const p = {type:'Polygon', coordinates:c}; return {b:path.bounds(p), a:path.area(p)}; });
+    let main = parts[0];
+    parts.forEach(p => { if(p.a > main.a) main = p; });
+    const mw = main.b[1][0]-main.b[0][0], mh = main.b[1][1]-main.b[0][1];
+    const px = Math.max(0.15*mw, 0.008*W), py = Math.max(0.15*mh, 0.008*W);
+    const x0 = main.b[0][0]-px, x1 = main.b[1][0]+px, y0 = main.b[0][1]-py, y1 = main.b[1][1]+py;
+    let ax = main.b[0][0], ay = main.b[0][1], bx = main.b[1][0], by = main.b[1][1];
+    parts.forEach(p => {
+      if(p.b[1][0] >= x0 && p.b[0][0] <= x1 && p.b[1][1] >= y0 && p.b[0][1] <= y1){
+        ax = Math.min(ax, p.b[0][0]); ay = Math.min(ay, p.b[0][1]); bx = Math.max(bx, p.b[1][0]); by = Math.max(by, p.b[1][1]);
+      }
+    });
+    const res = [[ax, ay], [bx, by]];
+    focusCache.set(feature, res);
+    return res;
+  }
+
   function zoomToFeature(feature, padding, opts){
     padding = padding || 5;
     opts = opts || {};
-    const b = path.bounds(feature);
+    const b = focusBounds(feature);
     const dx = Math.max(b[1][0]-b[0][0], 1), dy = Math.max(b[1][1]-b[0][1], 1);
     const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
     // Zone réellement visible : on retire la barre du haut et, en découverte, la fiche en bas

@@ -64,6 +64,7 @@
   .card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 16px 32px rgba(0,0,0,0.2); }
   .card .names { min-width: 0; }
   .card .country { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; line-height: 1.15; }
+  .card .region { font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); margin-top: 2px; line-height: 1.2; }
   .card .capital { color: var(--accent, var(--ink-soft)); font-weight: 700; font-size: 0.95rem; margin-top: 1px; }
   .count-note { text-align: center; color: #fff; font-weight: 700; font-size: 0.95rem; margin-bottom: 16px; opacity: 0.95; }
 
@@ -187,6 +188,7 @@
   html.dark .bg { background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%); }
   html.dark .card { background: #1e1b2e; color: #e8e2ff; box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
   html.dark .card .country { color: #e8e2ff; }
+  html.dark .card .region { color: #7a72a8; }
   html.dark .card .capital { color: #a89fd8; }
   html.dark .question-card { background: #1e1b2e; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
   html.dark .q-country { color: #e8e2ff; }
@@ -766,6 +768,7 @@ function renderStudy(){
     card.style.setProperty("--accent", COLORS[d.k]);
     card.innerHTML=`<span>${badgeHtml(d.num,48)}</span>
       <div class="names"><div class="country">${d.c}</div>
+      <div class="region">${d.k}</div>
       <div class="capital">${d.cap}</div></div>`;
     grid.appendChild(card);
   });

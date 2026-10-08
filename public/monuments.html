@@ -616,10 +616,13 @@ function enterMode(mode){
   document.getElementById("tblHint2Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblHint3Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
-  // On ne régénère rien si le mode est déjà prêt : la question en cours est conservée
+  // Réinitialiser auto-avance à chaque changement de mode
+  clearTimeout(autoAdvTimer);
+  autoAdvanceOn=true;
+  document.getElementById("autoAdvanceBtn").classList.add("active");
   if(mode==="revision") renderRevision();
-  else if(mode==="quiz"){ if(!currentItem){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); } }
-  else if(!tblList.length) renderClavier();
+  else if(mode==="quiz"){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); }
+  else renderClavier();
 }
 
 // ==================== RÉVISION ====================

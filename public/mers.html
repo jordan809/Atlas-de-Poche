@@ -859,7 +859,7 @@ function switchTab(tab){
   document.getElementById("revNote").style.display = tab==="rev" ? "block" : "none";
   if(tab==="game") startGame();
   const tabsEl = document.querySelector(".tabs");
-  if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 70), 50);
+  if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 10), 50);
 }
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);

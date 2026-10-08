@@ -1903,7 +1903,7 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
     enterMode(mode);
     const modesEl = document.querySelector(".modes");
     if(modesEl) setTimeout(()=>{
-      const y = modesEl.getBoundingClientRect().top + window.scrollY - 70;
+      const y = modesEl.getBoundingClientRect().top + window.scrollY - 10;
       window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
     }, 50);
   };

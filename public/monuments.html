@@ -590,7 +590,7 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 function scrollToModesBar(){
   const modesEl = document.getElementById("modesBar");
   if(modesEl) setTimeout(()=>{
-    const y = modesEl.getBoundingClientRect().top + window.scrollY - 70;
+    const y = modesEl.getBoundingClientRect().top + window.scrollY - 10;
     window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
   }, 50);
 }

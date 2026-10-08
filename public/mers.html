@@ -863,7 +863,12 @@ function switchTab(tab){
     renderRevision();
   }
   document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
-  if(tab==="game") startGame();
+  if(tab==="game"){
+    gameFilter="Tous"; gameSubFilter="Tous";
+    document.querySelectorAll("#gameFilterBar .game-filter-chip").forEach(b=>b.classList.toggle("active",b.textContent.includes("Tous")));
+    document.getElementById("gameSubFilterBar").classList.remove("visible");
+    startGame();
+  }
   const tabsEl = document.querySelector(".tabs");
   if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 10), 50);
 }

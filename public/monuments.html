@@ -244,9 +244,6 @@ html.dark .score-big{color:#8b7eff;}
     <button class="filter-btn" data-cont="Océanie">🌊 Océanie</button>
   </div>
   <div class="options-bar">
-    <button class="toggle hidden" id="tblHint1Btn">🌍 Continent</button>
-    <button class="toggle hidden" id="tblHint2Btn">🗺️ Pays</button>
-    <button class="toggle hidden" id="tblHint3Btn">🏙️ Ville</button>
     <button class="toggle hidden" id="tblRestartBtn">🎲 Nouvelle série</button>
   </div>
 
@@ -614,9 +611,6 @@ function enterMode(mode){
   document.getElementById("clavierSection").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("reviseSection").classList.toggle("hidden",mode!=="revision");
   document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz");
-  document.getElementById("tblHint1Btn").classList.toggle("hidden",mode!=="clavier");
-  document.getElementById("tblHint2Btn").classList.toggle("hidden",mode!=="clavier");
-  document.getElementById("tblHint3Btn").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
   // Réinitialiser auto-avance à chaque changement de mode
   clearTimeout(autoAdvTimer);
@@ -627,7 +621,6 @@ function enterMode(mode){
   document.querySelectorAll(".filter-btn").forEach(b=>b.classList.toggle("active",b.dataset.cont===""));
   // Réinitialiser aides clavier
   gHints[0]=gHints[1]=gHints[2]=false;
-  ["tblHint1Btn","tblHint2Btn","tblHint3Btn"].forEach(id=>document.getElementById(id).classList.remove("active"));
   if(mode==="revision") renderRevision();
   else if(mode==="quiz"){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); }
   else renderClavier();
@@ -743,13 +736,6 @@ function refreshCardHint(card){
   if(gHints[2]||lvl>=3) parts.push("🏙️ "+m.city);
   card._hdisp.textContent=parts.join("  ·  ");
 }
-["tblHint1Btn","tblHint2Btn","tblHint3Btn"].forEach((id,i)=>{
-  document.getElementById(id).onclick=()=>{
-    gHints[i]=!gHints[i];
-    document.getElementById(id).classList.toggle("active",gHints[i]);
-    document.querySelectorAll("#tblGrid .tbl-card").forEach(refreshCardHint);
-  };
-});
 
 document.getElementById("tblRestartBtn").onclick=()=>renderClavier();
 

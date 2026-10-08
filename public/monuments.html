@@ -60,7 +60,7 @@ html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
 html.dark .menu-divider{background:rgba(255,255,255,0.12);}
 
 /* Modes : mêmes boutons que Quiz/Clavier du jeu des capitales */
-.modes{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:22px auto 14px;width:fit-content;max-width:100%;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);padding:6px;border-radius:50px;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+.modes{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:22px auto 14px;width:fit-content;max-width:100%;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);padding:6px;border-radius:50px;box-shadow:0 8px 24px rgba(0,0,0,0.15);scroll-margin-top:10px;}
 .mode-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:1rem;padding:10px 24px;border:none;background:transparent;color:#fff;cursor:pointer;border-radius:40px;transition:all 0.2s ease;}
 .mode-btn.active{background:#fff;color:var(--bg1);box-shadow:0 4px 12px rgba(0,0,0,0.18);}
 html.dark .modes{background:rgba(0,0,0,0.35);}
@@ -216,7 +216,7 @@ html.dark .score-big{color:#8b7eff;}
     <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
     <a href="/globe.html">🌍 Globe interactif</a>
     <a href="/mers.html">🌊 Mers &amp; Océans</a>
-    <a href="/monuments.html" class="active">🏛 Monuments du Monde</a>
+    <a href="/monuments.html" class="active"><img src="logo.svg" alt="" style="width:18px;height:18px;vertical-align:middle;border-radius:3px;"> Monuments du Monde</a>
     <div class="menu-divider"></div>
     <div class="menu-divider"></div>
     <div class="menu-lang" id="menuLang">
@@ -232,7 +232,7 @@ html.dark .score-big{color:#8b7eff;}
 <div class="wrap">
   <header>
     <a class="eyebrow" href="/">Atlas de poche</a>
-    <h1>🏛️ Monuments du Monde</h1>
+    <h1><img class="logo" src="logo.svg" alt="" width="64" height="64"> Monuments du Monde</h1>
     <p class="sub">Sauras-tu identifier les monuments les plus emblématiques du monde ?</p>
   </header>
 
@@ -629,10 +629,8 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 // ==================== MODE SWITCH ====================
 function scrollToModesBar(){
   const modesEl = document.getElementById("modesBar");
-  if(modesEl) setTimeout(()=>{
-    const y = modesEl.getBoundingClientRect().top + window.scrollY - 10;
-    window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
-  }, 50);
+  if(!modesEl) return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>modesEl.scrollIntoView({behavior:"smooth",block:"start"})));
 }
 document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };

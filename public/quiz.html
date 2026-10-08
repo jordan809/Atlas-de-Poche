@@ -1901,10 +1901,11 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
   btn.onclick=()=>{
     const mode = btn.dataset.mode;
     enterMode(mode);
-    if(mode === "pvp"){
-      const pvpEl = document.getElementById("pvp");
-      if(pvpEl) setTimeout(()=>pvpEl.scrollIntoView({behavior:"smooth", block:"start"}), 50);
-    }
+    const modesEl = document.querySelector(".modes");
+    if(modesEl) setTimeout(()=>{
+      const y = modesEl.getBoundingClientRect().top + window.scrollY - 70;
+      window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
+    }, 50);
   };
 });
 

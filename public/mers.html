@@ -857,11 +857,9 @@ function switchTab(tab){
   document.getElementById("revFilterBar").style.display = tab==="rev" ? "flex" : "none";
   document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
   document.getElementById("revNote").style.display = tab==="rev" ? "block" : "none";
-  if(tab==="game"){
-    startGame();
-    // Descend jusqu'au jeu (une fois l'onglet affiché)
-    requestAnimationFrame(()=>scrollToEl(document.getElementById("gameSection"), 70));
-  }
+  if(tab==="game") startGame();
+  const tabsEl = document.querySelector(".tabs");
+  if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 70), 50);
 }
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);

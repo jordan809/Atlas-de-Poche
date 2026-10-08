@@ -220,7 +220,7 @@ html.dark .score-big{color:#8b7eff;}
   <header>
     <a class="eyebrow" href="/">Atlas de poche</a>
     <h1>🏛️ Monuments du Monde</h1>
-    <p class="sub">Reconnais les monuments les plus célèbres de la planète</p>
+    <p class="sub">Sauras-tu identifier les monuments les plus emblématiques du monde ?</p>
   </header>
 
   <div class="modes" id="modesBar">
@@ -587,9 +587,16 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 });
 
 // ==================== MODE SWITCH ====================
-document.getElementById("modeReviseBtn").onclick=()=>enterMode("revision");
-document.getElementById("modeQuizBtn").onclick=()=>enterMode("quiz");
-document.getElementById("modeClavierBtn").onclick=()=>enterMode("clavier");
+function scrollToModesBar(){
+  const modesEl = document.getElementById("modesBar");
+  if(modesEl) setTimeout(()=>{
+    const y = modesEl.getBoundingClientRect().top + window.scrollY - 70;
+    window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
+  }, 50);
+}
+document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
+document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };
+document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); scrollToModesBar(); };
 
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);

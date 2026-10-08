@@ -221,6 +221,7 @@
 
   async function exchange(code) {
     var verifier = sGet('v') || '';
+    console.log('[SP] exchange start, verifier:', verifier ? 'ok' : 'MISSING');
     try {
       var r = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
@@ -232,15 +233,16 @@
       });
       if (!r.ok) {
         var err = await r.json().catch(function(){ return {}; });
-        // invalid_grant = code déjà utilisé. Si un autre onglet a déjà storé les tokens, pas de souci
+        console.error('[SP] exchange FAIL', r.status, JSON.stringify(err));
         if ((err.error === 'invalid_grant' || r.status === 400) && !getTokens()) sDel('tok');
         return false;
       }
       var d = await r.json();
       sSet('tok', Object.assign({}, d, { ts: Date.now() }));
       sDel('v');
+      console.log('[SP] exchange OK, token stored');
       return true;
-    } catch { return false; }
+    } catch(ex) { console.error('[SP] exchange exception', ex); return false; }
   }
 
   function logout() {
@@ -262,7 +264,9 @@
   }
 
   async function initPlayer() {
+    console.log('[SP] initPlayer called');
     var token = await getToken();
+    console.log('[SP] getToken:', token ? 'ok' : 'NULL');
     if (!token) { updateUI(false); return; }
     updateUI(true);
 
@@ -393,7 +397,9 @@
   document.addEventListener('DOMContentLoaded', async function() {
     injectCSS();
     buildUI();
+    console.log('[SP] boot, pending:', !!localStorage.getItem('sp_pending_code'), 'tokens:', !!getTokens());
     var exchanged = await checkPendingCode();
+    console.log('[SP] exchanged:', exchanged, 'tokens:', !!getTokens());
     if (exchanged || getTokens()) await initPlayer();
   });
 

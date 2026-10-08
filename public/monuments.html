@@ -126,7 +126,18 @@ html.dark .opt.wrong{background:var(--bad);border-color:var(--bad);color:#fff;}
 .progress-text{text-align:center;color:#fff;font-weight:700;font-size:0.85rem;margin-top:6px;opacity:0.95;}
 html.dark .progress-text{color:#e8e2ff;}
 
-/* CLAVIER */
+/* TYPE (clavier frappe libre) */
+#typeSection{max-width:560px;margin:0 auto;}
+.type-input-wrap{width:100%;margin-bottom:6px;}
+.type-input{width:100%;padding:13px 16px;border:2.5px solid #ece9ff;background:#f7f6ff;color:var(--ink);border-radius:14px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;outline:none;transition:border-color 0.15s ease;text-align:center;}
+.type-input:focus{border-color:var(--bg1);}
+.type-input.correct{border-color:var(--good);background:#e7faf0;}
+.type-input.wrong{border-color:var(--bad);background:#fdeaee;}
+html.dark .type-input{background:#2a2545;border-color:#3d3568;color:#e8e2ff;}
+html.dark .type-input.correct{background:#1a3028;border-color:var(--good);}
+html.dark .type-input.wrong{background:#2e1820;border-color:var(--bad);}
+
+/* TABLEAU (anciennement Clavier) */
 #clavierSection{max-width:960px;margin:0 auto;}
 .tbl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
 .tbl-card{background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 24px rgba(0,0,0,0.2);}
@@ -228,7 +239,8 @@ html.dark .score-big{color:#8b7eff;}
   <div class="modes" id="modesBar">
     <button class="mode-btn active" id="modeReviseBtn">📖 Révision</button>
     <button class="mode-btn" id="modeQuizBtn">🎯 Quiz</button>
-    <button class="mode-btn" id="modeClavierBtn">⌨️ Clavier</button>
+    <button class="mode-btn" id="modeTypeBtn">⌨️ Clavier</button>
+    <button class="mode-btn" id="modeClavierBtn">📋 Tableau</button>
   </div>
 
   <div class="options-bar" id="autoBar">
@@ -270,6 +282,33 @@ html.dark .score-big{color:#8b7eff;}
   </div>
   <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
   <div class="progress-text" id="progressText">Réussite : —</div>
+</section>
+
+<!-- CLAVIER (frappe libre, une question à la fois) -->
+<section id="typeSection" class="hidden">
+  <div class="score-bar">
+    <span id="typeScoreDisplay">✅ 0</span>
+    <span id="typeStreakDisplay">🔥 0</span>
+    <span id="typeTotalDisplay">📍 1 / 20</span>
+  </div>
+  <div class="q-card">
+    <div class="q-photo-wrap">
+      <img class="q-photo" id="typePhoto" src="" alt="">
+      <span class="q-emoji-fb" id="typeEmojiFb">🏛</span>
+    </div>
+    <div class="q-card-body">
+      <div class="q-prompt">Tape le nom de ce monument</div>
+      <button class="hint-prog-btn" id="typeHintBtn">💡 Indice 1</button>
+      <div class="hint-text" id="typeHintText"></div>
+      <div class="type-input-wrap">
+        <input class="type-input" id="typeInput" type="text" placeholder="Nom du monument…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="feedback" id="typeFeedback"></div>
+      <button class="next-btn" id="typeNextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
+    </div>
+  </div>
+  <div class="progress-rail"><div class="progress-fill" id="typeProgressFill"></div></div>
+  <div class="progress-text" id="typeProgressText">Réussite : —</div>
 </section>
 
 <!-- RÉVISION -->
@@ -595,6 +634,7 @@ function scrollToModesBar(){
 }
 document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };
+document.getElementById("modeTypeBtn").onclick=()=>{ enterMode("type"); scrollToModesBar(); };
 document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); scrollToModesBar(); };
 
 function scrollToEl(el, offset){
@@ -606,11 +646,13 @@ function enterMode(mode){
   activeMode=mode;
   document.getElementById("modeReviseBtn").classList.toggle("active",mode==="revision");
   document.getElementById("modeQuizBtn").classList.toggle("active",mode==="quiz");
+  document.getElementById("modeTypeBtn").classList.toggle("active",mode==="type");
   document.getElementById("modeClavierBtn").classList.toggle("active",mode==="clavier");
   document.getElementById("quizSection").classList.toggle("hidden",mode!=="quiz");
+  document.getElementById("typeSection").classList.toggle("hidden",mode!=="type");
   document.getElementById("clavierSection").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("reviseSection").classList.toggle("hidden",mode!=="revision");
-  document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz");
+  document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz"&&mode!=="type");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
   // Réinitialiser auto-avance à chaque changement de mode
   clearTimeout(autoAdvTimer);
@@ -623,6 +665,7 @@ function enterMode(mode){
   gHints[0]=gHints[1]=gHints[2]=false;
   if(mode==="revision") renderRevision();
   else if(mode==="quiz"){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); }
+  else if(mode==="type"){ typeScore=0;typeStreak=0;typeTotal=0;typeQuestionNum=0;typeRefillBag();typeNextQuestion(); }
   else renderClavier();
 }
 
@@ -770,6 +813,90 @@ document.getElementById("tblCheckBtnMain").onclick=()=>{
   overlay.querySelector("#ovClose").onclick=()=>overlay.remove();
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
 };
+
+// ==================== TYPE (CLAVIER FRAPPE LIBRE) ====================
+let typeBag=[], typeSeriesTotal=0, typeQuestionNum=0;
+let typeScore=0, typeStreak=0, typeTotal=0;
+let typeCurrentItem=null, typeAnswered=false, typeHintLevel=0;
+
+function typeRefillBag(){ typeBag=shuffle(filteredPool()); typeSeriesTotal=typeBag.length; typeQuestionNum=0; }
+
+function typeUpdateScore(){
+  const pct=typeTotal>0?Math.round(typeScore/typeTotal*100):0;
+  document.getElementById("typeScoreDisplay").textContent="✅ "+typeScore;
+  document.getElementById("typeStreakDisplay").textContent="🔥 "+typeStreak;
+  document.getElementById("typeTotalDisplay").textContent="📍 "+typeQuestionNum+" / "+typeSeriesTotal;
+  document.getElementById("typeProgressFill").style.width=pct+"%";
+  document.getElementById("typeProgressText").textContent=typeTotal>0?"Réussite : "+pct+"%":"Réussite : —";
+}
+
+function typeNextQuestion(){
+  clearTimeout(autoAdvTimer);
+  if(typeBag.length===0) typeRefillBag();
+  const q=typeBag.shift();
+  typeCurrentItem=q; typeAnswered=false; typeHintLevel=0;
+  typeQuestionNum++;
+  const hbtn=document.getElementById("typeHintBtn");
+  hbtn.textContent="💡 Indice 1"; hbtn.disabled=false;
+  document.getElementById("typeHintText").textContent="";
+  document.getElementById("typeFeedback").textContent="";
+  document.getElementById("typeFeedback").className="feedback";
+  document.getElementById("typeNextBtn").classList.remove("show");
+  const inp=document.getElementById("typeInput");
+  inp.value=""; inp.className="type-input"; inp.disabled=false;
+  setPhoto(document.getElementById("typePhoto"),document.getElementById("typeEmojiFb"),q);
+  typeUpdateScore();
+  setTimeout(()=>inp.focus(),100);
+}
+
+function typeSubmit(){
+  if(typeAnswered) return;
+  const inp=document.getElementById("typeInput");
+  const val=inp.value.trim();
+  if(!val) return;
+  typeAnswered=true; typeTotal++;
+  const correct=norm(val)===norm(typeCurrentItem.name);
+  inp.disabled=true;
+  if(correct){
+    inp.classList.add("correct");
+    document.getElementById("typeFeedback").textContent="✅ Bravo !";
+    document.getElementById("typeFeedback").className="feedback good";
+    typeScore++; typeStreak++;
+    soundCorrect();
+    if(autoAdvanceOn){ autoAdvTimer=setTimeout(()=>typeNextQuestion(),800); }
+    else { document.getElementById("typeNextBtn").classList.add("show"); }
+  } else {
+    inp.classList.add("wrong");
+    document.getElementById("typeFeedback").innerHTML="❌ C'était : <strong>"+typeCurrentItem.name+"</strong>";
+    document.getElementById("typeFeedback").className="feedback bad";
+    typeStreak=0;
+    soundWrong();
+    document.getElementById("typeNextBtn").classList.add("show");
+  }
+  typeUpdateScore();
+}
+
+document.getElementById("typeHintBtn").addEventListener("click",()=>{
+  if(typeAnswered||!typeCurrentItem) return;
+  typeHintLevel=Math.min(typeHintLevel+1,3);
+  const m=typeCurrentItem, parts=[];
+  if(typeHintLevel>=1) parts.push("🌍 "+m.continent);
+  if(typeHintLevel>=2) parts.push("🗺️ "+m.country);
+  if(typeHintLevel>=3) parts.push("🏙️ "+m.city);
+  document.getElementById("typeHintText").textContent=parts.join("  ·  ");
+  const hbtn=document.getElementById("typeHintBtn");
+  if(typeHintLevel===1) hbtn.textContent="💡 Indice 2";
+  else if(typeHintLevel===2) hbtn.textContent="💡 Indice 3";
+  else { hbtn.disabled=true; hbtn.textContent="✅ Tous les indices"; }
+});
+
+document.getElementById("typeInput").addEventListener("keydown",e=>{
+  if(e.key!=="Enter") return;
+  e.preventDefault();
+  if(!typeAnswered) typeSubmit(); else typeNextQuestion();
+});
+
+document.getElementById("typeNextBtn").addEventListener("click",typeNextQuestion);
 
 // ==================== SON & MODE NUIT ====================
 let soundOn = localStorage.getItem('soundOn') !== '0';

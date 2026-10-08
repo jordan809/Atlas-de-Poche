@@ -115,9 +115,9 @@
   .next-btn { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem; margin-top: 12px; padding: 13px 38px; background: linear-gradient(135deg, var(--bg1), var(--bg2)); color: #fff; border: none; border-radius: 40px; cursor: pointer; box-shadow: 0 8px 20px rgba(106,92,255,0.4); transition: opacity 0.15s ease, transform 0.15s ease; opacity: 0; pointer-events: none; }
   .next-btn.show { opacity: 1; pointer-events: auto; }
   .next-btn:hover { transform: translateY(-2px) scale(1.03); }
-  .hint-btn { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem; margin: 8px auto 4px; display: block; padding: 7px 18px; background: rgba(255,255,255,0.7); color: var(--ink); border: 1.5px solid rgba(106,92,255,0.25); border-radius: 30px; cursor: pointer; transition: all 0.15s ease; }
-  .hint-btn:hover { background: rgba(106,92,255,0.12); border-color: var(--bg1); }
-  .hint-btn.active { background: rgba(106,92,255,0.15); border-color: var(--bg1); color: var(--bg1); }
+  .q-continent.hidden-hint { visibility: hidden; }
+  .opt { -webkit-tap-highlight-color: transparent; }
+  .opt:focus { outline: none; }
 
   .progress-rail { height: 10px; background: rgba(255,255,255,0.4); border-radius: 10px; margin-top: 24px; overflow: hidden; }
   .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffe14d, #1fae6a); border-radius: 10px; transition: width 0.45s ease; }
@@ -211,9 +211,6 @@
   html.dark .mode-btn.active { background: #e8e2ff; color: #1a1530; }
   html.dark .toggle { background: rgba(30,27,46,0.95); color: #e8e2ff; }
   html.dark .dark-toggle, html.dark .sound-toggle { background: rgba(0,0,0,0.35); }
-  html.dark .hint-btn { background: rgba(255,255,255,0.1); color: #e8e2ff; border-color: rgba(139,126,255,0.3); }
-  html.dark .hint-btn:hover { background: rgba(139,126,255,0.2); border-color: #8b7eff; }
-  html.dark .hint-btn.active { background: rgba(139,126,255,0.25); border-color: #8b7eff; color: #c8beff; }
 
   .menu { position: fixed; top: 14px; left: 16px; z-index: 510; }
   .menu-btn { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.95rem; padding: 0 20px; height: 42px; border: none; border-radius: 30px; cursor: pointer; background: rgba(255,255,255,0.25); backdrop-filter: blur(6px); color: #fff; letter-spacing: 0.03em; box-shadow: 0 4px 14px rgba(0,0,0,0.2); transition: transform 0.2s ease, background 0.2s ease; display: flex; align-items: center; gap: 8px; }
@@ -375,6 +372,8 @@
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la préfecture</button>
+    <button class="toggle" id="numToggle">🔢 Deviner le numéro</button>
+    <button class="toggle hidden" id="hintBtn">💡 Aide</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
   </div>
 
@@ -404,7 +403,6 @@
       <div class="q-badge-wrap" id="qBadgeWrap">🏳️</div>
       <div class="q-country" id="qCountry">—</div>
       <div class="q-continent" id="qContinent"></div>
-      <button class="hint-btn hidden" id="hintBtn">💡 Aide : voir la région</button>
       <div class="options" id="options"></div>
       <div class="type-row hidden" id="typeRow">
         <input class="type-input" id="typeInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tape ta réponse…">
@@ -825,20 +823,19 @@ function nextQuestion(){
 
   const cont=document.getElementById("qContinent");
   cont.textContent=q.k; cont.style.setProperty("--accent", COLORS[q.k]);
+  cont.classList.remove("hidden");
 
   const hintBtn=document.getElementById("hintBtn");
   if(direction==="cap"){
-    cont.classList.add("hidden");
-    hintBtn.classList.remove("hidden","active");
-    hintBtn.textContent="💡 Aide : voir la région";
-    hintBtn.onclick=()=>{
-      const hidden=cont.classList.toggle("hidden");
-      hintBtn.classList.toggle("active",!hidden);
-      hintBtn.textContent=hidden?"💡 Aide : voir la région":"💡 Masquer la région";
-    };
+    cont.classList.add("hidden-hint");
+    hintBtn.classList.remove("active");
+    hintBtn.textContent="💡 Aide";
   } else {
-    cont.classList.remove("hidden");
-    hintBtn.classList.add("hidden");
+    cont.classList.remove("hidden-hint");
+  }
+
+  if(document.activeElement && document.activeElement !== document.body){
+    document.activeElement.blur();
   }
 
   const isType = (activeMode==="type");
@@ -1053,6 +1050,12 @@ function enterMode(mode){
   stopTimer();
   activeFilter = "Tous";
   filtersEl.classList.remove('locked');
+  // Réinitialiser direction et boutons de direction
+  direction = dirState; // revenir à cap ou country selon l'état du dirToggle
+  const nt = document.getElementById("numToggle");
+  if(nt) nt.classList.remove("active");
+  const dt = document.getElementById("dirToggle");
+  if(dt) dt.textContent = direction === "cap" ? "🏛️ Deviner la préfecture" : "📍 Deviner le département";
   document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === "Tous"));
   document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active", b.dataset.mode===mode));
   const isStudy = (mode==="study");
@@ -1063,6 +1066,7 @@ function enterMode(mode){
   document.getElementById("play").classList.toggle("hidden", isStudy || showTypeTable || isMap);
   document.getElementById("typeTable").classList.toggle("hidden", !showTypeTable);
   document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isMap);
+  updateHintVisibility();
   document.getElementById("filters").classList.toggle("hidden", isMap);
   document.querySelector("header").classList.toggle("hidden", isMap);
   document.querySelector(".intro").classList.toggle("hidden", isMap);
@@ -1088,14 +1092,49 @@ document.querySelectorAll(".mode-btn").forEach(btn=>{
 });
 
 // ---------- Options toolbar ----------
-const dirToggle=document.getElementById("dirToggle");
-dirToggle.onclick=()=>{
-  if(direction==="cap") direction="country";
-  else if(direction==="country") direction="num";
-  else direction="cap";
-  dirToggle.textContent = direction==="cap" ? "🏛️ Deviner la préfecture" : direction==="country" ? "📍 Deviner le département" : "🔢 Deviner le numéro";
-  if(activeMode==="type" && typeTableMode) renderTypeTable(true);
-  else if(activeMode!=="study") startPlay();
+let dirState = "cap"; // "cap" | "country" (état du dirToggle, hors mode num)
+
+function updateHintVisibility(){
+  const hintBtn = document.getElementById("hintBtn");
+  if(!hintBtn) return;
+  hintBtn.classList.toggle("hidden", direction !== "cap");
+  if(direction !== "cap"){ hintBtn.classList.remove("active"); hintBtn.textContent = "💡 Aide"; }
+}
+
+const dirToggle = document.getElementById("dirToggle");
+dirToggle.onclick = () => {
+  // Désactiver le mode numéro si actif
+  document.getElementById("numToggle").classList.remove("active");
+  dirState = dirState === "cap" ? "country" : "cap";
+  direction = dirState;
+  dirToggle.textContent = direction === "cap" ? "🏛️ Deviner la préfecture" : "📍 Deviner le département";
+  updateHintVisibility();
+  if(activeMode === "type" && typeTableMode) renderTypeTable(true);
+  else if(activeMode !== "study") startPlay();
+};
+
+const numToggle = document.getElementById("numToggle");
+numToggle.onclick = () => {
+  const wasActive = numToggle.classList.toggle("active");
+  direction = wasActive ? "num" : dirState;
+  updateHintVisibility();
+  if(activeMode === "type" && typeTableMode) renderTypeTable(true);
+  else if(activeMode !== "study") startPlay();
+};
+
+const hintBtn = document.getElementById("hintBtn");
+hintBtn.onclick = () => {
+  hintBtn.classList.toggle("active");
+  const isActive = hintBtn.classList.contains("active");
+  const cont = document.getElementById("qContinent");
+  if(isActive){
+    cont.classList.remove("hidden-hint");
+    hintBtn.textContent = "💡 " + (currentItem ? currentItem.k : "Aide");
+  } else {
+    if(!answered){ nextQuestion(); return; }
+    cont.classList.add("hidden-hint");
+    hintBtn.textContent = "💡 Aide";
+  }
 };
 const tableToggle=document.getElementById("tableToggle");
 tableToggle.onclick=()=>{

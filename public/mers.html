@@ -50,7 +50,10 @@
   a.eyebrow:hover{background:rgba(255,255,255,0.38);transform:translateY(-1px);}
   h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(2.2rem,6.4vw,3.8rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18);}
   .sub{margin-top:10px;font-size:1.05rem;font-weight:600;opacity:0.95;}
-  .rev-note{margin:10px auto 0;max-width:560px;font-size:0.85rem;font-weight:600;line-height:1.45;opacity:0.9;}
+  .rev-note{display:none;}
+  .intro{max-width:680px;margin:-8px auto 24px;text-align:center;color:#fff;font-size:1rem;font-weight:600;line-height:1.6;text-shadow:0 2px 8px rgba(0,0,0,0.18);}
+  .intro strong{font-weight:800;}
+  footer{text-align:center;margin-top:42px;color:#fff;font-weight:600;font-size:0.85rem;opacity:0.9;}
   .vocab-section-title{scroll-margin-top:72px;}
 
   /* Onglets */
@@ -218,9 +221,16 @@
   <header>
     <a class="eyebrow" href="/">Atlas de poche</a>
     <h1>🌊 Mers &amp; Océans</h1>
-    <p class="sub">Explore et mémorise les mers, océans, golfes et détroits de la planète</p>
-    <p class="rev-note" id="revNote">🌊 Plus de 150 étendues d'eau répertoriées à travers tous les océans du monde — et la liste s'enrichit régulièrement !</p>
+    <p class="sub">Révise, teste-toi et explore les eaux du monde</p>
   </header>
+
+  <p class="intro">
+    Bienvenue sur <strong>Atlas de poche</strong> ! Découvre plus de <strong>150 mers, océans, golfes et détroits</strong>
+    répartis sur les cinq océans de la planète, puis entraîne-toi grâce aux modes
+    <strong>révision</strong>, <strong>jeu</strong> et <strong>vocabulaire</strong> !
+  </p>
+
+  <p class="rev-note" id="revNote" style="display:none;"></p>
   <div class="tabs">
     <button class="tab-btn active" id="tabRev" onclick="switchTab('rev')">📖 Révision</button>
     <button class="tab-btn" id="tabGame" onclick="switchTab('game')">🎮 Jeu</button>
@@ -276,6 +286,8 @@
     <div class="filter-bar" id="vocabNav"></div>
     <div id="vocabContent"></div>
   </section>
+
+  <footer>Atlas de poche — explore les eaux du monde</footer>
 </div>
 
 <script>

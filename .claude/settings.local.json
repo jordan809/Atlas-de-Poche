@@ -29,7 +29,8 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "Bash(git fetch *)",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(grep -n \"footer\\\\|</div>\\\\s*$\\\\|</body>\" \"C:\\\\Users\\\\amole\\\\Desktop\\\\Atlas-de-Poche\\\\public\\\\mers.html\")"
     ]
   },
   "hooks": {

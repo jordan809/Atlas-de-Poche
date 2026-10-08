@@ -240,10 +240,10 @@ html.dark .score-big{color:#8b7eff;}
     <button class="mode-btn active" id="modeReviseBtn">📖 Révision</button>
     <button class="mode-btn" id="modeQuizBtn">🎯 Quiz</button>
     <button class="mode-btn" id="modeTypeBtn">⌨️ Clavier</button>
-    <button class="mode-btn" id="modeClavierBtn">📋 Tableau</button>
   </div>
 
   <div class="options-bar" id="autoBar">
+    <button class="toggle hidden" id="tableauToggle">📋 Mode tableau</button>
     <button class="toggle active" id="autoAdvanceBtn">⚡ Auto-avance</button>
   </div>
   <div class="filter-bar" id="filterBar">
@@ -635,7 +635,10 @@ function scrollToModesBar(){
 document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };
 document.getElementById("modeTypeBtn").onclick=()=>{ enterMode("type"); scrollToModesBar(); };
-document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); scrollToModesBar(); };
+document.getElementById("tableauToggle").onclick=()=>{
+  if(activeMode==="type") enterMode("clavier");
+  else enterMode("type");
+};
 
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);
@@ -646,13 +649,14 @@ function enterMode(mode){
   activeMode=mode;
   document.getElementById("modeReviseBtn").classList.toggle("active",mode==="revision");
   document.getElementById("modeQuizBtn").classList.toggle("active",mode==="quiz");
-  document.getElementById("modeTypeBtn").classList.toggle("active",mode==="type");
-  document.getElementById("modeClavierBtn").classList.toggle("active",mode==="clavier");
+  document.getElementById("modeTypeBtn").classList.toggle("active",mode==="type"||mode==="clavier");
   document.getElementById("quizSection").classList.toggle("hidden",mode!=="quiz");
   document.getElementById("typeSection").classList.toggle("hidden",mode!=="type");
   document.getElementById("clavierSection").classList.toggle("hidden",mode!=="clavier");
   document.getElementById("reviseSection").classList.toggle("hidden",mode!=="revision");
-  document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz"&&mode!=="type");
+  document.getElementById("autoBar").classList.toggle("hidden",mode!=="quiz"&&mode!=="type"&&mode!=="clavier");
+  document.getElementById("tableauToggle").classList.toggle("hidden",mode!=="type"&&mode!=="clavier");
+  document.getElementById("tableauToggle").classList.toggle("active",mode==="clavier");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
   // Réinitialiser auto-avance à chaque changement de mode
   clearTimeout(autoAdvTimer);
@@ -666,7 +670,7 @@ function enterMode(mode){
   if(mode==="revision") renderRevision();
   else if(mode==="quiz"){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); }
   else if(mode==="type"){ typeScore=0;typeStreak=0;typeTotal=0;typeQuestionNum=0;typeRefillBag();typeNextQuestion(); }
-  else renderClavier();
+  else if(mode==="clavier") renderClavier();
 }
 
 // ==================== RÉVISION ====================

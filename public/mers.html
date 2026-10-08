@@ -77,7 +77,7 @@
   .ocean-title{margin-bottom:8px;}
 
   /* Groupe parent (sous-mers regroupées sous leur mer mère) */
-  .parent-group{margin-bottom:18px;}
+  .parent-group{margin-bottom:18px;margin-top:16px;}
   .parent-title{
     display:inline-flex;align-items:center;gap:7px;
     font-family:'Baloo 2',cursive;font-weight:700;font-size:0.88rem;
@@ -855,8 +855,14 @@ function switchTab(tab){
   document.getElementById("vocabSection").classList.toggle("on",tab==="vocab");
   // Masquer les filtres en mode vocab
   document.getElementById("revFilterBar").style.display = tab==="rev" ? "flex" : "none";
-  document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
   document.getElementById("revNote").style.display = tab==="rev" ? "block" : "none";
+  if(tab==="rev"){
+    revFilter="Tous"; revSubFilter="Tous";
+    document.querySelectorAll("#revFilterBar .filter-chip").forEach(b=>b.classList.toggle("active",b.textContent.includes("Tous")));
+    document.getElementById("revSubFilterBar").classList.remove("visible");
+    renderRevision();
+  }
+  document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
   if(tab==="game") startGame();
   const tabsEl = document.querySelector(".tabs");
   if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 10), 50);

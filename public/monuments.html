@@ -135,12 +135,14 @@ html.dark .tbl-card{background:#1e1b2e;}
 .tbl-photo{width:100%;height:100%;object-fit:cover;display:block;}
 .tbl-emoji-fb{font-size:3.5rem;display:none;}
 .tbl-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;}
-.tbl-hint-display{font-size:0.78rem;color:var(--ink-soft);font-weight:700;text-align:center;min-height:1em;line-height:1.5;}
+.tbl-hint-display{font-size:0.78rem;color:var(--ink-soft);font-weight:700;text-align:center;min-height:1em;line-height:1.6;}
+.tbl-hint-display:not(:empty){background:#f0edff;border-radius:10px;padding:4px 10px;}
 html.dark .tbl-hint-display{color:#a89fd8;}
-.tbl-hint-prog{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.75rem;padding:5px 14px;border:2px solid #ece9ff;background:#f7f6ff;color:var(--ink-soft);border-radius:40px;cursor:pointer;transition:all 0.15s ease;}
-.tbl-hint-prog:hover:not(:disabled){border-color:var(--bg1);color:var(--bg1);}
-.tbl-hint-prog:disabled{opacity:0.5;cursor:default;}
-html.dark .tbl-hint-prog{background:#2a2545;border-color:#3d3568;color:#c9c0f0;}
+html.dark .tbl-hint-display:not(:empty){background:#2a2545;}
+.tbl-hint-prog{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.78rem;padding:6px 16px;border:none;background:linear-gradient(135deg,#f0edff,#e8e2ff);color:var(--bg1);border-radius:40px;cursor:pointer;transition:all 0.15s ease;box-shadow:0 2px 8px rgba(106,92,255,0.15);}
+.tbl-hint-prog:hover:not(:disabled){background:linear-gradient(135deg,#e8e2ff,#d6ceff);transform:translateY(-1px);}
+.tbl-hint-prog:disabled{opacity:0.45;cursor:default;transform:none;}
+html.dark .tbl-hint-prog{background:linear-gradient(135deg,#2a2545,#332960);color:#c9c0f0;}
 .tbl-input{width:100%;padding:9px 12px;border:2px solid #ece9ff;background:#f7f6ff;color:var(--ink);border-radius:10px;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:700;outline:none;text-align:center;transition:border-color 0.15s ease;}
 .tbl-input:focus{border-color:var(--bg1);}
 .tbl-input.correct{border-color:var(--good);background:#e7faf0;}
@@ -234,7 +236,7 @@ html.dark .score-big{color:#8b7eff;}
   </div>
   <div class="filter-bar" id="filterBar">
     <button class="filter-btn active" data-cont="">🌐 Tous</button>
-    <button class="filter-btn" data-cont="Europe">🇪🇺 Europe</button>
+    <button class="filter-btn" data-cont="Europe">🏰 Europe</button>
     <button class="filter-btn" data-cont="Asie">🌏 Asie</button>
     <button class="filter-btn" data-cont="Afrique">🌍 Afrique</button>
     <button class="filter-btn" data-cont="Amérique du Nord">🌎 Amér. Nord</button>
@@ -620,6 +622,12 @@ function enterMode(mode){
   clearTimeout(autoAdvTimer);
   autoAdvanceOn=true;
   document.getElementById("autoAdvanceBtn").classList.add("active");
+  // Réinitialiser filtre continent
+  selectedContinent="";
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.toggle("active",b.dataset.cont===""));
+  // Réinitialiser aides clavier
+  gHints[0]=gHints[1]=gHints[2]=false;
+  ["tblHint1Btn","tblHint2Btn","tblHint3Btn"].forEach(id=>document.getElementById(id).classList.remove("active"));
   if(mode==="revision") renderRevision();
   else if(mode==="quiz"){ score=0;streak=0;total=0;questionNum=0;refillBag();nextQuestion(); }
   else renderClavier();

@@ -121,6 +121,10 @@ html.dark .opt.wrong{background:var(--bad);border-color:var(--bad);color:#fff;}
 .next-btn{display:none;font-family:'Baloo 2',cursive;font-weight:700;font-size:1.05rem;margin:10px auto 0;padding:13px 38px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:40px;cursor:pointer;box-shadow:0 8px 20px rgba(106,92,255,0.4);transition:transform 0.15s ease;}
 .next-btn.show{display:block;}
 .next-btn:hover{transform:translateY(-2px) scale(1.03);}
+.progress-rail{height:10px;background:rgba(255,255,255,0.4);border-radius:10px;margin-top:20px;overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#ffe14d,#1fae6a);border-radius:10px;transition:width 0.45s ease;}
+.progress-text{text-align:center;color:#fff;font-weight:700;font-size:0.85rem;margin-top:6px;opacity:0.95;}
+html.dark .progress-text{color:#e8e2ff;}
 
 /* CLAVIER */
 #clavierSection{max-width:960px;margin:0 auto;}
@@ -265,6 +269,8 @@ html.dark .score-big{color:#8b7eff;}
       <button class="next-btn" id="nextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
     </div>
   </div>
+  <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">Réussite : —</div>
 </section>
 
 <!-- RÉVISION -->
@@ -525,8 +531,8 @@ function chooseOpt(btn,correct){
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
   total++;
   updateScore();
-  if(autoAdvanceOn){
-    autoAdvTimer=setTimeout(()=>nextQuestion(), correct?800:2000);
+  if(autoAdvanceOn && correct){
+    autoAdvTimer=setTimeout(()=>nextQuestion(), 800);
   } else {
     document.getElementById("nextBtn").classList.add("show");
   }
@@ -536,6 +542,9 @@ function updateScore(){
   document.getElementById("scoreDisplay").textContent=`✅ ${score}`;
   document.getElementById("streakDisplay").textContent=`🔥 ${streak}`;
   document.getElementById("totalDisplay").textContent=`📍 ${questionNum} / ${seriesTotal}`;
+  const pct=total?Math.round((score/total)*100):0;
+  const pf=document.getElementById("progressFill"); if(pf) pf.style.width=pct+"%";
+  const pt=document.getElementById("progressText"); if(pt) pt.textContent=total?`Réussite : ${pct}% (${score}/${total})`:"Réussite : —";
 }
 
 // Progressive hint (quiz)
@@ -578,10 +587,9 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 });
 
 // ==================== MODE SWITCH ====================
-// Seul le bouton Quiz fait défiler la page (pour voir tout le jeu) ; Révision et Clavier ne font pas défiler
-document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); window.scrollTo({top:0,behavior:"smooth"}); };
-document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToEl(document.getElementById("quizSection"), 64); };
-document.getElementById("modeClavierBtn").onclick=()=>{ enterMode("clavier"); window.scrollTo({top:0,behavior:"smooth"}); };
+document.getElementById("modeReviseBtn").onclick=()=>enterMode("revision");
+document.getElementById("modeQuizBtn").onclick=()=>enterMode("quiz");
+document.getElementById("modeClavierBtn").onclick=()=>enterMode("clavier");
 
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);

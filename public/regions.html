@@ -372,7 +372,7 @@
 
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la préfecture</button>
-    <button class="toggle" id="numToggle">🔢 Deviner le numéro</button>
+    <button class="toggle" id="numToggle">🎲 Deviner le numéro</button>
     <button class="toggle hidden" id="hintBtn">💡 Aide</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
   </div>
@@ -812,7 +812,7 @@ function nextQuestion(){
     mainEl.textContent=q.c;
   } else if(direction==="num"){
     promptEl.textContent="Quel est le numéro du département…";
-    badgeWrap.innerHTML=`<span class="pin">🔢</span>`;
+    badgeWrap.innerHTML=`<span class="pin">🎲</span>`;
     mainEl.textContent=q.c;
   } else {
     promptEl.textContent="Quel département a pour préfecture…";
@@ -825,14 +825,10 @@ function nextQuestion(){
   cont.textContent=q.k; cont.style.setProperty("--accent", COLORS[q.k]);
   cont.classList.remove("hidden");
 
+  cont.classList.add("hidden-hint");
   const hintBtn=document.getElementById("hintBtn");
-  if(direction==="cap"){
-    cont.classList.add("hidden-hint");
-    hintBtn.classList.remove("active");
-    hintBtn.textContent="💡 Aide";
-  } else {
-    cont.classList.remove("hidden-hint");
-  }
+  hintBtn.classList.remove("active");
+  hintBtn.textContent="💡 Aide";
 
   if(document.activeElement && document.activeElement !== document.body){
     document.activeElement.blur();
@@ -1080,15 +1076,8 @@ function enterMode(mode){
   else { startPlay(); }
 }
 
-const PLAY_MODES = new Set(["quiz","type","timed"]);
 document.querySelectorAll(".mode-btn").forEach(btn=>{
-  btn.onclick=()=>{
-    enterMode(btn.dataset.mode);
-    if(PLAY_MODES.has(btn.dataset.mode)){
-      const ob = document.getElementById("optionsBar");
-      if(ob) setTimeout(()=>ob.scrollIntoView({behavior:"smooth", block:"start"}), 50);
-    }
-  };
+  btn.onclick=()=>enterMode(btn.dataset.mode);
 });
 
 // ---------- Options toolbar ----------
@@ -1097,8 +1086,8 @@ let dirState = "cap"; // "cap" | "country" (état du dirToggle, hors mode num)
 function updateHintVisibility(){
   const hintBtn = document.getElementById("hintBtn");
   if(!hintBtn) return;
-  hintBtn.classList.toggle("hidden", direction !== "cap");
-  if(direction !== "cap"){ hintBtn.classList.remove("active"); hintBtn.textContent = "💡 Aide"; }
+  hintBtn.classList.remove("active","hidden");
+  hintBtn.textContent = "💡 Aide";
 }
 
 const dirToggle = document.getElementById("dirToggle");

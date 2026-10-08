@@ -162,6 +162,7 @@
   .card {
     background: var(--card); border-radius: 18px; padding: 16px 18px;
     display: flex; align-items: center; gap: 14px;
+    min-height: 82px;
     box-shadow: 0 10px 24px rgba(0,0,0,0.13);
     border-left: 7px solid var(--accent, #ccc);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
@@ -1489,8 +1490,8 @@ function renderStudyCards(list){
     const card=document.createElement("div");
     card.className="card";
     card.style.setProperty("--accent", COLORS[d.k]);
-    card.style.animation=`cardIn 0.4s cubic-bezier(0.22,1,0.36,1) both`;
-    card.style.animationDelay=Math.min(i*18,600)+"ms";
+    card.style.animation=`cardIn 0.65s cubic-bezier(0.22,1,0.36,1) both`;
+    card.style.animationDelay=Math.min(i*28,900)+"ms";
     card.innerHTML=`<span class="flag">${flagImg(d.f)}</span>
       <div class="names"><div class="country">${d.c}</div>
       <div class="capital">${d.cap}</div></div>`;

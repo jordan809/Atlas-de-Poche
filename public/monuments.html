@@ -31,6 +31,8 @@ header{text-align:center;margin-bottom:26px;color:#fff;}
 .eyebrow{display:inline-block;background:rgba(255,255,255,0.22);backdrop-filter:blur(4px);letter-spacing:0.28em;text-transform:uppercase;font-size:0.72rem;font-weight:700;padding:6px 16px;border-radius:30px;margin-bottom:14px;color:#fff;text-decoration:none;cursor:pointer;transition:background 0.2s ease,transform 0.15s ease;}
 a.eyebrow:hover{background:rgba(255,255,255,0.38);transform:translateY(-1px);}
 h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(2.2rem,6.4vw,3.8rem);line-height:1;text-shadow:0 4px 20px rgba(0,0,0,0.18);}
+h1 .logo{height:0.95em;width:auto;vertical-align:-0.16em;margin-right:0.12em;filter:drop-shadow(0 6px 14px rgba(0,0,0,0.28));animation:float 3.4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
 .sub{margin-top:10px;font-size:1.05rem;font-weight:600;opacity:0.95;}
 
 /* Menu + boutons du haut (copie des autres pages) */
@@ -630,7 +632,11 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 function scrollToModesBar(){
   const modesEl = document.getElementById("modesBar");
   if(!modesEl) return;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>modesEl.scrollIntoView({behavior:"smooth",block:"start"})));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    let top=0, el=modesEl;
+    while(el){ top+=el.offsetTop; el=el.offsetParent; }
+    window.scrollTo({top:Math.max(0,top-10),behavior:"smooth"});
+  }));
 }
 document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };

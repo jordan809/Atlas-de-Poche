@@ -256,6 +256,8 @@ html.dark .score-big{color:#8b7eff;}
     <button class="filter-btn" data-cont="Océanie">🌊 Océanie</button>
   </div>
   <div class="options-bar">
+    <button class="toggle hidden" id="tblSameBtn">🔁 Même série</button>
+    <button class="toggle hidden" id="tblLastErrBtn">⚠️ Refaire mes erreurs</button>
     <button class="toggle hidden" id="tblRestartBtn">🎲 Nouvelle série</button>
   </div>
 
@@ -638,6 +640,7 @@ document.getElementById("modeTypeBtn").onclick=()=>{ enterMode("type"); scrollTo
 document.getElementById("tableauToggle").onclick=()=>{
   if(activeMode==="type") enterMode("clavier");
   else enterMode("type");
+  scrollToModesBar();
 };
 
 function scrollToEl(el, offset){
@@ -658,6 +661,8 @@ function enterMode(mode){
   document.getElementById("tableauToggle").classList.toggle("hidden",mode!=="type"&&mode!=="clavier");
   document.getElementById("tableauToggle").classList.toggle("active",mode==="clavier");
   document.getElementById("tblRestartBtn").classList.toggle("hidden",mode!=="clavier");
+  document.getElementById("tblSameBtn").classList.add("hidden");
+  document.getElementById("tblLastErrBtn").classList.add("hidden");
   // Réinitialiser auto-avance à chaque changement de mode
   clearTimeout(autoAdvTimer);
   autoAdvanceOn=true;
@@ -720,13 +725,16 @@ document.addEventListener("keydown",e=>{
 });
 
 // ==================== CLAVIER ====================
-let tblList=[];
+let tblList=[], lastTblList=[], lastTblErrors=[];
 
-function renderClavier(){
-  tblList=shuffle(filteredPool());
+function renderClavier(overrideList){
+  if(overrideList){ tblList=overrideList.slice(); }
+  else { tblList=shuffle(filteredPool()); lastTblList=tblList.slice(); }
   const grid=document.getElementById("tblGrid");
   grid.innerHTML="";
   document.getElementById("tblCheckBtnMain").classList.remove("hidden");
+  document.getElementById("tblSameBtn").classList.add("hidden");
+  document.getElementById("tblLastErrBtn").classList.add("hidden");
 
   tblList.forEach(m=>{
     const card=document.createElement("div");
@@ -785,9 +793,11 @@ function refreshCardHint(card){
 }
 
 document.getElementById("tblRestartBtn").onclick=()=>renderClavier();
+document.getElementById("tblSameBtn").onclick=()=>renderClavier(lastTblList);
+document.getElementById("tblLastErrBtn").onclick=()=>{ if(lastTblErrors.length>0) renderClavier(lastTblErrors); };
 
 document.getElementById("tblCheckBtnMain").onclick=()=>{
-  let correct=0,tot=0;
+  let correct=0,tot=0; const wrongItems=[];
   document.querySelectorAll("#tblGrid .tbl-card").forEach(card=>{
     const input=card.querySelector(".tbl-input");
     const m=card._item;
@@ -799,20 +809,32 @@ document.getElementById("tblCheckBtnMain").onclick=()=>{
     } else {
       input.classList.add("wrong");
       input.value=m.name;
+      wrongItems.push(m);
     }
   });
+  lastTblErrors=wrongItems.slice();
+  document.getElementById("tblCheckBtnMain").classList.add("hidden");
+  document.getElementById("tblSameBtn").classList.remove("hidden");
+  if(wrongItems.length>0) document.getElementById("tblLastErrBtn").textContent="⚠️ Refaire mes erreurs ("+wrongItems.length+")";
+  if(wrongItems.length>0) document.getElementById("tblLastErrBtn").classList.remove("hidden");
+
   const pct=tot?Math.round(correct/tot*100):0;
   const emoji=pct===100?"🏆":pct>=75?"🎉":pct>=50?"👍":"💪";
   const overlay=document.createElement("div");
   overlay.className="score-overlay";
+  const errBtn=wrongItems.length>0?`<button class="score-btn" id="ovErr">⚠️ Refaire mes erreurs (${wrongItems.length})</button>`:"";
   overlay.innerHTML=`<div class="score-modal">
     <div class="score-emoji">${emoji}</div>
     <div class="score-big">${correct} / ${tot}</div>
     <div class="score-pct">${pct}%</div>
+    ${errBtn}
+    <button class="score-btn" id="ovSame">🔁 Même série</button>
     <button class="score-btn" id="ovRestart">🎲 Nouvelle série</button>
     <button class="score-btn" style="margin-top:8px;background:rgba(0,0,0,0.07);color:#333;" id="ovClose">Voir mes réponses</button>
   </div>`;
   document.body.appendChild(overlay);
+  if(wrongItems.length>0) overlay.querySelector("#ovErr").onclick=()=>{overlay.remove();renderClavier(lastTblErrors);};
+  overlay.querySelector("#ovSame").onclick=()=>{overlay.remove();renderClavier(lastTblList);};
   overlay.querySelector("#ovRestart").onclick=()=>{overlay.remove();renderClavier();};
   overlay.querySelector("#ovClose").onclick=()=>overlay.remove();
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};

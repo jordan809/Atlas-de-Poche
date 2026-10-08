@@ -956,7 +956,7 @@
   <section id="typeTable" class="hidden">
     <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
       <button class="toggle" id="typeTableChronoBtn">🚀 Lancer le chrono</button>
-      <button class="toggle" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
+      <button class="toggle active" id="typeTableFlagPosToggle">🚩 Avec drapeau</button>
       <button class="toggle" id="typeTableLockPosBtn">📌 Position fixe</button>
       <button class="toggle" id="typeTableRestartBtn">🎲 Nouvelle série</button>
       <button class="toggle hidden" id="typeTableSameBtn">🔁 Même série</button>
@@ -2240,7 +2240,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
   const checkBtn = document.getElementById("typeTableCheckBtn");
   grid.innerHTML = "";
   // Mode Difficile : les noms de pays sont cachés (seul le drapeau reste), sans toucher aux réponses déjà saisies
-  if(hideName && !showTableFlag){ showTableFlag = true; document.getElementById("typeTableFlagPosToggle").textContent = T().flagShow; }
+  if(hideName && !showTableFlag){ showTableFlag = true; const _fp=document.getElementById("typeTableFlagPosToggle"); _fp.textContent=T().flagShow; _fp.classList.add("active"); }
   grid.classList.toggle("hide-names", hideName && direction==="cap");
   checkBtn.classList.remove("hidden");
   checkBtn.disabled = false;
@@ -2387,7 +2387,9 @@ document.getElementById("typeTableChronoBtn").onclick = () => {
 };
 document.getElementById("typeTableFlagPosToggle").onclick = () => {
   showTableFlag = !showTableFlag;
-  document.getElementById("typeTableFlagPosToggle").textContent = showTableFlag ? T().flagShow : T().flagHide;
+  const ftBtn = document.getElementById("typeTableFlagPosToggle");
+  ftBtn.textContent = showTableFlag ? T().flagShow : T().flagHide;
+  ftBtn.classList.toggle("active", showTableFlag);
   // Sans drapeau, le mode Difficile (noms cachés) ne laisserait aucun indice : on le désactive
   if(!showTableFlag && hideName){ hideName = false; document.getElementById("hideNameToggle").classList.remove("active"); }
   renderTypeTable(true);

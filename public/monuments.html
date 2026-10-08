@@ -631,12 +631,10 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
 // ==================== MODE SWITCH ====================
 function scrollToModesBar(){
   const modesEl = document.getElementById("modesBar");
-  if(!modesEl) return;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    let top=0, el=modesEl;
-    while(el){ top+=el.offsetTop; el=el.offsetParent; }
-    window.scrollTo({top:Math.max(0,top-10),behavior:"smooth"});
-  }));
+  if(modesEl) setTimeout(()=>{
+    const y = modesEl.getBoundingClientRect().top + window.scrollY - 10;
+    window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
+  }, 50);
 }
 document.getElementById("modeReviseBtn").onclick=()=>{ enterMode("revision"); scrollToModesBar(); };
 document.getElementById("modeQuizBtn").onclick=()=>{ enterMode("quiz"); scrollToModesBar(); };
@@ -876,7 +874,7 @@ function typeNextQuestion(){
   inp.value=""; inp.className="type-input"; inp.disabled=false;
   setPhoto(document.getElementById("typePhoto"),document.getElementById("typeEmojiFb"),q);
   typeUpdateScore();
-  setTimeout(()=>inp.focus(),100);
+  setTimeout(()=>inp.focus({preventScroll:true}),100);
 }
 
 function typeSubmit(){

@@ -1088,6 +1088,18 @@ function enterMode(mode){
 
 // ---------- Barre de modes : défilement automatique (même réglage sur toutes les pages) ----------
 // Après un clic sur un bouton de la barre, la page défile pour que la barre soit tout en haut de l'écran.
+// Si la barre y est déjà (on passe d'un mode à l'autre), la page ne bouge pas du tout.
+function modeBarPad(){
+  let pad = document.getElementById('modeBarPad');
+  if(!pad){ pad = document.createElement('div'); pad.id = 'modeBarPad'; pad.setAttribute('aria-hidden', 'true'); pad.style.pointerEvents = 'none'; document.body.appendChild(pad); }
+  return pad;
+}
+// À appeler AVANT de changer de mode : la page garde sa hauteur pendant le changement, donc elle ne saute pas
+function modeBarHold(){
+  const pad = modeBarPad();
+  pad.style.height = Math.max(pad.offsetHeight, window.scrollY + window.innerHeight) + 'px';
+}
+// À appeler APRÈS le changement de mode
 function scrollToModeBar(bar){
   if(!bar) return;
   let used = 10;
@@ -1097,21 +1109,34 @@ function scrollToModeBar(bar){
     used = (r.left < 130 || r.right > window.innerWidth - 120) ? 62 : 10;
     const target = Math.max(0, r.top + window.scrollY - used);
     // page trop courte pour atteindre cette position : on ajoute juste l'espace nécessaire en bas
-    let pad = document.getElementById('modeBarPad');
-    if(!pad){ pad = document.createElement('div'); pad.id = 'modeBarPad'; pad.setAttribute('aria-hidden', 'true'); pad.style.pointerEvents = 'none'; document.body.appendChild(pad); }
+    const pad = modeBarPad();
     const base = document.documentElement.scrollHeight - pad.offsetHeight;
-    pad.style.height = Math.max(0, target + window.innerHeight - base) + 'px';
-    window.scrollTo({top: target, behavior: smooth ? 'smooth' : 'auto'});
+    pad.style.height = Math.max(0, target + window.innerHeight - base, window.scrollY + window.innerHeight - base) + 'px';
+    if(Math.abs(r.top - used) > 1) window.scrollTo({top: target, behavior: smooth ? 'smooth' : 'auto'});
   };
   setTimeout(() => go(true), 50);
-  // vérification : si quelque chose a perturbé le défilement (images qui se chargent…), on le refait
-  setTimeout(() => { if(Math.abs(bar.getBoundingClientRect().top - used) > 3) go(false); }, 1000);
+  // Quand le défilement est terminé : si quelque chose l'a perturbé (images qui se chargent…) on le refait une fois,
+  // puis on réduit l'espace ajouté en bas au strict nécessaire.
+  let last = -1, retried = false, n = 0;
+  const settle = () => {
+    n++;
+    const stopped = Math.abs(window.scrollY - last) < 1;
+    last = window.scrollY;
+    if(!stopped && n < 25){ setTimeout(settle, 200); return; }
+    if(Math.abs(bar.getBoundingClientRect().top - used) > 3 && !retried){ retried = true; go(false); setTimeout(settle, 200); return; }
+    const pad = modeBarPad();
+    const base = document.documentElement.scrollHeight - pad.offsetHeight;
+    pad.style.height = Math.max(0, window.scrollY + window.innerHeight - base) + 'px';
+  };
+  setTimeout(settle, 350);
 }
 
 document.querySelectorAll(".mode-btn").forEach(btn=>{
   btn.onclick=()=>{
+    const bar = document.querySelector(".modes");
+    modeBarHold();
     enterMode(btn.dataset.mode);
-    scrollToModeBar(document.querySelector(".modes"));
+    scrollToModeBar(bar);
   };
 });
 

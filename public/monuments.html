@@ -183,7 +183,7 @@ html.dark .q-end .recap-item{background:rgba(255,255,255,0.07);}
 .q-end .recap-item .rn{font-weight:800;font-size:0.92rem;}
 .q-end .recap-item .rc{font-size:0.8rem;color:var(--ink-soft);font-weight:700;}
 html.dark .q-end .recap-item .rc{color:#a89fd8;}
-.q-end .next-btn{display:block;margin:12px auto 0;}
+.q-end .next-btn{display:inline-block;margin:12px 0 0;}
 
 /* RÉVISION */
 #reviseSection{max-width:960px;margin:0 auto;}
@@ -203,14 +203,17 @@ html.dark .rev-place{color:#a89fd8;}
 
 /* Résultat */
 .score-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
-.score-modal{background:#fff;border-radius:28px;padding:36px 32px;text-align:center;max-width:340px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.35);}
+.score-modal{background:#fff;border-radius:28px;padding:40px 36px;text-align:center;max-width:340px;width:90%;box-shadow:0 24px 60px rgba(0,0,0,0.35);}
 html.dark .score-modal{background:#1e1b2e;color:#e8e2ff;}
-.score-emoji{font-size:3.4rem;margin-bottom:10px;}
-.score-big{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.1rem;color:var(--bg1);line-height:1;}
-html.dark .score-big{color:#8b7eff;}
-.score-pct{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.25rem;color:var(--ink-soft);margin:4px 0 8px;}
-.score-btn{display:block;width:100%;margin-top:12px;padding:13px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:40px;font-family:'Baloo 2',cursive;font-size:1.02rem;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(106,92,255,0.35);}
-.score-btn.sec{background:#efedfb;color:var(--bg1);box-shadow:none;}
+.score-modal .score-emoji{font-size:3.5rem;margin-bottom:10px;}
+.score-modal .score-big{font-family:'Baloo 2',cursive;font-weight:800;font-size:3.2rem;color:var(--bg1);line-height:1;}
+html.dark .score-modal .score-big{color:#8b7eff;}
+.score-modal .score-pct{font-family:'Baloo 2',cursive;font-weight:700;font-size:1.3rem;color:var(--ink-soft);margin-top:4px;}
+html.dark .score-modal .score-pct{color:#a89fd8;}
+.score-modal .score-restart{margin-top:24px;font-family:'Baloo 2',cursive;font-weight:700;font-size:1.05rem;padding:13px 38px;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border:none;border-radius:40px;cursor:pointer;box-shadow:0 8px 20px rgba(106,92,255,0.4);transition:transform 0.15s ease;}
+.score-modal .score-restart:hover{transform:translateY(-2px) scale(1.03);}
+.score-modal .score-restart.sec{background:rgba(0,0,0,0.07);color:#333;box-shadow:none;}
+html.dark .score-modal .score-restart.sec{background:rgba(255,255,255,0.12);color:#e8e2ff;}
 .hidden{display:none!important;}
 
 @media (max-width:520px){
@@ -282,11 +285,6 @@ html.dark .score-big{color:#8b7eff;}
     <button class="filter-btn" data-cont="Amérique du Sud">🌎 Amér. Sud</button>
     <button class="filter-btn" data-cont="Océanie">🌊 Océanie</button>
   </div>
-  <div class="options-bar">
-    <button class="toggle hidden" id="tblSameBtn">🔁 Même série</button>
-    <button class="toggle hidden" id="tblLastErrBtn">⚠️ Refaire mes erreurs</button>
-    <button class="toggle hidden" id="tblRestartBtn">🎲 Nouvelle série</button>
-  </div>
 
 <!-- QUIZ -->
 <section id="quizSection">
@@ -350,6 +348,11 @@ html.dark .score-big{color:#8b7eff;}
 
 <!-- CLAVIER -->
 <section id="clavierSection" class="hidden">
+  <div style="display:flex; justify-content:center; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+    <button class="toggle" id="tblRestartBtn">🎲 Nouvelle série</button>
+    <button class="toggle hidden" id="tblSameBtn">🔁 Même série</button>
+    <button class="toggle hidden" id="tblLastErrBtn">⚠️ Refaire mes erreurs</button>
+  </div>
   <div class="tbl-grid" id="tblGrid"></div>
   <button class="tbl-check-btn hidden" id="tblCheckBtnMain">✅ Vérifier mes réponses</button>
 </section>
@@ -561,13 +564,18 @@ function showSeriesEnd(kind){
   document.getElementById(isQuiz ? "qCard" : "typeCard").classList.add("hidden");
   const list = mistakes.map(m => '<div class="recap-item"><span class="rn">'+m.name+'</span><span class="rc">'+m.city+', '+m.country+'</span></div>').join("");
   const end = document.getElementById(isQuiz ? "quizEnd" : "typeEnd");
+  // (les boutons sont séparés par un saut de ligne comme sur les capitales : même espace entre eux)
+  const buttons = [
+    n>0 ? '<button class="next-btn show" id="'+kind+'EndErrBtn">🎯 Refaire mes '+n+' erreur'+(n>1?'s':'')+'</button>' : '',
+    '<button class="next-btn show" id="'+kind+'EndSameBtn">🔁 Refaire la même série</button>',
+    '<button class="next-btn show" id="'+kind+'EndReplayBtn">🔄 Recommencer</button>'
+  ].filter(Boolean).join('\n');
   end.innerHTML =
     '<div class="end-title">🎉 Vous avez terminé !</div>'+
     '<div class="end-big">'+ok+'/'+totalN+'</div>'+
     '<div class="end-lbl">'+((totalN===1 ? 'Le monument est passé' : 'Les '+totalN+' monuments sont passés')+(n===0 ? ', sans aucune erreur. Bravo ! 🏆' : ' — '+n+' erreur'+(n>1?'s':'')+' à revoir :'))+'</div>'+
-    (n>0 ? '<div class="recap-list">'+list+'</div><button class="next-btn show" id="'+kind+'EndErrBtn">🎯 Refaire mes '+n+' erreur'+(n>1?'s':'')+'</button>' : '')+
-    '<button class="next-btn show" id="'+kind+'EndSameBtn">🔁 Refaire la même série</button>'+
-    '<button class="next-btn show" id="'+kind+'EndReplayBtn">🔄 Recommencer</button>';
+    (n>0 ? '<div class="recap-list">'+list+'</div>' : '')+
+    buttons;
   end.classList.remove("hidden");
   document.getElementById(kind+"EndReplayBtn").onclick = () => {
     if(isQuiz){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
@@ -941,15 +949,15 @@ document.getElementById("tblCheckBtnMain").onclick=()=>{
   const emoji=pct===100?"🏆":pct>=75?"🎉":pct>=50?"👍":"💪";
   const overlay=document.createElement("div");
   overlay.className="score-overlay";
-  const errBtn=wrongItems.length>0?`<button class="score-btn" id="ovErr">⚠️ Refaire mes erreurs (${wrongItems.length})</button>`:"";
+  const errBtn=wrongItems.length>0?`<button class="score-restart" id="ovErr" style="margin-top:10px;">⚠️ Refaire mes erreurs (${wrongItems.length})</button>`:"";
   overlay.innerHTML=`<div class="score-modal">
     <div class="score-emoji">${emoji}</div>
     <div class="score-big">${correct} / ${tot}</div>
     <div class="score-pct">${pct}%</div>
     ${errBtn}
-    <button class="score-btn" id="ovSame">🔁 Même série</button>
-    <button class="score-btn" id="ovRestart">🎲 Nouvelle série</button>
-    <button class="score-btn" style="margin-top:8px;background:rgba(0,0,0,0.07);color:#333;" id="ovClose">Voir mes réponses</button>
+    <button class="score-restart" id="ovSame">🔁 Même série</button>
+    <button class="score-restart" id="ovRestart">🎲 Nouvelle série</button>
+    <button class="score-restart sec" id="ovClose">Voir mes réponses</button>
   </div>`;
   document.body.appendChild(overlay);
   if(wrongItems.length>0) overlay.querySelector("#ovErr").onclick=()=>{overlay.remove();renderClavier(lastTblErrors);};

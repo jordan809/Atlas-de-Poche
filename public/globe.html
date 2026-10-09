@@ -328,7 +328,7 @@
       if(show !== countryShown[i]){ countryShown[i] = show; countryNodes[i].style.display = show ? '' : 'none'; }
     }
   }
-  const zoom = d3.zoom().scaleExtent([1, 14]).on('zoom', (ev)=>{
+  const zoom = d3.zoom().scaleExtent([1, 40]).on('zoom', (ev)=>{
     g.attr('transform', ev.transform);
     cullCountries(ev.transform);
     if(dotEls) dotEls.attr('r', 3.4 / ev.transform.k);   // les points des micro-États gardent la même taille à l'écran
@@ -355,14 +355,22 @@
       .attr('d', path)
       .on('mousemove', (ev,f)=>{
         if(mode!=='discover') return;
-        const d = lookup(f.properties);
-        tipEl.textContent = d ? d.c : (f.properties.ADMIN || f.properties.NAME || '');
+        const d = lookup(f.properties), terr = territoryAt(f, d3.pointer(ev, g.node()));
+        const own = f.properties.NAME_FR || f.properties.ADMIN || f.properties.NAME || '';
+        tipEl.textContent = terr ? terr.name : (d && bestFeatures.has(f) ? d.c : own);
         tipEl.style.left = ev.clientX+'px'; tipEl.style.top = ev.clientY+'px'; tipEl.style.display='block';
       })
       .on('mouseleave', ()=> tipEl.style.display='none')
       .on('click', (ev,f)=>{
         if(mode!=='discover') return;
-        showCountry(lookup(f.properties), f.properties.ADMIN || f.properties.NAME);
+        const terr = territoryAt(f, d3.pointer(ev, g.node()));
+        if(terr){ showTerritory(terr); zoomToCountry(f, terr.b); return; }
+        const d = lookup(f.properties), own = f.properties.NAME_FR || f.properties.ADMIN || f.properties.NAME;
+        if(bestFeatures.has(f)) showCountry(d, own);
+        else {   // territoire (Saint-Barthélemy, Porto Rico, Groenland…) : sa propre fiche, pas celle du pays de tutelle
+          const inf = TERR_INFO[own] || {};
+          showTerritory({ name:own, parentData:d, cap:inf.cap, k:inf.k });
+        }
         zoomToCountry(f);
       });
 
@@ -401,6 +409,64 @@
   const measureCtx = document.createElement('canvas').getContext('2d');
   let labelItems = [];      // du plus grand au plus petit pays (les grands ont la priorité)
   let labelRaf = 0;
+  const bestFeatures = new Set(gameItems.map(i => i.f));   // la "forme principale" de chaque pays de la liste
+  // Noms plus courts sur la carte (laisse de la place aux îles voisines) ; la fiche garde le nom complet
+  const SHORT = { 'Saint-Christophe-et-Niévès':'Saint-Kitts-et-Nevis', 'Saint-Vincent-et-les-Grenadines':'Saint-Vincent', 'République démocratique du Congo':'RD Congo',
+    'République centrafricaine':'Centrafrique', 'îles Vierges des États-Unis':'Îles Vierges (É.-U.)', 'îles Vierges britanniques':'Îles Vierges (R.-U.)',
+    'îles Turques-et-Caïques':'Turques-et-Caïques', 'Sao Tomé-et-Principe':'Sao Tomé', 'Terres australes et antarctiques françaises':'Terres australes' };
+  const labelText = n => { const s = SHORT[n] || n; return s.charAt(0).toUpperCase() + s.slice(1); };
+  // Capitale / continent des territoires qui ne sont pas dans la liste des pays
+  const TERR_INFO = {
+    'Saint-Barthélemy':{cap:'Gustavia',k:'Amérique du Nord'}, 'Saint-Martin':{cap:'Marigot',k:'Amérique du Nord'}, 'Saint-Pierre-et-Miquelon':{cap:'Saint-Pierre',k:'Amérique du Nord'},
+    'Nouvelle-Calédonie':{cap:'Nouméa',k:'Océanie'}, 'Polynésie française':{cap:'Papeete',k:'Océanie'}, 'Wallis-et-Futuna':{cap:'Mata-Utu',k:'Océanie'},
+    'Porto Rico':{cap:'San Juan',k:'Amérique du Nord'}, 'Aruba':{cap:'Oranjestad',k:'Amérique du Nord'}, 'Curaçao':{cap:'Willemstad',k:'Amérique du Nord'},
+    'Anguilla':{cap:'The Valley',k:'Amérique du Nord'}, 'Montserrat':{cap:'Plymouth',k:'Amérique du Nord'}, 'îles Caïmans':{cap:'George Town',k:'Amérique du Nord'},
+    'îles Vierges britanniques':{cap:'Road Town',k:'Amérique du Nord'}, 'îles Vierges des États-Unis':{cap:'Charlotte Amalie',k:'Amérique du Nord'},
+    'îles Turques-et-Caïques':{cap:'Cockburn Town',k:'Amérique du Nord'}, 'Bermudes':{cap:'Hamilton',k:'Amérique du Nord'}, 'Groenland':{cap:'Nuuk',k:'Amérique du Nord'},
+    'îles Féroé':{cap:'Tórshavn',k:'Europe'}, 'Sainte-Hélène':{cap:'Jamestown',k:'Afrique'}, 'îles Falkland':{cap:'Stanley',k:'Amérique du Sud'}
+  };
+  // Îles / régions d'outre-mer qui font partie d'un pays dans la carte : on les nomme à part (Guadeloupe et non France).
+  const TERRITORIES = [
+    {n:'Guadeloupe',    parent:'France', c:[-61.45, 16.2],  cap:'Basse-Terre',     k:'Amérique du Nord'},
+    {n:'Martinique',    parent:'France', c:[-61.0, 14.65],  cap:'Fort-de-France',  k:'Amérique du Nord'},
+    {n:'Guyane',        parent:'France', c:[-53.2, 3.9],    cap:'Cayenne',         k:'Amérique du Sud'},
+    {n:'La Réunion',    parent:'France', c:[55.53, -21.12], cap:'Saint-Denis',     k:'Afrique'},
+    {n:'Mayotte',       parent:'France', c:[45.15, -12.82], cap:'Mamoudzou',       k:'Afrique'},
+    {n:'Corse',         parent:'France', c:[9.1, 42.15],    cap:'Ajaccio',         k:'Europe'},
+    {n:'Bonaire',       parent:'Netherlands', c:[-68.27, 12.17], cap:'Kralendijk', k:'Amérique du Nord'},
+    {n:'Saba',          parent:'Netherlands', c:[-63.23, 17.63], cap:'The Bottom', k:'Amérique du Nord'},
+    {n:'Saint-Eustache',parent:'Netherlands', c:[-62.97, 17.49], cap:'Oranjestad', k:'Amérique du Nord'},
+    {n:'Alaska',        parent:'United States of America', c:[-152, 64.5],   cap:'Juneau',   k:'Amérique du Nord'},
+    {n:'Hawaï',         parent:'United States of America', c:[-156.3, 20.3], cap:'Honolulu', k:'Océanie'},
+    {n:'Îles Canaries', parent:'Spain', c:[-15.6, 28.3], cap:'Las Palmas / Santa Cruz', k:'Afrique'},
+    {n:'Îles Baléares', parent:'Spain', c:[2.95, 39.6],  cap:'Palma',                   k:'Europe'},
+    {n:'Açores',        parent:'Portugal', c:[-27.9, 38.6],  cap:'Ponta Delgada', k:'Europe'},
+    {n:'Madère',        parent:'Portugal', c:[-16.95, 32.75], cap:'Funchal',      k:'Afrique'},
+    {n:'Île de Pâques', parent:'Chile',   c:[-109.35, -27.12], cap:'Hanga Roa',   k:'Océanie'},
+    {n:'Galápagos',     parent:'Ecuador', c:[-90.5, -0.6],     cap:'Puerto Baquerizo Moreno', k:'Amérique du Sud'}
+  ];
+  let territories = [];     // territoires résolus (zone sur la carte), recalculés à chaque tracé
+  function resolveTerritories(){
+    territories = [];
+    TERRITORIES.forEach(T => {
+      const ft = countries.features.find(x => x.properties.ADMIN === T.parent && x.geometry && x.geometry.type === 'MultiPolygon');
+      const P = projection(T.c);
+      if(!ft || !P) return;
+      const pad = 0.012 * W;
+      const near = ft.geometry.coordinates.map(c => path.bounds({type:'Polygon', coordinates:c}))
+        .filter(b => P[0] >= b[0][0]-pad && P[0] <= b[1][0]+pad && P[1] >= b[0][1]-pad && P[1] <= b[1][1]+pad);
+      if(!near.length) return;
+      const b = [[Math.min(...near.map(x=>x[0][0])), Math.min(...near.map(x=>x[0][1]))], [Math.max(...near.map(x=>x[1][0])), Math.max(...near.map(x=>x[1][1]))]];
+      territories.push({ name:T.n, feature:ft, parentData:lookup(ft.properties), cap:T.cap, k:T.k, b, ax:P[0], ay:P[1], area:(b[1][0]-b[0][0])*(b[1][1]-b[0][1]) });
+    });
+    territories.sort((a, c) => a.area - c.area);   // les plus petits d'abord pour le clic
+  }
+  // Territoire sous un point de la carte (coordonnées de la carte, avant zoom)
+  function territoryAt(feature, xy){
+    if(!territories.length || !xy) return null;
+    const m = 3 / d3.zoomTransform(svg.node()).k;
+    return territories.find(t => t.feature === feature && xy[0] >= t.b[0][0]-m && xy[0] <= t.b[1][0]+m && xy[1] >= t.b[0][1]-m && xy[1] <= t.b[1][1]+m) || null;
+  }
   // Taille "utile" d'un pays pour son nom. Pays éparpillés sur toute la carte (Kiribati…, coupés par la ligne de changement
   // de date) : on prend leur plus grande île, sinon leur boîte englobante couvrirait tout l'océan.
   function labelBounds(feature){
@@ -420,14 +486,18 @@
       const p = projection([lng, lat]);
       if(!text || !p || !isFinite(p[0]) || !isFinite(p[1])) return;
       const b = labelBounds(feature);
-      items.push({ text, ax:p[0], ay:p[1], w0:b[1][0]-b[0][0], h0:b[1][1]-b[0][1], tw12:measureCtx.measureText(text).width, isDot, el:null, shown:false });
+      items.push({ text:labelText(text), ax:p[0], ay:p[1], w0:b[1][0]-b[0][0], h0:b[1][1]-b[0][1], tw12:measureCtx.measureText(text).width, isDot, el:null, shown:false });
     };
     // pays de la liste (noms en français)
     gameItems.forEach(it => pushItem(it.d.c, it.lng, it.lat, it.f, it.size < 1.4));
+    // îles d'outre-mer nommées à part (Guadeloupe, Martinique, Alaska…)
+    resolveTerritories();
+    territories.forEach(t => items.push({ text:labelText(t.name), ax:t.ax, ay:t.ay, w0:t.b[1][0]-t.b[0][0], h0:t.b[1][1]-t.b[0][1], tw12:measureCtx.measureText(labelText(t.name)).width, isDot:false, el:null, shown:false }));
     // territoires hors liste (Groenland, Antarctique…) : nom français fourni par la carte
-    const best = new Set(gameItems.map(i => i.f)), seen = new Set(gameItems.map(i => i.d.c));
+    const seen = new Set(gameItems.map(i => i.d.c));
+    territories.forEach(t => seen.add(t.name));
     countries.features.forEach(ft => {
-      if(best.has(ft) || lookup(ft.properties)) return;
+      if(bestFeatures.has(ft)) return;
       const p = ft.properties, name = p.NAME_FR || p.ADMIN || p.NAME;
       if(!name || seen.has(name)) return;
       seen.add(name);
@@ -448,11 +518,13 @@
       const sw = l.w0 * k, sh = l.h0 * k;                       // taille du pays à l'écran
       const fs = Math.max(10, Math.min(16, 8 + sw / 40));        // plus le pays est grand, plus le nom est grand
       const tw = l.tw12 * fs / 12;
-      let show = tw <= 1.3 * Math.max(sw, 0.6 * sh);            // le nom doit tenir dans le pays, sinon il faut zoomer
+      // Le nom doit tenir dans le pays pour s'afficher. Les petites îles, elles, n'y tiendront jamais : dès qu'on a assez zoomé
+      // (k >= 2,2) elles sont toutes candidates, et seul le manque de place (chevauchement) les cache.
+      let show = k >= 2.2 || tw <= 1.3 * Math.max(sw, 0.6 * sh);
       let x = 0, y = 0, vis = false;
       if(show){
         x = l.ax * k + t.x; y = l.ay * k + t.y + (l.isDot ? 11 : 0);   // micro-États : sous le point jaune
-        const x0 = x - tw/2 - 4, x1 = x + tw/2 + 4, y0 = y - fs*0.65 - 2, y1 = y + fs*0.65 + 2;
+        const x0 = x - tw/2 - 3, x1 = x + tw/2 + 3, y0 = y - fs*0.6 - 1, y1 = y + fs*0.6 + 1;
         for(const p of placed){ if(x0 < p.x1 && x1 > p.x0 && y0 < p.y1 && y1 > p.y0){ show = false; break; } }   // pas de chevauchement
         if(show){
           placed.push({x0, x1, y0, y1});
@@ -503,7 +575,7 @@
   function zoomToFeature(feature, padding, opts){
     padding = padding || 5;
     opts = opts || {};
-    const b = focusBounds(feature);
+    const b = opts.bounds || focusBounds(feature);
     const dx = Math.max(b[1][0]-b[0][0], 1), dy = Math.max(b[1][1]-b[0][1], 1);
     const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
     // Zone réellement visible : on retire la barre du haut et, en découverte, la fiche en bas
@@ -515,9 +587,9 @@
     svg.transition().duration(opts.duration || 1100).call(zoom.transform, t);
   }
   // Mode découverte : le pays cliqué remplit bien l'écran, au-dessus de la fiche d'info
-  function zoomToCountry(feature){
+  function zoomToCountry(feature, bounds){
     const cardH = infoEl.offsetHeight || 100;
-    zoomToFeature(feature, 2.3, { top: 64, bottom: cardH + 36, minScale: 1.6, maxScale: 12, duration: 900 });
+    zoomToFeature(feature, 2.3, { top: 64, bottom: cardH + 36, minScale: 1.6, maxScale: 12, duration: 900, bounds });
   }
   function resetView(){
     svg.transition().duration(700).call(zoom.transform, d3.zoomIdentity);
@@ -544,6 +616,15 @@
       $('iCap').textContent = '(pas dans la liste des pays)';
       $('iCont').style.display='none';
     }
+    infoEl.classList.add('show'); hintEl.classList.add('hide');
+  }
+  function showTerritory(t){
+    const d = t.parentData;
+    $('iFlag').innerHTML = d ? flagImg(d.f, 60) : '🏳️';
+    $('iCountry').textContent = t.name + (d ? ' (' + d.c + ')' : '');
+    $('iCap').innerHTML = t.cap ? 'Capitale : <b>'+t.cap+'</b>' : '(territoire hors de la liste des pays)';
+    const c = $('iCont');
+    if(t.k){ c.textContent = t.k; c.style.background = COLORS[t.k]||'#9d7bff'; c.style.display='inline-block'; } else c.style.display = 'none';
     infoEl.classList.add('show'); hintEl.classList.add('hide');
   }
   $('iClose').onclick = ()=> infoEl.classList.remove('show');

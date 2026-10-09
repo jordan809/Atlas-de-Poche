@@ -19,11 +19,13 @@
     --page-bg:#eef1fb; --map-bg:#ffffff; --map-fill:#ffffff; --map-stroke:#3b6fe0; --map-hover:#eaf1ff;
     --chrome-bg:rgba(255,255,255,0.92); --chrome-text:#2b2350; --chrome-border:rgba(43,35,80,0.12);
     --hint-bg:rgba(43,35,80,0.85); --hint-text:#fff; --loading-bg:#eef1fb;
+    --label-fill:#2b2350; --label-halo:rgba(255,255,255,0.92);
   }
   html.dark{
     --page-bg:#0d0a1f; --map-bg:#100c26; --map-fill:#171233; --map-stroke:#7fb0ff; --map-hover:#241d47;
     --chrome-bg:rgba(255,255,255,0.14); --chrome-text:#fff; --chrome-border:rgba(255,255,255,0.2);
     --hint-bg:rgba(0,0,0,.35); --hint-text:#fff; --loading-bg:#0d0a1f;
+    --label-fill:#eae6ff; --label-halo:rgba(16,12,38,0.92);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -35,6 +37,9 @@
   .map-discover .country{ cursor:pointer; }
   .map-discover .country:hover{ fill:var(--map-hover); }
   .country.target{ fill:var(--green) !important; stroke:#0a8f4c !important; stroke-width:2.2 !important; }
+  /* Noms des pays (découverte seulement : en mode jeu ils donneraient la réponse) */
+  .map-label{ font-family:'Nunito',system-ui,sans-serif; font-weight:800; fill:var(--label-fill); stroke:var(--label-halo); stroke-width:3.2px; paint-order:stroke; stroke-linejoin:round; text-anchor:middle; dominant-baseline:central; pointer-events:none; user-select:none; -webkit-user-select:none; }
+  body:not(.map-discover) #labelG{ display:none; }
   .dot-marker{ fill:#f5c518; stroke:#fff; stroke-width:1.2; vector-effect:non-scaling-stroke; }
   .map-discover .dot-marker{ cursor:pointer; }
   .dot-marker.target{ fill:var(--green); stroke:#0a8f4c; }
@@ -131,6 +136,7 @@
 <body>
   <svg id="mapSvg">
     <g id="mapG"></g>
+    <g id="labelG"></g>
   </svg>
   <div id="mapTip"></div>
 
@@ -326,6 +332,7 @@
     g.attr('transform', ev.transform);
     cullCountries(ev.transform);
     if(dotEls) dotEls.attr('r', 3.4 / ev.transform.k);   // les points des micro-États gardent la même taille à l'écran
+    scheduleLabels();
     document.body.classList.add('moving');
     clearTimeout(movingTimer);
     movingTimer = setTimeout(()=> document.body.classList.remove('moving'), 160);
@@ -384,6 +391,80 @@
     countryShown = countryNodes.map(n => n.style.display !== 'none');
     cullCountries(d3.zoomTransform(svg.node()));
     refreshColors();
+    buildLabels();
+    updateLabels();
+  }
+
+  // ---------- Noms des pays (comme sur Google Maps) ----------
+  // Les grands pays affichent leur nom même dézoomés ; les petits n'apparaissent qu'en zoomant, pour que les noms ne se chevauchent pas.
+  const labelG = d3.select('#labelG');
+  const measureCtx = document.createElement('canvas').getContext('2d');
+  let labelItems = [];      // du plus grand au plus petit pays (les grands ont la priorité)
+  let labelRaf = 0;
+  // Taille "utile" d'un pays pour son nom. Pays éparpillés sur toute la carte (Kiribati…, coupés par la ligne de changement
+  // de date) : on prend leur plus grande île, sinon leur boîte englobante couvrirait tout l'océan.
+  function labelBounds(feature){
+    const full = focusBounds(feature), g = feature.geometry;
+    if(g && g.type === 'MultiPolygon' && (full[1][0] - full[0][0]) > 0.4 * W){
+      let best = null;
+      g.coordinates.forEach(c => { const p = {type:'Polygon', coordinates:c}, a = path.area(p); if(!best || a > best.a) best = {a, b:path.bounds(p)}; });
+      if(best) return best.b;
+    }
+    return full;
+  }
+  function buildLabels(){
+    labelG.selectAll('*').remove();
+    measureCtx.font = "800 12px Nunito, system-ui, sans-serif";
+    const items = [];
+    const pushItem = (text, lng, lat, feature, isDot) => {
+      const p = projection([lng, lat]);
+      if(!text || !p || !isFinite(p[0]) || !isFinite(p[1])) return;
+      const b = labelBounds(feature);
+      items.push({ text, ax:p[0], ay:p[1], w0:b[1][0]-b[0][0], h0:b[1][1]-b[0][1], tw12:measureCtx.measureText(text).width, isDot, el:null, shown:false });
+    };
+    // pays de la liste (noms en français)
+    gameItems.forEach(it => pushItem(it.d.c, it.lng, it.lat, it.f, it.size < 1.4));
+    // territoires hors liste (Groenland, Antarctique…) : nom français fourni par la carte
+    const best = new Set(gameItems.map(i => i.f)), seen = new Set(gameItems.map(i => i.d.c));
+    countries.features.forEach(ft => {
+      if(best.has(ft) || lookup(ft.properties)) return;
+      const p = ft.properties, name = p.NAME_FR || p.ADMIN || p.NAME;
+      if(!name || seen.has(name)) return;
+      seen.add(name);
+      const hasLabel = p.LABEL_X != null && p.LABEL_Y != null && !isNaN(+p.LABEL_X) && !isNaN(+p.LABEL_Y);
+      const c = hasLabel ? [+p.LABEL_X, +p.LABEL_Y] : d3.geoCentroid(ft);
+      pushItem(name, c[0], c[1], ft, false);
+    });
+    labelItems = items.sort((a, b) => (b.w0*b.h0) - (a.w0*a.h0));
+    labelItems.forEach(l => { l.el = labelG.append('text').attr('class','map-label').style('display','none').text(l.text).node(); });
+  }
+  function scheduleLabels(){ if(!labelRaf) labelRaf = requestAnimationFrame(updateLabels); }
+  function updateLabels(){
+    labelRaf = 0;
+    if(mode !== 'discover') return;     // masqués par le CSS en mode jeu
+    const t = d3.zoomTransform(svg.node()), k = t.k;
+    const placed = [];
+    for(const l of labelItems){
+      const sw = l.w0 * k, sh = l.h0 * k;                       // taille du pays à l'écran
+      const fs = Math.max(10, Math.min(16, 8 + sw / 40));        // plus le pays est grand, plus le nom est grand
+      const tw = l.tw12 * fs / 12;
+      let show = tw <= 1.3 * Math.max(sw, 0.6 * sh);            // le nom doit tenir dans le pays, sinon il faut zoomer
+      let x = 0, y = 0, vis = false;
+      if(show){
+        x = l.ax * k + t.x; y = l.ay * k + t.y + (l.isDot ? 11 : 0);   // micro-États : sous le point jaune
+        const x0 = x - tw/2 - 4, x1 = x + tw/2 + 4, y0 = y - fs*0.65 - 2, y1 = y + fs*0.65 + 2;
+        for(const p of placed){ if(x0 < p.x1 && x1 > p.x0 && y0 < p.y1 && y1 > p.y0){ show = false; break; } }   // pas de chevauchement
+        if(show){
+          placed.push({x0, x1, y0, y1});
+          vis = !(x1 < -20 || x0 > W + 20 || y1 < -20 || y0 > H + 20);   // hors écran : pas dessiné
+        }
+      }
+      if(vis){
+        l.el.setAttribute('transform', 'translate(' + x.toFixed(1) + ',' + y.toFixed(1) + ')');
+        l.el.setAttribute('font-size', fs.toFixed(1));
+        if(!l.shown){ l.el.style.display = ''; l.shown = true; }
+      } else if(l.shown){ l.el.style.display = 'none'; l.shown = false; }
+    }
   }
 
   function refreshColors(){
@@ -529,6 +610,7 @@
     if(m==='discover'){
       panel.classList.remove('show');
       hintEl.classList.remove('hide');
+      scheduleLabels();
       resetView();
     } else {
       hintEl.classList.add('hide');

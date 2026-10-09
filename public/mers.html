@@ -881,9 +881,30 @@ function switchTab(tab){
     document.getElementById("gameSubFilterBar").classList.remove("visible");
     startGame();
   }
-  const tabsEl = document.querySelector(".tabs");
-  if(tabsEl) setTimeout(()=>scrollToEl(tabsEl, 10), 50);
+  scrollToModeBar(document.querySelector(".tabs"));
 }
+// ---------- Barre de modes : défilement automatique (même réglage sur toutes les pages) ----------
+// Après un clic sur un bouton de la barre, la page défile pour que la barre soit tout en haut de l'écran.
+function scrollToModeBar(bar){
+  if(!bar) return;
+  let used = 10;
+  const go = (smooth) => {
+    const r = bar.getBoundingClientRect();
+    // petit écran : les boutons fixes du haut (menu, son, nuit) recouvriraient la barre -> on garde une marge
+    used = (r.left < 130 || r.right > window.innerWidth - 120) ? 62 : 10;
+    const target = Math.max(0, r.top + window.scrollY - used);
+    // page trop courte pour atteindre cette position : on ajoute juste l'espace nécessaire en bas
+    let pad = document.getElementById('modeBarPad');
+    if(!pad){ pad = document.createElement('div'); pad.id = 'modeBarPad'; pad.setAttribute('aria-hidden', 'true'); pad.style.pointerEvents = 'none'; document.body.appendChild(pad); }
+    const base = document.documentElement.scrollHeight - pad.offsetHeight;
+    pad.style.height = Math.max(0, target + window.innerHeight - base) + 'px';
+    window.scrollTo({top: target, behavior: smooth ? 'smooth' : 'auto'});
+  };
+  setTimeout(() => go(true), 50);
+  // vérification : si quelque chose a perturbé le défilement (images qui se chargent…), on le refait
+  setTimeout(() => { if(Math.abs(bar.getBoundingClientRect().top - used) > 3) go(false); }, 1000);
+}
+
 function scrollToEl(el, offset){
   const y = el.getBoundingClientRect().top + window.scrollY - (offset||0);
   window.scrollTo({top: Math.max(0, y), behavior: "smooth"});

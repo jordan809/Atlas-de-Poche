@@ -169,6 +169,22 @@ html.dark .tbl-input.wrong{background:#2e1820;border-color:var(--bad);}
 .tbl-check-btn{display:block;margin:22px auto 0;font-family:'Baloo 2',cursive;font-weight:700;font-size:1.1rem;padding:14px 48px;border:none;border-radius:40px;cursor:pointer;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;box-shadow:0 8px 20px rgba(106,92,255,0.4);transition:transform 0.15s ease;}
 .tbl-check-btn:hover{transform:translateY(-2px);}
 
+/* FIN DE SÉRIE (Quiz et Clavier) */
+.q-end{background:#fff;border-radius:var(--radius);padding:30px 24px 26px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.22);}
+html.dark .q-end{background:#1e1b2e;color:#e8e2ff;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.q-end .end-title{font-family:'Baloo 2',cursive;font-weight:800;font-size:1.7rem;color:var(--bg1);line-height:1.2;margin-bottom:8px;}
+.q-end .end-big{font-family:'Baloo 2',cursive;font-weight:800;font-size:3rem;color:var(--bg1);line-height:1;}
+.q-end .end-lbl{font-weight:700;color:var(--ink-soft);margin:6px 0 6px;}
+html.dark .q-end .end-title,html.dark .q-end .end-big{color:#8b7eff;}
+html.dark .q-end .end-lbl{color:#a89fd8;}
+.q-end .recap-list{max-height:230px;overflow-y:auto;text-align:left;margin:10px 0 6px;display:flex;flex-direction:column;gap:6px;}
+.q-end .recap-item{background:rgba(0,0,0,0.04);border-radius:12px;padding:8px 14px;display:flex;flex-direction:column;}
+html.dark .q-end .recap-item{background:rgba(255,255,255,0.07);}
+.q-end .recap-item .rn{font-weight:800;font-size:0.92rem;}
+.q-end .recap-item .rc{font-size:0.8rem;color:var(--ink-soft);font-weight:700;}
+html.dark .q-end .recap-item .rc{color:#a89fd8;}
+.q-end .next-btn{display:block;margin:12px auto 0;}
+
 /* RÉVISION */
 #reviseSection{max-width:960px;margin:0 auto;}
 .rev-count{text-align:center;color:#fff;font-weight:800;font-size:0.9rem;margin-bottom:6px;opacity:0.95;}
@@ -293,6 +309,7 @@ html.dark .score-big{color:#8b7eff;}
       <button class="next-btn" id="nextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
     </div>
   </div>
+  <div class="q-end hidden" id="quizEnd"></div>
   <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
   <div class="progress-text" id="progressText">Réussite : —</div>
 </section>
@@ -304,7 +321,7 @@ html.dark .score-big{color:#8b7eff;}
     <span id="typeStreakDisplay">🔥 0</span>
     <span id="typeTotalDisplay">📍 1 / 20</span>
   </div>
-  <div class="q-card">
+  <div class="q-card" id="typeCard">
     <div class="q-photo-wrap">
       <img class="q-photo" id="typePhoto" src="" alt="">
       <span class="q-emoji-fb" id="typeEmojiFb">🏛</span>
@@ -320,6 +337,7 @@ html.dark .score-big{color:#8b7eff;}
       <button class="next-btn" id="typeNextBtn">Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small></button>
     </div>
   </div>
+  <div class="q-end hidden" id="typeEnd"></div>
   <div class="progress-rail"><div class="progress-fill" id="typeProgressFill"></div></div>
   <div class="progress-text" id="typeProgressText">Réussite : —</div>
 </section>
@@ -523,10 +541,50 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 })();
 
 // ==================== QUIZ ====================
-function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; }
+// État de fin de série (Quiz et Clavier) : au lieu de repartir à 1, on affiche un message de fin
+let quizMistakes=[], typeMistakes=[], pendingQuizEnd=false, pendingTypeEnd=false, quizEnded=false, typeEnded=false;
+const NEXT_LABEL='Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small>';
+const RESULT_LABEL='Voir mon résultat →';
+function resetSeriesState(kind){
+  if(kind==="quiz"){ quizMistakes=[]; pendingQuizEnd=false; quizEnded=false; document.getElementById("quizEnd").classList.add("hidden"); document.getElementById("qCard").classList.remove("hidden"); document.getElementById("nextBtn").innerHTML=NEXT_LABEL; }
+  else { typeMistakes=[]; pendingTypeEnd=false; typeEnded=false; document.getElementById("typeEnd").classList.add("hidden"); document.getElementById("typeCard").classList.remove("hidden"); document.getElementById("typeNextBtn").innerHTML=NEXT_LABEL; }
+}
+function soundFanfare(){ [523,659,784,1047].forEach((fr,i)=>setTimeout(()=>beep(fr,0.22),i*110)); }
+function showSeriesEnd(kind){
+  const isQuiz = kind==="quiz";
+  const totalN = isQuiz ? seriesTotal : typeSeriesTotal;
+  const ok = isQuiz ? score : typeScore;
+  const mistakes = (isQuiz ? quizMistakes : typeMistakes).slice();
+  const n = mistakes.length;
+  if(isQuiz){ quizEnded=true; answered=false; currentItem=null; } else { typeEnded=true; typeAnswered=false; typeCurrentItem=null; }
+  document.getElementById(isQuiz ? "qCard" : "typeCard").classList.add("hidden");
+  const list = mistakes.map(m => '<div class="recap-item"><span class="rn">'+m.name+'</span><span class="rc">'+m.city+', '+m.country+'</span></div>').join("");
+  const end = document.getElementById(isQuiz ? "quizEnd" : "typeEnd");
+  end.innerHTML =
+    '<div class="end-title">🎉 Vous avez terminé !</div>'+
+    '<div class="end-big">'+ok+'/'+totalN+'</div>'+
+    '<div class="end-lbl">'+((totalN===1 ? 'Le monument est passé' : 'Les '+totalN+' monuments sont passés')+(n===0 ? ', sans aucune erreur. Bravo ! 🏆' : ' — '+n+' erreur'+(n>1?'s':'')+' à revoir :'))+'</div>'+
+    (n>0 ? '<div class="recap-list">'+list+'</div><button class="next-btn show" id="'+kind+'EndErrBtn">🎯 Refaire mes '+n+' erreur'+(n>1?'s':'')+'</button>' : '')+
+    '<button class="next-btn show" id="'+kind+'EndReplayBtn">🔄 Recommencer</button>';
+  end.classList.remove("hidden");
+  document.getElementById(kind+"EndReplayBtn").onclick = () => {
+    if(isQuiz){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
+    else { typeScore=0;typeStreak=0;typeTotal=0;typeRefillBag();typeNextQuestion(); }
+  };
+  if(n>0) document.getElementById(kind+"EndErrBtn").onclick = () => {
+    if(isQuiz){ resetSeriesState("quiz"); bag=shuffle(mistakes); seriesTotal=bag.length; questionNum=0; score=0;streak=0;total=0; nextQuestion(); }
+    else { resetSeriesState("type"); typeBag=shuffle(mistakes); typeSeriesTotal=typeBag.length; typeQuestionNum=0; typeScore=0;typeStreak=0;typeTotal=0; typeNextQuestion(); }
+  };
+  soundFanfare();
+}
+
+function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; resetSeriesState("quiz"); }
 
 function nextQuestion(){
   clearTimeout(autoAdvTimer);
+  document.getElementById("nextBtn").innerHTML=NEXT_LABEL;
+  if(pendingQuizEnd){ pendingQuizEnd=false; showSeriesEnd("quiz"); return; }
+  if(quizEnded) return;   // le message de fin reste affiché jusqu'à un choix
   if(bag.length===0) refillBag();
   const q=bag.shift();
   currentItem=q;
@@ -575,6 +633,7 @@ function chooseOpt(btn,correct){
     document.getElementById("feedback").textContent=`❌ C'est : ${q.name}`;
     document.getElementById("feedback").className="feedback bad";
     streak=0;
+    quizMistakes.push(q);
     document.querySelectorAll(".opt").forEach(b=>{
       if(b.textContent===q.name) b.classList.add("correct");
       else if(b!==btn) b.classList.add("dim");
@@ -583,6 +642,7 @@ function chooseOpt(btn,correct){
   document.querySelectorAll(".opt").forEach(b=>b.disabled=true);
   total++;
   updateScore();
+  if(bag.length===0){ pendingQuizEnd=true; document.getElementById("nextBtn").innerHTML=RESULT_LABEL; }   // dernière question : la suite affichera le message de fin
   if(autoAdvanceOn && correct){
     autoAdvTimer=setTimeout(()=>nextQuestion(), 800);
   } else {
@@ -633,6 +693,7 @@ document.querySelectorAll(".filter-btn").forEach(btn=>{
     btn.classList.add("active");
     selectedContinent=btn.dataset.cont;
     if(activeMode==="quiz"){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
+    else if(activeMode==="type"){ typeScore=0;typeStreak=0;typeTotal=0;typeRefillBag();typeNextQuestion(); }
     else if(activeMode==="clavier") renderClavier();
     else renderRevision();
   };
@@ -897,7 +958,7 @@ let typeBag=[], typeSeriesTotal=0, typeQuestionNum=0;
 let typeScore=0, typeStreak=0, typeTotal=0;
 let typeCurrentItem=null, typeAnswered=false, typeHintLevel=0;
 
-function typeRefillBag(){ typeBag=shuffle(filteredPool()); typeSeriesTotal=typeBag.length; typeQuestionNum=0; }
+function typeRefillBag(){ typeBag=shuffle(filteredPool()); typeSeriesTotal=typeBag.length; typeQuestionNum=0; resetSeriesState("type"); }
 
 function typeUpdateScore(){
   const pct=typeTotal>0?Math.round(typeScore/typeTotal*100):0;
@@ -910,6 +971,9 @@ function typeUpdateScore(){
 
 function typeNextQuestion(){
   clearTimeout(autoAdvTimer);
+  document.getElementById("typeNextBtn").innerHTML=NEXT_LABEL;
+  if(pendingTypeEnd){ pendingTypeEnd=false; showSeriesEnd("type"); return; }
+  if(typeEnded) return;   // le message de fin reste affiché jusqu'à un choix
   if(typeBag.length===0) typeRefillBag();
   const q=typeBag.shift();
   typeCurrentItem=q; typeAnswered=false; typeHintLevel=0;
@@ -948,9 +1012,11 @@ function typeSubmit(){
     document.getElementById("typeFeedback").innerHTML="❌ C'était : <strong>"+typeCurrentItem.name+"</strong>";
     document.getElementById("typeFeedback").className="feedback bad";
     typeStreak=0;
+    typeMistakes.push(typeCurrentItem);
     soundWrong();
     document.getElementById("typeNextBtn").classList.add("show");
   }
+  if(typeBag.length===0){ pendingTypeEnd=true; document.getElementById("typeNextBtn").innerHTML=RESULT_LABEL; }   // dernière question : la suite affichera le message de fin
   typeUpdateScore();
 }
 

@@ -277,6 +277,7 @@
   }
   .endgame .big { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 3rem; color: var(--bg1); line-height: 1; }
   .endgame .lbl { font-weight: 700; color: var(--ink-soft); margin-top: 6px; }
+  .endgame .end-title { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.7rem; color: var(--bg1); line-height: 1.2; margin-bottom: 8px; }
   .endgame .record { color: var(--good); font-weight: 800; margin-top: 10px; }
   .recap-list { text-align: left; max-height: 320px; overflow-y: auto; margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
   .recap-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.04); border-radius: 12px; padding: 8px 14px; font-weight: 700; color: var(--ink); }
@@ -740,6 +741,7 @@
   }
   html.dark .endgame .big { color: #8b7eff; }
   html.dark .endgame .lbl { color: #a89fd8; }
+  html.dark .endgame .end-title { color: #8b7eff; }
   html.dark .recap-item { background: rgba(255,255,255,0.06); color: #e8e2ff; }
   html.dark .recap-item .cap { color: #a89fd8; }
   html.dark .feedback.bad { color: #ff6b85; }
@@ -1349,7 +1351,8 @@ let soundOn = true;
 let score = 0, asked = 0, streak = 0, currentItem = null, answered = false;
 let bag = [], bagKey = "";          // "sac mélangé" : tire chaque pays une fois avant de recommencer
 let mistakes = [];                  // erreurs du tour en cours (mode Clavier)
-let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain "suivant" affiche le récap
+let pendingTypeRecap = false;       // le tour vient de se terminer, le prochain "suivant" affiche le message de fin
+let roundEnded = false;             // le message de fin est affiché : plus de nouvelle question tant qu'on n'a pas choisi (Entrée comprise)
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;          // mode Clavier : false = question par question, true = tableau (comme "tous les drapeaux")
 let showTableFlag = true;           // afficher le drapeau dans le tableau (au-dessus de l'info connue)
@@ -1517,7 +1520,7 @@ document.getElementById("studySearch").addEventListener("input", e=>{
 });
 
 // ---------- Scoreboard / records ----------
-function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; updateScore(); }
+function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; roundEnded=false; updateScore(); }
 function updateScore(){
   document.getElementById("sScore").textContent=score;
   document.getElementById("sAsked").textContent=asked;
@@ -1534,10 +1537,17 @@ function renderRecords(){
 
 // ---------- Question rendering ----------
 function nextQuestion(){
-  if(activeMode==="type" && pendingTypeRecap){
+  document.getElementById("nextBtn").textContent = T().nextBtn;   // remet le libellé normal (après « Voir mon résultat »)
+  if((activeMode==="type" || activeMode==="quiz") && pendingTypeRecap){
     pendingTypeRecap=false;
     showTypeRecap();
     return;
+  }
+  if(roundEnded) return;   // le message de fin reste affiché jusqu'à un choix (Rejouer…)
+  // Question passée sans réponse (Aide / Difficile = « changer la question ») : elle revient plus tard dans la série,
+  // pour que tous les pays soient bien posés une fois avant la fin.
+  if(!answered && currentItem && bagKey!=="" && (activeMode==="type" || activeMode==="quiz")){
+    bag.splice(Math.floor(Math.random()*(bag.length+1)), 0, currentItem);
   }
   answered=false;
   document.getElementById("endgame").classList.add("hidden");
@@ -1667,7 +1677,17 @@ function chooseOption(btn,label){
     else if(b!==btn) b.classList.add("dim");
   });
   registerResult(isCorrect);
+  if(!isCorrect && activeMode==="quiz") mistakes.push(currentItem);
+  markRoundEnd();
   afterAnswer(isCorrect && autoAdvanceOn);
+}
+
+// Dernière question de la série répondue : la suite affichera le message de fin (au lieu de repartir à 1)
+function markRoundEnd(){
+  if((activeMode==="quiz" || activeMode==="type") && bag.length===0){
+    pendingTypeRecap = true;
+    document.getElementById("nextBtn").textContent = T().seeResult;
+  }
 }
 
 function checkTyped(){
@@ -1688,7 +1708,7 @@ function checkTyped(){
     if(activeMode==="type") mistakes.push(currentItem);
   }
   registerResult(isCorrect);
-  if(activeMode==="type" && bag.length===0) pendingTypeRecap=true;
+  markRoundEnd();
   afterAnswer((activeMode==="type" || autoAdvanceOn) && isCorrect);
 }
 
@@ -1708,46 +1728,52 @@ function afterAnswer(autoAdvance){
   }
 }
 
-// ---------- Récap de fin de tour (mode Clavier) ----------
+// ---------- Message de fin de tour (modes Quiz et Clavier) ----------
 function showTypeRecap(){
+  roundEnded = true;
   document.getElementById("questionCard").classList.add("hidden");
   document.getElementById("nextBtn").classList.remove("show");
+  const isType = (activeMode==="type");
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
-  // En session de révision : retirer les items correctement répondus des erreurs sauvegardées
-  if(reviewPool) {
-    const newMistakesSet = new Set(errItems.map(m=>m.c));
-    const reviewedSet = new Set((lastRoundPool||[]).map(m=>m.c));
-    savedTypeErrors = savedTypeErrors.filter(s => !reviewedSet.has(s.c) || newMistakesSet.has(s.c));
-  }
-  // Sauvegarder les erreurs
-  if(errCount>0){
-    const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
-    savedTypeErrors = [...savedTypeErrors, ...newSaved];
-    try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
-  } else if(reviewPool) {
-    try {
-      if(savedTypeErrors.length>0) localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors));
-      else localStorage.removeItem("atlasTypeErrors");
-    } catch(e) {}
+  if(isType){
+    // En session de révision : retirer les items correctement répondus des erreurs sauvegardées
+    if(reviewPool) {
+      const newMistakesSet = new Set(errItems.map(m=>m.c));
+      const reviewedSet = new Set((lastRoundPool||[]).map(m=>m.c));
+      savedTypeErrors = savedTypeErrors.filter(s => !reviewedSet.has(s.c) || newMistakesSet.has(s.c));
+    }
+    // Sauvegarder les erreurs
+    if(errCount>0){
+      const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
+      savedTypeErrors = [...savedTypeErrors, ...newSaved];
+      try { localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors)); } catch(e){}
+    } else if(reviewPool) {
+      try {
+        if(savedTypeErrors.length>0) localStorage.setItem("atlasTypeErrors", JSON.stringify(savedTypeErrors));
+        else localStorage.removeItem("atlasTypeErrors");
+      } catch(e) {}
+    }
   }
   const list = mistakes.map(m => `<div class="recap-item">${flagImg(m.f, 26)} <span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
   eg.innerHTML = `
+    <div class="end-title">${T().roundDoneTitle}</div>
     <div class="big">${total-errCount}/${total}</div>
-    <div class="lbl">${T().typeRecapTitle(errCount)}</div>
+    <div class="lbl">${T().roundDoneMsg(total, errCount)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">${T().reviewErrors(errCount)}</button>` : ""}
     <button class="next-btn show" id="typeRecapSameBtn">🔁 Refaire la même série</button>
     <button class="next-btn show" id="typeRecapReplayBtn">${T().restart}</button>
-    ${errCount===0 && savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
+    ${isType && errCount===0 && savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
   const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
   document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);
   document.getElementById("typeRecapReplayBtn").onclick = () => startPlay();
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
-  if(savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
+  if(isType && savedTypeErrors.length>0 && errCount===0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
+  confetti(errCount===0 ? 80 : 35); soundFanfare();
 }
 
 // ---------- Timer (Défi) ----------
@@ -2554,6 +2580,9 @@ const LANGS = {
     timedResult: (s,t) => `bonnes réponses en ${t} s`,
     newRecord:"🏆 Nouveau record !",
     replay:"Rejouer ⏱️",
+    roundDoneTitle:"🎉 Vous avez terminé !",
+    roundDoneMsg: (t,n) => { const s = t===1 ? "Le pays est passé" : `Les ${t} pays sont passés`; return n===0 ? `${s}, sans aucune erreur. Bravo ! 🏆` : `${s} — ${n} erreur${n>1?"s":""} à revoir :`; },
+    seeResult:"Voir mon résultat →",
     typeRecapTitle: (n) => n===0 ? "Aucune erreur, bravo ! 🎉" : `Tour terminé — ${n} erreur${n>1?"s":""} à revoir :`,
     reviewErrors: (n) => `🎯 Refaire mes ${n} erreur${n>1?"s":""}`,
     // Progress
@@ -2636,6 +2665,9 @@ const LANGS = {
     timedResult: (s,t) => `correct answers in ${t} s`,
     newRecord:"🏆 New record!",
     replay:"Play again ⏱️",
+    roundDoneTitle:"🎉 You're done!",
+    roundDoneMsg: (t,n) => { const s = t===1 ? "The country is done" : `All ${t} countries done`; return n===0 ? `${s}, no mistakes. Well done! 🏆` : `${s} — ${n} mistake${n>1?"s":""} to review:`; },
+    seeResult:"See my result →",
     typeRecapTitle: (n) => n===0 ? "No mistakes, well done! 🎉" : `Round complete — ${n} mistake${n>1?"s":""} to review:`,
     reviewErrors: (n) => `🎯 Redo my ${n} mistake${n>1?"s":""}`,
     progress: (pct,s,a) => `Success: ${pct}% (${s}/${a})`,
@@ -2715,6 +2747,9 @@ const LANGS = {
     timedResult: (s,t) => `respuestas correctas en ${t} s`,
     newRecord:"🏆 ¡Nuevo récord!",
     replay:"Volver a jugar ⏱️",
+    roundDoneTitle:"🎉 ¡Has terminado!",
+    roundDoneMsg: (t,n) => { const s = t===1 ? "El país está completado" : `Los ${t} países completados`; return n===0 ? `${s}, sin ningún error. ¡Genial! 🏆` : `${s} — ${n} error${n>1?"es":""} para repasar:`; },
+    seeResult:"Ver mi resultado →",
     typeRecapTitle: (n) => n===0 ? "¡Sin errores, genial! 🎉" : `Ronda terminada — ${n} error${n>1?"es":""} para repasar:`,
     reviewErrors: (n) => `🎯 Repetir mis ${n} error${n>1?"es":""}`,
     progress: (pct,s,a) => `Acierto: ${pct}% (${s}/${a})`,

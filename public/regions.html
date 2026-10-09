@@ -128,6 +128,7 @@
   .endgame { background: #fff; border-radius: 26px; padding: 30px 26px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.22); }
   .endgame .big { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 3rem; color: var(--bg1); line-height: 1; }
   .endgame .lbl { font-weight: 700; color: var(--ink-soft); margin-top: 6px; }
+  .endgame .end-title { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.7rem; color: var(--bg1); line-height: 1.2; margin-bottom: 8px; }
   .endgame .record { color: var(--good); font-weight: 800; margin-top: 10px; }
   .recap-list { text-align: left; max-height: 320px; overflow-y: auto; margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
   .recap-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.04); border-radius: 12px; padding: 8px 14px; font-weight: 700; color: var(--ink); }
@@ -206,6 +207,7 @@
   html.dark .endgame { background: #1e1b2e; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
   html.dark .endgame .big { color: #8b7eff; }
   html.dark .endgame .lbl { color: #a89fd8; }
+  html.dark .endgame .end-title { color: #8b7eff; }
   html.dark .recap-item { background: rgba(255,255,255,0.06); color: #e8e2ff; }
   html.dark .recap-item .cap { color: #a89fd8; }
   html.dark .feedback.bad { color: #ff6b85; }
@@ -667,6 +669,7 @@ let score = 0, asked = 0, streak = 0, currentItem = null, answered = false;
 let bag = [], bagKey = "";
 let mistakes = [];
 let pendingTypeRecap = false;
+let roundEnded = false;   // le message de fin est affiché : plus de nouvelle question tant qu'on n'a pas choisi (Entrée comprise)
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;
 let showTableFlag = true;
@@ -778,7 +781,7 @@ function renderStudy(){
 }
 
 // ---------- Scoreboard / records ----------
-function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; updateScore(); }
+function resetQuiz(){ score=0; asked=0; streak=0; bag=[]; bagKey=""; mistakes=[]; pendingTypeRecap=false; roundEnded=false; updateScore(); }
 function updateScore(){
   document.getElementById("sScore").textContent=score;
   document.getElementById("sAsked").textContent=asked;
@@ -795,10 +798,16 @@ function renderRecords(){
 
 // ---------- Question rendering ----------
 function nextQuestion(){
-  if(activeMode==="type" && pendingTypeRecap){
+  document.getElementById("nextBtn").textContent = "Question suivante →";   // remet le libellé normal (après « Voir mon résultat »)
+  if((activeMode==="type" || activeMode==="quiz") && pendingTypeRecap){
     pendingTypeRecap=false;
     showTypeRecap();
     return;
+  }
+  if(roundEnded) return;   // le message de fin reste affiché jusqu'à un choix (Rejouer…)
+  // Question passée sans réponse (Aide / Difficile = « changer la question ») : elle revient plus tard dans la série
+  if(!answered && currentItem && bagKey!=="" && (activeMode==="type" || activeMode==="quiz")){
+    bag.splice(Math.floor(Math.random()*(bag.length+1)), 0, currentItem);
   }
   answered=false;
   document.getElementById("endgame").classList.add("hidden");
@@ -921,7 +930,17 @@ function chooseOption(btn,label){
     else if(b!==btn) b.classList.add("dim");
   });
   registerResult(isCorrect);
+  if(!isCorrect && activeMode==="quiz") mistakes.push(currentItem);
+  markRoundEnd();
   afterAnswer();
+}
+
+// Dernière question de la série répondue : la suite affichera le message de fin (au lieu de repartir à 1)
+function markRoundEnd(){
+  if((activeMode==="quiz" || activeMode==="type") && bag.length===0){
+    pendingTypeRecap = true;
+    document.getElementById("nextBtn").textContent = "Voir mon résultat →";
+  }
 }
 
 function checkTyped(){
@@ -942,7 +961,7 @@ function checkTyped(){
     if(activeMode==="type") mistakes.push(currentItem);
   }
   registerResult(isCorrect);
-  if(activeMode==="type" && bag.length===0) pendingTypeRecap=true;
+  markRoundEnd();
   afterAnswer(activeMode==="type" && isCorrect);
 }
 
@@ -963,8 +982,9 @@ function afterAnswer(autoAdvance){
   }
 }
 
-// ---------- Récap de fin de tour (mode Clavier) ----------
+// ---------- Message de fin de tour (modes Quiz et Clavier) ----------
 function showTypeRecap(){
+  roundEnded = true;
   document.getElementById("questionCard").classList.add("hidden");
   document.getElementById("nextBtn").classList.remove("show");
   const total = pool().length;
@@ -973,14 +993,17 @@ function showTypeRecap(){
   const list = mistakes.map(m => `<div class="recap-item">${badgeHtml(m.num,30)}<span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
   eg.innerHTML = `
+    <div class="end-title">🎉 Vous avez terminé !</div>
     <div class="big">${total-errCount}/${total}</div>
-    <div class="lbl">${errCount===0 ? "Aucune erreur, bravo ! 🎉" : `Tour terminé — ${errCount} erreur${errCount>1?"s":""} à revoir :`}</div>
+    <div class="lbl">${(total===1 ? "Le département est passé" : `Les ${total} départements sont passés`) + (errCount===0 ? ", sans aucune erreur. Bravo ! 🏆" : ` — ${errCount} erreur${errCount>1?"s":""} à revoir :`)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">🎯 Refaire mes ${errCount} erreur${errCount>1?"s":""}</button>` : ""}
     <button class="next-btn show" id="typeRecapReplayBtn">🔄 Recommencer</button>`;
   eg.classList.remove("hidden");
-  document.getElementById("typeRecapReplayBtn").onclick = startPlay;
+  document.getElementById("typeRecapReplayBtn").onclick = () => startPlay();
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
+  if(typeof confetti === "function") confetti(errCount===0 ? 80 : 35);
+  if(typeof soundFanfare === "function") soundFanfare();
 }
 
 // ---------- Timer (Défi) ----------

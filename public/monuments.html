@@ -542,6 +542,7 @@ function norm(s){ return s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ
 
 // ==================== QUIZ ====================
 // État de fin de série (Quiz et Clavier) : au lieu de repartir à 1, on affiche un message de fin
+let lastQuizSeries=[], lastTypeSeries=[];   // série jouée (pour « Refaire la même série »)
 let quizMistakes=[], typeMistakes=[], pendingQuizEnd=false, pendingTypeEnd=false, quizEnded=false, typeEnded=false;
 const NEXT_LABEL='Question suivante → <small style="opacity:.6;font-size:.75em">(Entrée)</small>';
 const RESULT_LABEL='Voir mon résultat →';
@@ -565,20 +566,25 @@ function showSeriesEnd(kind){
     '<div class="end-big">'+ok+'/'+totalN+'</div>'+
     '<div class="end-lbl">'+((totalN===1 ? 'Le monument est passé' : 'Les '+totalN+' monuments sont passés')+(n===0 ? ', sans aucune erreur. Bravo ! 🏆' : ' — '+n+' erreur'+(n>1?'s':'')+' à revoir :'))+'</div>'+
     (n>0 ? '<div class="recap-list">'+list+'</div><button class="next-btn show" id="'+kind+'EndErrBtn">🎯 Refaire mes '+n+' erreur'+(n>1?'s':'')+'</button>' : '')+
+    '<button class="next-btn show" id="'+kind+'EndSameBtn">🔁 Refaire la même série</button>'+
     '<button class="next-btn show" id="'+kind+'EndReplayBtn">🔄 Recommencer</button>';
   end.classList.remove("hidden");
   document.getElementById(kind+"EndReplayBtn").onclick = () => {
     if(isQuiz){ score=0;streak=0;total=0;refillBag();nextQuestion(); }
     else { typeScore=0;typeStreak=0;typeTotal=0;typeRefillBag();typeNextQuestion(); }
   };
+  document.getElementById(kind+"EndSameBtn").onclick = () => {
+    if(isQuiz){ const s = lastQuizSeries.slice(); resetSeriesState("quiz"); bag=shuffle(s); seriesTotal=bag.length; questionNum=0; score=0;streak=0;total=0; nextQuestion(); }
+    else { const s = lastTypeSeries.slice(); resetSeriesState("type"); typeBag=shuffle(s); typeSeriesTotal=typeBag.length; typeQuestionNum=0; typeScore=0;typeStreak=0;typeTotal=0; typeNextQuestion(); }
+  };
   if(n>0) document.getElementById(kind+"EndErrBtn").onclick = () => {
-    if(isQuiz){ resetSeriesState("quiz"); bag=shuffle(mistakes); seriesTotal=bag.length; questionNum=0; score=0;streak=0;total=0; nextQuestion(); }
-    else { resetSeriesState("type"); typeBag=shuffle(mistakes); typeSeriesTotal=typeBag.length; typeQuestionNum=0; typeScore=0;typeStreak=0;typeTotal=0; typeNextQuestion(); }
+    if(isQuiz){ resetSeriesState("quiz"); lastQuizSeries=mistakes.slice(); bag=shuffle(mistakes); seriesTotal=bag.length; questionNum=0; score=0;streak=0;total=0; nextQuestion(); }
+    else { resetSeriesState("type"); lastTypeSeries=mistakes.slice(); typeBag=shuffle(mistakes); typeSeriesTotal=typeBag.length; typeQuestionNum=0; typeScore=0;typeStreak=0;typeTotal=0; typeNextQuestion(); }
   };
   soundFanfare();
 }
 
-function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; resetSeriesState("quiz"); }
+function refillBag(){ bag=shuffle(filteredPool()); seriesTotal=bag.length; questionNum=0; lastQuizSeries=bag.slice(); resetSeriesState("quiz"); }
 
 function nextQuestion(){
   clearTimeout(autoAdvTimer);
@@ -958,7 +964,7 @@ let typeBag=[], typeSeriesTotal=0, typeQuestionNum=0;
 let typeScore=0, typeStreak=0, typeTotal=0;
 let typeCurrentItem=null, typeAnswered=false, typeHintLevel=0;
 
-function typeRefillBag(){ typeBag=shuffle(filteredPool()); typeSeriesTotal=typeBag.length; typeQuestionNum=0; resetSeriesState("type"); }
+function typeRefillBag(){ typeBag=shuffle(filteredPool()); typeSeriesTotal=typeBag.length; typeQuestionNum=0; lastTypeSeries=typeBag.slice(); resetSeriesState("type"); }
 
 function typeUpdateScore(){
   const pct=typeTotal>0?Math.round(typeScore/typeTotal*100):0;

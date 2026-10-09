@@ -669,6 +669,10 @@ let score = 0, asked = 0, streak = 0, currentItem = null, answered = false;
 let bag = [], bagKey = "";
 let mistakes = [];
 let pendingTypeRecap = false;
+let lastRoundPool = null;            // série jouée au dernier tour (pour « Refaire la même série »)
+const SAVED_ERR_KEY = "regionsTypeErrors";
+let savedTypeErrors = [];            // erreurs accumulées en mode Clavier (stockées en localStorage)
+try { const se = localStorage.getItem(SAVED_ERR_KEY); if(se) savedTypeErrors = JSON.parse(se).filter(e => DATA.some(d=>d.c===e.c)); } catch(e){}
 let roundEnded = false;   // le message de fin est affiché : plus de nouvelle question tant qu'on n'a pas choisi (Entrée comprise)
 let timerId = null, timeLeft = TIMED_SECONDS;
 let typeTableMode = false;
@@ -987,9 +991,29 @@ function showTypeRecap(){
   roundEnded = true;
   document.getElementById("questionCard").classList.add("hidden");
   document.getElementById("nextBtn").classList.remove("show");
+  const isType = (activeMode==="type");
   const total = pool().length;
   const errCount = mistakes.length;
   const errItems = mistakes.slice();
+  if(isType){
+    // En session de révision : retirer les items correctement répondus des erreurs sauvegardées
+    if(reviewPool){
+      const newMistakesSet = new Set(errItems.map(m=>m.c));
+      const reviewedSet = new Set((lastRoundPool||[]).map(m=>m.c));
+      savedTypeErrors = savedTypeErrors.filter(s => !reviewedSet.has(s.c) || newMistakesSet.has(s.c));
+    }
+    // Sauvegarder les erreurs
+    if(errCount>0){
+      const newSaved = errItems.filter(e => !savedTypeErrors.some(s=>s.c===e.c));
+      savedTypeErrors = [...savedTypeErrors, ...newSaved];
+      try { localStorage.setItem(SAVED_ERR_KEY, JSON.stringify(savedTypeErrors)); } catch(e){}
+    } else if(reviewPool){
+      try {
+        if(savedTypeErrors.length>0) localStorage.setItem(SAVED_ERR_KEY, JSON.stringify(savedTypeErrors));
+        else localStorage.removeItem(SAVED_ERR_KEY);
+      } catch(e){}
+    }
+  }
   const list = mistakes.map(m => `<div class="recap-item">${badgeHtml(m.num,30)}<span class="country">${m.c}</span><span class="cap">${m.cap}</span></div>`).join("");
   const eg = document.getElementById("endgame");
   eg.innerHTML = `
@@ -998,10 +1022,15 @@ function showTypeRecap(){
     <div class="lbl">${(total===1 ? "Le département est passé" : `Les ${total} départements sont passés`) + (errCount===0 ? ", sans aucune erreur. Bravo ! 🏆" : ` — ${errCount} erreur${errCount>1?"s":""} à revoir :`)}</div>
     ${errCount>0 ? `<div class="recap-list">${list}</div>` : ""}
     ${errCount>0 ? `<button class="next-btn show" id="typeRecapReviewBtn">🎯 Refaire mes ${errCount} erreur${errCount>1?"s":""}</button>` : ""}
-    <button class="next-btn show" id="typeRecapReplayBtn">🔄 Recommencer</button>`;
+    <button class="next-btn show" id="typeRecapSameBtn">🔁 Refaire la même série</button>
+    <button class="next-btn show" id="typeRecapReplayBtn">🔄 Recommencer</button>
+    ${isType && errCount===0 && savedTypeErrors.length>0 ? `<button class="next-btn show" id="typeRecapSavedErrBtn">📚 Mes erreurs (${savedTypeErrors.length})</button>` : ""}`;
   eg.classList.remove("hidden");
+  const _roundPool = lastRoundPool ? lastRoundPool.slice() : null;
+  document.getElementById("typeRecapSameBtn").onclick = () => startPlay(_roundPool);
   document.getElementById("typeRecapReplayBtn").onclick = () => startPlay();
   if(errCount>0) document.getElementById("typeRecapReviewBtn").onclick = () => startReviewSession(errItems);
+  if(isType && errCount===0 && savedTypeErrors.length>0) document.getElementById("typeRecapSavedErrBtn").onclick = () => startReviewSession(savedTypeErrors);
   if(typeof confetti === "function") confetti(errCount===0 ? 80 : 35);
   if(typeof soundFanfare === "function") soundFanfare();
 }
@@ -1043,6 +1072,7 @@ function endTimed(){
 // ---------- Mode orchestration ----------
 function startPlay(overridePool){
   reviewPool = overridePool || null;
+  lastRoundPool = pool().slice(); // capture la série avant resetQuiz
   stopTimer();
   resetQuiz();
   document.getElementById("endgame").classList.add("hidden");

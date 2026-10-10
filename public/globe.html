@@ -59,7 +59,7 @@
   #massifLegend .ml-title{ display:block; margin-bottom:5px; }
   #massifLegend .ml-item{ display:inline-flex; align-items:center; gap:5px; margin:2px 8px; white-space:nowrap; }
   #massifLegend .ml-dot{ width:12px; height:12px; border-radius:4px; display:inline-block; border:1.5px solid rgba(255,255,255,.85); }
-  .map-label.massif{ font-style:italic; font-weight:700; fill:var(--massif-label); }
+  .map-label.massif{ font-style:italic; font-weight:800; fill:var(--massif-label); stroke-width:3.8px; }
   .dot-marker{ fill:#f5c518; stroke:#fff; stroke-width:1.2; vector-effect:non-scaling-stroke; }
   .map-discover .dot-marker{ cursor:pointer; }
   /* Mode Massifs : les pays ne réagissent plus (ni survol, ni clic) ; seuls les massifs réagissent */
@@ -580,8 +580,8 @@
     const t = d3.zoomTransform(svg.node()), k = t.k;
     // Noms de pays : en mode jeu ils donneraient la réponse. Noms de massifs : seulement si le bouton est actif.
     const active = [];
-    if(mode === 'discover') labelItems.forEach(l => active.push(l));
     if(massifsOn) massifItems.forEach(l => active.push(l));
+    if(mode === 'discover') labelItems.forEach(l => active.push(l));
     const activeSet = new Set(active);
     labelItems.concat(massifItems).forEach(l => { if(!activeSet.has(l) && l.shown){ l.el.style.display = 'none'; l.shown = false; } });
     const placed = [];
@@ -589,8 +589,8 @@
       const sw = l.w0 * k, sh = l.h0 * k;                       // taille du pays à l'écran
       let fs, tw, show;
       if(l.massif){
-        fs = l.rank === 1 ? 12 : l.rank === 2 ? 11 : 10;        // les grands massifs ont un nom plus grand
-        tw = l.tw12 * fs / 12;
+        fs = (l.big ? 17 : l.rank === 1 ? 15 : l.rank === 2 ? 14 : l.rank === 3 ? 13 : 12) + (k >= 8 ? 2 : k >= 4 ? 1 : 0);   // les grands massifs ont un nom plus grand
+        tw = l.tw12 * fs / 12 * 1.06;
         show = k >= (MASSIF_MINK[l.rank] || 5);                 // les petits massifs n'apparaissent qu'en zoomant
       } else {
         fs = Math.max(10, Math.min(16, 8 + sw / 40));            // plus le pays est grand, plus le nom est grand
@@ -619,7 +619,7 @@
 
   // ---------- Massifs montagneux (bouton ⛰️ Massifs) ----------
   let massifsOn = false, massifsData = null, massifG = null, massifItems = [];
-  const MASSIF_MINK = {1:1, 2:1.8, 3:3, 4:5};    // zoom minimal pour afficher le nom, selon l'importance du massif
+  const MASSIF_MINK = {1:1, 2:1, 3:1.5, 4:2.4};    // zoom minimal pour afficher le nom, selon l'importance du massif
   // Les 7 grands massifs du monde (un par continent), chacun dans sa couleur
   const BIG7 = {
     'Alpes':'#6a5cff', 'Himalaya':'#e63946', 'Atlas':'#d4a017', 'montagnes Rocheuses':'#f08a24',
@@ -646,7 +646,7 @@
       })
       .on('mouseleave', () => { tipEl.style.display = 'none'; });
     massifG.selectAll('path.big').raise();           // les 7 grands massifs restent bien visibles au-dessus des autres
-    measureCtx.font = "700 12px Nunito, system-ui, sans-serif";
+    measureCtx.font = "italic 800 12px Nunito, system-ui, sans-serif";
     const items = [];
     massifsData.features.forEach(ft => {
       const c = projection(d3.geoCentroid(ft)), b = path.bounds(ft);

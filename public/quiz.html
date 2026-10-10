@@ -1384,10 +1384,12 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 
 // ---------- Helpers ----------
 let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
+// Continents choisis (multi-sélection) : activeFilter vaut « Tous » ou la liste « Asie|Afrique »
+function filterData(f){ return (!f || f==="Tous") ? DATA : DATA.filter(d=>f.split("|").includes(d.k)); }
+function filterLabel(f){ return (f || "Tous").split("|").join(" · "); }
 function pool(){
   if(reviewPool) return reviewPool;
-  if(activeFilters.has("Tous") || activeFilters.size===0) return DATA;
-  return DATA.filter(d=>activeFilters.has(d.k));
+  return filterData(activeFilter);
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -1467,7 +1469,7 @@ CONTINENTS.forEach(name=>{
       if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
       document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
     }
-    activeFilter=[...activeFilters][0]||"Tous";
+    activeFilter=[...activeFilters].join("|")||"Tous";
     if(activeMode==="study") renderStudy();
     else if(activeMode==="flags") enterFlagsSubMode(flagsSubMode);
     else if(activeMode==="type" && typeTableMode){ lastTablePool = null; lastTableList = null; originalTablePool = null; originalTableList = null; renderTypeTable(true); }
@@ -1478,7 +1480,7 @@ CONTINENTS.forEach(name=>{
 
 // ---------- Study ----------
 function renderStudy(){
-  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const studyList = filterData(activeFilter);
   const allSorted = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
   const searchEl = document.getElementById("studySearch");
   if(searchEl) searchEl.value = "";
@@ -1494,7 +1496,7 @@ function equalizeCardHeights(){
 }
 
 function renderStudyCards(list){
-  document.getElementById("countNote").textContent = T().countNote(list.length, activeFilter);
+  document.getElementById("countNote").textContent = T().countNote(list.length, filterLabel(activeFilter));
   const grid=document.getElementById("grid"); grid.innerHTML="";
   list.forEach((d,i)=>{
     const card=document.createElement("div");
@@ -1513,7 +1515,7 @@ function renderStudyCards(list){
 document.getElementById("studySearch").addEventListener("input", e=>{
   if(activeMode!=="study") return;
   const q = norm(e.target.value.trim());
-  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const studyList = filterData(activeFilter);
   const filtered = q ? studyList.filter(d=> norm(d.c).includes(q) || norm(d.cap).includes(q)) : studyList;
   const sorted = filtered.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
   renderStudyCards(sorted);
@@ -2201,7 +2203,7 @@ function renderFlagsAll(force=false){
 
   // Dans "tous les drapeaux" on affiche tous les pays du continent, sans filtre de difficulté.
   // Ordre mélangé à chaque fois (pour ne pas mémoriser les positions et "tricher" sans le vouloir).
-  const list = shuffle(activeFilter === "Tous" ? DATA : DATA.filter(d => d.k === activeFilter));
+  const list = shuffle(filterData(activeFilter));
   const grid = document.getElementById("flagsGrid");
   const checkBtn = document.getElementById("flagsCheckBtn");
   grid.innerHTML = "";
@@ -2953,7 +2955,7 @@ function pvpOrd(n){
 }
 
 // Tous les pays du continent choisi (sert à plafonner le nombre de manches)
-function pvpAvailableFor(filter){ return !filter || filter === "Tous" ? DATA : DATA.filter(d => d.k === filter); }
+function pvpAvailableFor(filter){ return filterData(filter); }
 function pvpAvailable(){ return pvpAvailableFor(activeFilter); }
 function pvpToArray(x){
   if(Array.isArray(x)) return x.filter(Boolean);
@@ -3193,7 +3195,8 @@ async function pvpJoin(){
     pvpQuestions = pvpToArray(room.questions);
     if(room.filter){
       activeFilter = room.filter;
-      document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", c.dataset.key === activeFilter));
+      activeFilters = new Set(activeFilter.split("|"));
+      document.querySelectorAll(".chip").forEach(c => c.classList.toggle("active", activeFilters.has(c.dataset.key)));
     }
     filtersEl.classList.add('locked');
     pvpSavedName = name;
@@ -3266,7 +3269,7 @@ function pvpRenderWaiting(room){
   if(document.getElementById('pvpWaiting').classList.contains('hidden')) pvpShowSection('pvpWaiting');
   document.getElementById('pvpCodeDisplay').textContent = pvpRoom;
   const total = pvpToArray(room.questions).length;
-  const filt = room.filter && room.filter !== 'Tous' ? room.filter : T().filterAll;
+  const filt = room.filter && room.filter !== 'Tous' ? filterLabel(room.filter) : T().filterAll;
   document.getElementById('pvpWaitInfo').textContent = pvpT('pvpInfo')(total, filt);
   const list = pvpPlayers(room);
   document.getElementById('pvpRosterLbl').textContent = pvpT('pvpPlayers')(list.length);

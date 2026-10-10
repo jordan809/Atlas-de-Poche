@@ -378,6 +378,7 @@
   <div class="options-bar hidden" id="optionsBar">
     <button class="toggle" id="dirToggle">🏛️ Deviner la préfecture</button>
     <button class="toggle" id="numToggle">🎲 Deviner le numéro</button>
+    <button class="toggle hidden active" id="autoAdvanceToggle">⚡ Auto-avance</button>
     <button class="toggle hidden" id="hintBtn">💡 Aide</button>
     <button class="toggle hidden" id="tableToggle">📋 Mode tableau</button>
   </div>
@@ -661,7 +662,9 @@ const COLORS = { "Auvergne-Rhône-Alpes":"#1a72e8","Bourgogne-Franche-Comté":"#
 const TIMED_SECONDS = 60;
 
 // ---------- State ----------
-let activeFilter = "Tous";
+let activeFilter = "Tous";          // « Tous » ou la liste des régions choisies, séparées par « | »
+let activeFilters = new Set(["Tous"]); // multi-sélection des régions
+let autoAdvanceOn = true;          // quiz : passer à la question suivante après une bonne réponse
 let activeMode = "study";          // study | quiz | type | timed
 let direction = "cap";             // "cap" = deviner la préfecture ; "country" = deviner le département
 let soundOn = true;
@@ -691,9 +694,11 @@ function saveRecords(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(rec
 
 // ---------- Helpers ----------
 let reviewPool = null; // si défini : liste des erreurs à retravailler, remplace le pool normal
+function filterData(f){ return (!f || f==="Tous") ? DATA : DATA.filter(d=>f.split("|").includes(d.k)); }
+function filterLabel(f){ return (f || "Tous").split("|").join(" · "); }
 function pool(){
   if(reviewPool) return reviewPool;
-  return activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  return filterData(activeFilter);
 }
 function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
@@ -754,9 +759,16 @@ REGIONS.forEach(name=>{
   b.dataset.key=name;
   b.textContent=name;
   b.onclick=()=>{
-    activeFilter=name;
-    document.querySelectorAll(".chip").forEach(c=>c.classList.remove("active"));
-    b.classList.add("active");
+    // plusieurs régions peuvent être choisies ; « Tous » remet tout
+    if(name==="Tous"){
+      activeFilters=new Set(["Tous"]);
+    } else {
+      activeFilters.delete("Tous");
+      if(activeFilters.has(name)) activeFilters.delete(name); else activeFilters.add(name);
+      if(activeFilters.size===0) activeFilters=new Set(["Tous"]);
+    }
+    activeFilter=[...activeFilters].join("|");
+    document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active", activeFilters.has(c.dataset.key)));
     if(activeMode==="study") renderStudy();
     else if(activeMode==="type" && typeTableMode) renderTypeTable(true);
     else startPlay();
@@ -766,9 +778,9 @@ REGIONS.forEach(name=>{
 
 // ---------- Study ----------
 function renderStudy(){
-  const studyList = activeFilter==="Tous" ? DATA : DATA.filter(d=>d.k===activeFilter);
+  const studyList = filterData(activeFilter);
   const list = studyList.slice().sort((a,b)=>a.c.localeCompare(b.c,"fr"));
-  document.getElementById("countNote").textContent = list.length+" département"+(list.length>1?"s":"")+(activeFilter==="Tous"?" répertoriés":" — "+activeFilter);
+  document.getElementById("countNote").textContent = list.length+" département"+(list.length>1?"s":"")+(activeFilter==="Tous"?" répertoriés":" — "+filterLabel(activeFilter));
   const grid=document.getElementById("grid"); grid.innerHTML="";
   list.forEach((d,i)=>{
     const card=document.createElement("div");
@@ -936,7 +948,7 @@ function chooseOption(btn,label){
   registerResult(isCorrect);
   if(!isCorrect && activeMode==="quiz") mistakes.push(currentItem);
   markRoundEnd();
-  afterAnswer();
+  afterAnswer(isCorrect && autoAdvanceOn);
 }
 
 // Dernière question de la série répondue : la suite affichera le message de fin (au lieu de repartir à 1)
@@ -1104,6 +1116,11 @@ function enterMode(mode){
   activeMode=mode;
   stopTimer();
   activeFilter = "Tous";
+  activeFilters = new Set(["Tous"]);
+  // Auto-avance : réactivé à chaque changement de mode, visible seulement en Quiz
+  autoAdvanceOn = true;
+  const aat = document.getElementById("autoAdvanceToggle");
+  if(aat){ aat.classList.add("active"); aat.classList.toggle("hidden", mode!=="quiz"); }
   filtersEl.classList.remove('locked');
   // Réinitialiser direction et boutons de direction
   direction = dirState; // revenir à cap ou country selon l'état du dirToggle
@@ -1222,6 +1239,12 @@ numToggle.onclick = () => {
   updateHintVisibility();
   if(activeMode === "type" && typeTableMode) renderTypeTable(true);
   else if(activeMode !== "study") startPlay();
+};
+
+const autoAdvanceToggle = document.getElementById("autoAdvanceToggle");
+autoAdvanceToggle.onclick = () => {
+  autoAdvanceOn = !autoAdvanceOn;
+  autoAdvanceToggle.classList.toggle("active", autoAdvanceOn);
 };
 
 const hintBtn = document.getElementById("hintBtn");

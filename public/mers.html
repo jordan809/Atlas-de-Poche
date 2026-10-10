@@ -119,6 +119,13 @@
   #gameSection{display:none;}
   #gameSection.on{display:block;}
   .game-filter-bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+  /* Option du jeu (même bouton que sur les autres pages) */
+  .options-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 16px;}
+  .toggle{font-family:'Nunito',sans-serif;font-weight:800;font-size:0.86rem;padding:8px 16px;border:none;cursor:pointer;border-radius:40px;background:rgba(255,255,255,0.95);color:var(--ink);box-shadow:0 6px 14px rgba(0,0,0,0.14);transition:transform 0.15s ease;}
+  .toggle:hover{transform:translateY(-2px);}
+  .toggle.active{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;}
+  html.dark .toggle{background:rgba(30,27,46,0.95);color:#e8e2ff;}
+  html.dark .toggle.active{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;}
   .game-subfilter-bar{display:none;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;padding:6px 0 2px;}
   .game-subfilter-bar.visible{display:flex;}
 
@@ -254,6 +261,9 @@
 
   <!-- JEU -->
   <section id="gameSection">
+    <div class="options-bar" id="gameOptions">
+      <button class="toggle active" id="autoAdvanceToggle">⚡ Auto-avance</button>
+    </div>
     <div class="game-filter-bar" id="gameFilterBar">
       <button class="game-filter-chip active" onclick="setGameFilter('Tous',this)">🌐 Tous</button>
       <button class="game-filter-chip" onclick="setGameFilter('Atlantique',this)">🌎 Atlantique</button>
@@ -844,6 +854,7 @@ const BADGE_LABEL = {principale:"Mer principale","sous-mer":"Sous-mer","golfe":"
 let activeTab="rev", revFilter="Tous", revSubFilter="Tous";
 let gameFilter="Tous", gameSubFilter="Tous";
 let gamePool=[], gameIdx=0, gameScore=0, answered=false, currentAns="";
+let autoAdvanceOn=true;   // jeu : question suivante automatique après une bonne réponse
 
 // ════════════════════════════════════════
 // DARK MODE
@@ -877,6 +888,8 @@ function switchTab(tab){
   }
   document.getElementById("revSubFilterBar").classList.toggle("visible", tab==="rev" && revFilter!=="Tous");
   if(tab==="game"){
+    autoAdvanceOn=true;
+    document.getElementById("autoAdvanceToggle").classList.add("active");
     gameFilter="Tous"; gameSubFilter="Tous";
     document.querySelectorAll("#gameFilterBar .game-filter-chip").forEach(b=>b.classList.toggle("active",b.textContent.includes("Tous")));
     document.getElementById("gameSubFilterBar").classList.remove("visible");
@@ -1190,8 +1203,19 @@ function answerQ(btn,chosen){
   const fb=document.getElementById("gFeedback");
   if(ok){fb.textContent="✅ Bonne réponse !";fb.className="g-feedback fb-good";}
   else{fb.textContent=`❌ C'était : ${currentAns}`;fb.className="g-feedback fb-bad";}
-  document.getElementById("nextBtn").style.display="inline-block";
+  if(ok && autoAdvanceOn){
+    // bonne réponse : on passe tout seul à la suite (une mauvaise réponse laisse le temps de lire la correction)
+    const idx=gameIdx;
+    setTimeout(()=>{ if(answered && gameIdx===idx && activeTab==="game") nextQ(); },650);
+  } else {
+    document.getElementById("nextBtn").style.display="inline-block";
+  }
 }
+
+document.getElementById("autoAdvanceToggle").onclick=function(){
+  autoAdvanceOn=!autoAdvanceOn;
+  this.classList.toggle("active",autoAdvanceOn);
+};
 
 function nextQ(){gameIdx++;showQ();}
 

@@ -41,7 +41,12 @@
   .country.target{ fill:var(--green) !important; stroke:#0a8f4c !important; stroke-width:2.2 !important; }
   /* Noms des pays (découverte seulement : en mode jeu ils donneraient la réponse) */
   .map-label{ font-family:'Nunito',system-ui,sans-serif; font-weight:800; fill:var(--label-fill); stroke:var(--label-halo); stroke-width:3.2px; paint-order:stroke; stroke-linejoin:round; text-anchor:middle; dominant-baseline:central; pointer-events:none; user-select:none; -webkit-user-select:none; }
-  body:not(.map-discover) #labelG .map-label:not(.massif){ display:none; }
+  body:not(.map-discover):not(.mgame) #labelG .map-label:not(.massif){ display:none; }
+  /* Jeu des massifs : seul le massif à deviner est visible, en vert ; ses voisins et leurs noms restent cachés */
+  body.mgame #massifG{ display:inline; }
+  body.mgame .massif-poly:not(.m-target){ display:none; }
+  body.mgame .massif-poly{ pointer-events:none !important; }
+  .massif-poly.m-target{ fill:rgba(25,211,107,.62) !important; stroke:#0a8f4c !important; stroke-width:2.4 !important; opacity:1 !important; }
   /* Massifs montagneux (bouton ⛰️ Massifs) */
   #massifG{ display:none; pointer-events:none; }
   body.massifs-on #massifG{ display:inline; }
@@ -220,6 +225,7 @@
     <button class="pill active" id="btnDiscover">🔍 Découverte</button>
     <button class="pill" id="btnGame">🎮 Lancer le jeu</button>
     <button class="pill" id="btnMassifs" title="Afficher les massifs montagneux du monde">⛰️ Massifs</button>
+    <button class="pill hidden" id="btnMassifGame" title="Deviner le nom des massifs">🎮 Jeu des massifs</button>
   </div>
 
   <div class="hint" id="hint">Clique sur un pays pour le découvrir 🗺️ — glisse pour te déplacer, molette pour zoomer</div>
@@ -235,8 +241,8 @@
   </div>
 
   <div id="gamePanel">
-    <div class="gp-head">🎮 Devine le pays</div>
-    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span> · Pays : <b id="gNum">0</b> / <span id="gCount">0</span></div>
+    <div class="gp-head" id="gpHead">🎮 Devine le pays</div>
+    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span> · <span id="gNumLbl">Pays</span> : <b id="gNum">0</b> / <span id="gCount">0</span></div>
     <div class="gp-field" style="margin-top:12px;">Continent</div>
     <div class="gp-conts" id="gpConts">
       <button class="gp-chip active" data-key="Tous">🌐 Tous</button>
@@ -246,12 +252,13 @@
       <button class="gp-chip" data-key="Amérique du Nord">🌎 Amér. Nord</button>
       <button class="gp-chip" data-key="Amérique du Sud">🌎 Amér. Sud</button>
       <button class="gp-chip" data-key="Océanie">🌊 Océanie</button>
+      <button class="gp-chip" id="chipAntarctique" data-key="Antarctique" style="display:none">❄️ Antarctique</button>
     </div>
     <div class="gp-q" id="gpQ">Appuie sur « Lancer le jeu » pour commencer.</div>
     <div id="gpForm" class="hidden">
-      <label class="gp-field" for="inCountry">Pays</label>
+      <label class="gp-field" for="inCountry" id="lblCountry">Pays</label>
       <input class="gp-input" id="inCountry" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nom du pays…">
-      <label class="gp-field" for="inCapital">Capitale</label>
+      <label class="gp-field" for="inCapital" id="lblCapital">Capitale</label>
       <input class="gp-input" id="inCapital" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Sa capitale…">
       <div class="gp-fb" id="gpFb"></div>
       <button class="gp-btn" id="gValidate">Valider ✅</button>
@@ -349,12 +356,14 @@
   const dotItems = gameItems.filter(i => i.size < 1.4);
 
   // ---------- État ----------
-  let mode = "discover";     // "discover" | "game"
+  let mode = "discover";     // "discover" | "game" | "mgame" (jeu des massifs)
   let target = null;         // feature GeoJSON en vert (mode jeu)
   let current = null;        // pays à deviner (données)
   let gScore = 0, gAsked = 0;
   let gameBag = [];          // sac mélangé — chaque pays apparaît une fois par cycle
   let gameContinent = 'Tous';   // continent choisi pour le jeu
+  let gameKind = 'pays';        // 'pays' | 'massifs' : quel jeu est en cours
+  let massifBag = [], currentMassif = null;   // jeu des massifs : sac de tirage et massif à deviner
   let gameEndPending = false;   // le dernier pays vient d'être répondu : la suite affiche l'écran de fin
   const gamePool = () => gameContinent === 'Tous' ? gameItems : gameItems.filter(i => i.d.k === gameContinent);
 
@@ -580,8 +589,8 @@
     const t = d3.zoomTransform(svg.node()), k = t.k;
     // Noms de pays : en mode jeu ils donneraient la réponse. Noms de massifs : seulement si le bouton est actif.
     const active = [];
-    if(massifsOn) massifItems.forEach(l => active.push(l));
-    if(mode === 'discover') labelItems.forEach(l => active.push(l));
+    if(massifsOn && mode !== 'mgame') massifItems.forEach(l => active.push(l));   // jeu des massifs : leurs noms restent cachés
+    if(mode === 'discover' || mode === 'mgame') labelItems.forEach(l => active.push(l));   // (noms de pays : utiles pour se repérer dans le jeu des massifs)
     const activeSet = new Set(active);
     labelItems.concat(massifItems).forEach(l => { if(!activeSet.has(l) && l.shown){ l.el.style.display = 'none'; l.shown = false; } });
     const placed = [];
@@ -635,12 +644,12 @@
     if(!massifsData) return;
     if(!massifG) massifG = g.insert('g', 'circle.dot-marker').attr('id', 'massifG');
     massifG.selectAll('path').data(massifsData.features).join('path')
-      .attr('class', d => 'massif-poly' + (BIG7[d.properties.n] ? ' big' : ''))
+      .attr('class', d => 'massif-poly' + (BIG7[d.properties.n] ? ' big' : '') + (d === currentMassif ? ' m-target' : ''))
       .attr('d', path)
       .style('fill', d => BIG7[d.properties.n] ? hexRgba(BIG7[d.properties.n], 0.5) : null)
       .style('stroke', d => BIG7[d.properties.n] || null)
       .on('mousemove', (ev, d) => {
-        if(!massifsOn) return;
+        if(!massifsOn || mode === 'mgame') return;      // en jeu, le nom ne doit pas apparaître
         tipEl.textContent = labelText(d.properties.n);
         tipEl.style.left = ev.clientX + 'px'; tipEl.style.top = ev.clientY + 'px'; tipEl.style.display = 'block';
       })
@@ -703,11 +712,11 @@
     const dx = Math.max(b[1][0]-b[0][0], 1), dy = Math.max(b[1][1]-b[0][1], 1);
     const cx = (b[0][0]+b[1][0])/2, cy = (b[0][1]+b[1][1])/2;
     // Zone réellement visible : on retire la barre du haut et, en découverte, la fiche en bas
-    const top = opts.top || 0, bottom = opts.bottom || 0;
-    const availH = Math.max(H - top - bottom, 120);
-    let scale = Math.min(W/(dx*padding), availH/(dy*padding));
+    const top = opts.top || 0, bottom = opts.bottom || 0, right = opts.right || 0;
+    const availH = Math.max(H - top - bottom, 120), availW = Math.max(W - right, 160);
+    let scale = Math.min(availW/(dx*padding), availH/(dy*padding));
     scale = Math.max(opts.minScale || 1.3, Math.min(scale, opts.maxScale || 6));
-    const t = d3.zoomIdentity.translate(W/2, top + availH/2).scale(scale).translate(-cx, -cy);
+    const t = d3.zoomIdentity.translate(availW/2, top + availH/2).scale(scale).translate(-cx, -cy);
     svg.transition().duration(opts.duration || 1100).call(zoom.transform, t);
   }
   // Mode découverte : le pays cliqué remplit bien l'écran, au-dessus de la fiche d'info
@@ -721,7 +730,9 @@
 
   function resize(){
     drawMap();
-    if(mode==='game' && target) zoomToFeature(target); else resetView();
+    if(mode==='game' && target) zoomToFeature(target);
+    else if(mode==='mgame' && currentMassif) zoomToFeature(currentMassif, 2.2, massifZoomOpts(currentMassif));
+    else resetView();
   }
   window.addEventListener('resize', resize);
 
@@ -755,6 +766,7 @@
 
   // ---------- Mode Jeu ----------
   function startRound(){
+    if(gameKind === 'massifs') return startMassifRound();
     if(!gamePool().length) return;
     gameEndPending = false;
     $('gpEnd').classList.add('hidden');
@@ -790,6 +802,7 @@
   }
 
   function checkAnswer(){
+    if(gameKind === 'massifs') return checkMassifAnswer();
     if(!current) return;
     const inC = $('inCountry'), inK = $('inCapital');
     const okC = inC.value.trim()!=='' && norm(inC.value)===norm(current.c);
@@ -813,6 +826,112 @@
     $('gNext').classList.remove('hidden');
   }
 
+  // ---------- Jeu des massifs ----------
+  const MREGION = {'Europe':'Europe','Asia':'Asie','Africa':'Afrique','North America':'Amérique du Nord','South America':'Amérique du Sud','Oceania':'Océanie','Antarctica':'Antarctique'};
+  // noms ambigus ou en doublon dans les données : écartés du jeu
+  const MEXCLUDE = new Set(['Cordillera Oriental', 'Montagnes centrales', 'chaînes côtières du Pacifique'].map(norm));
+  // massifs du jeu : les plus connus (importance 1 à 3), un seul par nom, filtrés par continent ;
+  // si un continent en a trop peu (Océanie…), on ajoute les massifs de moindre importance
+  function massifPool(){
+    if(!massifsData) return [];
+    const build = maxRank => {
+      const seen = new Set(), res = [];
+      massifsData.features.slice().sort((a, b) => (a.properties.r || 4) - (b.properties.r || 4)).forEach(ft => {
+        const p = ft.properties;
+        if((p.r || 4) > maxRank) return;
+        if(gameContinent !== 'Tous' && MREGION[p.g] !== gameContinent) return;
+        const key = norm(p.n);
+        if(MEXCLUDE.has(key) || seen.has(key)) return;
+        seen.add(key); res.push(ft);
+      });
+      return res;
+    };
+    let res = build(3);
+    if(gameContinent !== 'Tous' && res.length < 6) res = build(4);
+    return res;
+  }
+  // Réponse acceptée avec ou sans le mot générique : « Rocheuses » = « Montagnes Rocheuses », « Andes » = « Cordillère des Andes »
+  const MGENERIC = new Set(['montagnes','montagne','monts','mont','chaine','chaines','massif','massifs','cordillere','plateaux','plateau','de','des','du','la','le','les','d','l']);
+  function massifKeys(name){
+    const words = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, ' ').split(/[\s-]+/).filter(Boolean);
+    const core = words.filter(w => !MGENERIC.has(w)).join('');
+    return core ? [norm(name), core] : [norm(name)];
+  }
+  const massifMatches = (input, name) => { const keys = massifKeys(name); return massifKeys(input).some(x => x && keys.includes(x)); };
+  function drawMassifItem(){
+    if(!massifBag.length){
+      massifBag = massifPool();
+      for(let i = massifBag.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [massifBag[i], massifBag[j]] = [massifBag[j], massifBag[i]]; }
+      if(massifBag.length > 1 && currentMassif && massifBag[massifBag.length - 1] === currentMassif){
+        [massifBag[massifBag.length - 1], massifBag[0]] = [massifBag[0], massifBag[massifBag.length - 1]];
+      }
+    }
+    return massifBag.pop();
+  }
+  function setMassifTarget(ft){
+    currentMassif = ft;
+    if(massifG){
+      massifG.selectAll('path').classed('m-target', d => d === ft);
+      massifG.selectAll('path.m-target').raise();
+    }
+  }
+  // cadrage d'un massif : au-dessus du panneau sur mobile, à gauche du panneau sinon
+  function massifZoomOpts(ft){
+    const opts = { bounds: path.bounds(ft), minScale: 1.3, maxScale: 9 };
+    if(window.innerWidth <= 600){ opts.top = 60; opts.bottom = panel.offsetHeight + 10; }
+    else { const r = panel.getBoundingClientRect(); if(r.width) opts.right = Math.max(0, W - r.left + 16); }
+    return opts;
+  }
+  function startMassifRound(){
+    const pool = massifPool();
+    if(!pool.length) return;
+    gameEndPending = false;
+    $('gpEnd').classList.add('hidden');
+    $('gpQ').classList.remove('hidden');
+    $('gNext').textContent = 'Massif suivant ➡️';
+    $('gCount').textContent = pool.length;
+    setMassifTarget(null);
+    infoEl.classList.remove('show');
+    $('gpForm').classList.add('hidden');
+    $('gNext').classList.add('hidden');
+    $('gStart').classList.add('hidden');
+    $('gpQ').textContent = "🔎 Choix d'un massif…";
+    resetView();
+    setTimeout(() => {
+      if(mode !== 'mgame') return;                 // on a quitté le jeu entre-temps
+      const ft = drawMassifItem();
+      if(!ft) return;
+      $('gNum').textContent = pool.length - massifBag.length;      // « Massif : n / total »
+      setMassifTarget(ft);
+      gAsked += 1; $('gAsked').textContent = gAsked;
+      $('gpQ').textContent = 'Quel est ce massif (en vert) ?';
+      const inp = $('inCountry');
+      inp.value = ''; inp.className = 'gp-input'; inp.disabled = false;
+      $('gpFb').innerHTML = '';
+      $('gpForm').classList.remove('hidden');
+      $('gValidate').classList.remove('hidden');
+      zoomToFeature(ft, 2.2, massifZoomOpts(ft));
+      setTimeout(() => inp.focus({preventScroll:true}), 50);
+    }, 550);
+  }
+  function checkMassifAnswer(){
+    if(!currentMassif) return;
+    const inp = $('inCountry');
+    const name = currentMassif.properties.n;
+    const ok = inp.value.trim() !== '' && massifMatches(inp.value, name);
+    inp.disabled = true;
+    inp.className = 'gp-input ' + (ok ? 'ok' : 'no');
+    if(ok){ gScore += 1; soundCorrect(); } else soundWrong();
+    $('gScore').textContent = gScore;
+    $('gpFb').innerHTML = ok
+      ? '<span class="good">Bravo ! 🎉</span><span class="reveal">⛰️ <b>' + labelText(name) + '</b></span>'
+      : '<span class="bad">À revoir.</span><span class="reveal">⛰️ <b>' + labelText(name) + '</b> — ' + (MREGION[currentMassif.properties.g] || '') + '</span>';
+    $('gValidate').classList.add('hidden');
+    gameEndPending = (massifBag.length === 0);
+    $('gNext').textContent = gameEndPending ? '🏁 Voir mon résultat' : 'Massif suivant ➡️';
+    $('gNext').classList.remove('hidden');
+  }
+
   // Écran de fin : message, score et bouton Recommencer
   function showGameEnd(){
     gameEndPending = false;
@@ -822,10 +941,12 @@
     $('gNext').classList.add('hidden');
     $('gStart').classList.add('hidden');
     $('gpQ').classList.add('hidden');
-    const total = gamePool().length, pct = gAsked ? Math.round(gScore / gAsked * 100) : 0;
+    setMassifTarget(null);
+    const isM = gameKind === 'massifs';
+    const total = isM ? massifPool().length : gamePool().length, pct = gAsked ? Math.round(gScore / gAsked * 100) : 0;
     $('gEndScore').textContent = gScore + ' / ' + gAsked;
     $('gEndMsg').innerHTML =
-      (total === 1 ? 'Le pays est passé' : 'Les ' + total + ' pays sont passés') + (gameContinent === 'Tous' ? '' : ' — ' + gameContinent) + '.<br>' +
+      (total === 1 ? (isM ? 'Le massif est passé' : 'Le pays est passé') : 'Les ' + total + (isM ? ' massifs sont passés' : ' pays sont passés')) + (gameContinent === 'Tous' ? '' : ' — ' + gameContinent) + '.<br>' +
       (gScore === gAsked ? 'Sans aucune erreur, bravo ! 🏆' : pct + '% de bonnes réponses.');
     $('gpEnd').classList.remove('hidden');
     resetView();                                    // on revoit toute la carte
@@ -835,10 +956,29 @@
 
   // ---------- Bascule de mode ----------
   function setMode(m){
+    // le jeu des pays est un jeu à part : le mode Massifs est désactivé
+    if(m === 'game' && massifsOn) massifsUI(false);
     mode = m;
+    gameKind = (m === 'mgame') ? 'massifs' : 'pays';
+    const isM = (m === 'mgame');
     $('btnDiscover').classList.toggle('active', m==='discover');
     $('btnGame').classList.toggle('active', m==='game');
+    $('btnMassifGame').classList.toggle('active', isM);
     document.body.classList.toggle('map-discover', m==='discover');
+    document.body.classList.toggle('mgame', isM);
+    // textes et champs du panneau selon le jeu
+    $('gpHead').textContent = isM ? '⛰️ Devine le massif' : '🎮 Devine le pays';
+    $('gNumLbl').textContent = isM ? 'Massif' : 'Pays';
+    $('lblCountry').textContent = isM ? 'Nom du massif' : 'Pays';
+    $('inCountry').placeholder = isM ? 'Nom du massif…' : 'Nom du pays…';
+    $('lblCapital').classList.toggle('hidden', isM);
+    $('inCapital').classList.toggle('hidden', isM);
+    $('chipAntarctique').style.display = isM ? '' : 'none';
+    if(!isM && gameContinent === 'Antarctique'){      // pas de pays en Antarctique : retour sur « Tous »
+      gameContinent = 'Tous';
+      document.querySelectorAll('#gpConts .gp-chip').forEach(x => x.classList.toggle('active', x.dataset.key === 'Tous'));
+    }
+    if(!isM) setMassifTarget(null);
     target=null; current=null; refreshColors();
     infoEl.classList.remove('show');
     tipEl.style.display='none';
@@ -853,44 +993,58 @@
       $('gpForm').classList.add('hidden');
       $('gNext').classList.add('hidden');
       $('gStart').classList.add('hidden');
+      scheduleLabels();
       startRound(); // lance directement une manche
     }
   }
 
   $('btnDiscover').onclick = ()=> setMode('discover');
   $('btnGame').onclick = ()=> setMode('game');
+  // Affichage du mode Massifs (le bouton « Jeu des massifs » n'existe que dans ce mode)
+  function massifsUI(on){
+    massifsOn = on;
+    $('btnMassifs').classList.toggle('active', on);
+    $('btnMassifGame').classList.toggle('hidden', !on);
+    document.body.classList.toggle('massifs-on', on);
+    if(on){ infoEl.classList.remove('show'); tipEl.style.display = 'none'; }
+  }
   $('btnMassifs').onclick = async () => {
-    massifsOn = !massifsOn;
-    $('btnMassifs').classList.toggle('active', massifsOn);
-    document.body.classList.toggle('massifs-on', massifsOn);
-    if(massifsOn){ infoEl.classList.remove('show'); tipEl.style.display = 'none'; }
-    if(massifsOn && !massifsData){ await loadMassifs(); drawMassifs(); }
+    const on = !massifsOn;
+    massifsUI(on);
+    if(!on && mode === 'mgame') setMode('discover');   // massifs masqués : on quitte aussi leur jeu
+    if(on && !massifsData){ await loadMassifs(); drawMassifs(); }
     scheduleLabels();
+  };
+  $('btnMassifGame').onclick = () => {
+    if(!massifsData) return;                      // massifs pas encore chargés
+    gScore = 0; gAsked = 0; gameBag = []; massifBag = [];
+    $('gScore').textContent = 0; $('gAsked').textContent = 0; $('gNum').textContent = 0;
+    setMode('mgame');
   };
   document.querySelectorAll('#gpConts .gp-chip').forEach(b => {
     b.onclick = () => {
       if(b.dataset.key === gameContinent) return;
       gameContinent = b.dataset.key;
       document.querySelectorAll('#gpConts .gp-chip').forEach(x => x.classList.toggle('active', x === b));
-      gScore = 0; gAsked = 0; gameBag = [];                       // nouvelle partie : score et tirage remis à zéro
+      gScore = 0; gAsked = 0; gameBag = []; massifBag = [];       // nouvelle partie : score et tirage remis à zéro
       $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
-      if(mode === 'game') startRound();
+      if(mode === 'game' || mode === 'mgame') startRound();
     };
   });
   $('gValidate').onclick = checkAnswer;
   $('gNext').onclick = nextOrEnd;
   $('gRestart').onclick = () => {            // même continent, score et tirage remis à zéro
-    gScore = 0; gAsked = 0; gameBag = [];
+    gScore = 0; gAsked = 0; gameBag = []; massifBag = [];
     $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
     startRound();
   };
   $('gStart').onclick = startRound;
   $('gStop').onclick = () => {
-    gScore = 0; gAsked = 0; gameBag = [];
+    gScore = 0; gAsked = 0; gameBag = []; massifBag = [];
     $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
     setMode('discover');
   };
-  $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('inCapital').focus(); } });
+  $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); if(gameKind === 'massifs') checkAnswer(); else $('inCapital').focus(); } });
   $('inCapital').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); checkAnswer(); } });
   document.addEventListener('keydown', e=>{
     if(e.key!=='Enter') return;

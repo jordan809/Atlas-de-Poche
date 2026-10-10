@@ -106,6 +106,10 @@
   .gp-head{ font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:8px; }
   .gp-score{ font-size:.9rem; color:#6b6396; font-weight:700; margin-top:2px; }
   .gp-score b{ color:#6a5cff; font-size:1.05rem; }
+  .gp-end{ text-align:center; margin-top:14px; }
+  .gp-end-title{ font-weight:800; font-size:1.2rem; color:#6a5cff; }
+  .gp-end-big{ font-weight:800; font-size:2.6rem; line-height:1.1; color:#6a5cff; margin:6px 0 2px; }
+  .gp-end-msg{ color:#6b6396; font-weight:700; font-size:.9rem; line-height:1.45; }
   .gp-conts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
   .gp-chip{ font-family:inherit; font-weight:800; font-size:.76rem; padding:5px 11px; border:2px solid #ece9ff; background:#f7f6ff; color:#2b2350; border-radius:30px; cursor:pointer; transition:all .15s ease; white-space:nowrap; }
   .gp-chip:hover{ border-color:#6a5cff; }
@@ -216,6 +220,12 @@
       <div class="gp-fb" id="gpFb"></div>
       <button class="gp-btn" id="gValidate">Valider ✅</button>
     </div>
+    <div id="gpEnd" class="gp-end hidden">
+      <div class="gp-end-title">🎉 Vous avez terminé !</div>
+      <div class="gp-end-big" id="gEndScore">0 / 0</div>
+      <div class="gp-end-msg" id="gEndMsg"></div>
+      <button class="gp-btn" id="gRestart">🔄 Recommencer</button>
+    </div>
     <button class="gp-btn sec hidden" id="gNext">Pays suivant ➡️</button>
     <button class="gp-btn hidden" id="gStart">🚀 Lancer un pays</button>
     <button class="gp-btn sec" id="gStop">⏹️ Arrêter le jeu</button>
@@ -309,6 +319,7 @@
   let gScore = 0, gAsked = 0;
   let gameBag = [];          // sac mélangé — chaque pays apparaît une fois par cycle
   let gameContinent = 'Tous';   // continent choisi pour le jeu
+  let gameEndPending = false;   // le dernier pays vient d'être répondu : la suite affiche l'écran de fin
   const gamePool = () => gameContinent === 'Tous' ? gameItems : gameItems.filter(i => i.d.k === gameContinent);
 
   function drawGameItem(){
@@ -650,6 +661,10 @@
   // ---------- Mode Jeu ----------
   function startRound(){
     if(!gamePool().length) return;
+    gameEndPending = false;
+    $('gpEnd').classList.add('hidden');
+    $('gpQ').classList.remove('hidden');
+    $('gNext').textContent = 'Pays suivant ➡️';
     $('gCount').textContent = gamePool().length;
     target = null; current = null; refreshColors();
     infoEl.classList.remove('show');
@@ -698,8 +713,30 @@
     }
     $('gpFb').innerHTML = fb;
     $('gValidate').classList.add('hidden');
+    gameEndPending = (gameBag.length === 0);   // plus aucun pays à tirer : c'était le dernier de la série
+    $('gNext').textContent = gameEndPending ? '🏁 Voir mon résultat' : 'Pays suivant ➡️';
     $('gNext').classList.remove('hidden');
   }
+
+  // Écran de fin : message, score et bouton Recommencer
+  function showGameEnd(){
+    gameEndPending = false;
+    target = null; current = null; refreshColors();
+    infoEl.classList.remove('show');
+    $('gpForm').classList.add('hidden');
+    $('gNext').classList.add('hidden');
+    $('gStart').classList.add('hidden');
+    $('gpQ').classList.add('hidden');
+    const total = gamePool().length, pct = gAsked ? Math.round(gScore / gAsked * 100) : 0;
+    $('gEndScore').textContent = gScore + ' / ' + gAsked;
+    $('gEndMsg').innerHTML =
+      (total === 1 ? 'Le pays est passé' : 'Les ' + total + ' pays sont passés') + (gameContinent === 'Tous' ? '' : ' — ' + gameContinent) + '.<br>' +
+      (gScore === gAsked ? 'Sans aucune erreur, bravo ! 🏆' : pct + '% de bonnes réponses.');
+    $('gpEnd').classList.remove('hidden');
+    resetView();                                    // on revoit toute la carte
+    [523, 659, 784, 1047].forEach((fr, i) => setTimeout(() => beep(fr, 0.22), i * 110));   // petite fanfare
+  }
+  function nextOrEnd(){ if(gameEndPending) showGameEnd(); else startRound(); }
 
   // ---------- Bascule de mode ----------
   function setMode(m){
@@ -738,7 +775,12 @@
     };
   });
   $('gValidate').onclick = checkAnswer;
-  $('gNext').onclick = startRound;
+  $('gNext').onclick = nextOrEnd;
+  $('gRestart').onclick = () => {            // même continent, score et tirage remis à zéro
+    gScore = 0; gAsked = 0; gameBag = [];
+    $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
+    startRound();
+  };
   $('gStart').onclick = startRound;
   $('gStop').onclick = () => {
     gScore = 0; gAsked = 0; gameBag = [];
@@ -751,7 +793,7 @@
     if(e.key!=='Enter') return;
     if(e.target.tagName==='INPUT' || e.target.tagName==='TEXTAREA') return;
     const gn = $('gNext');
-    if(gn && !gn.classList.contains('hidden')) startRound();
+    if(gn && !gn.classList.contains('hidden')) nextOrEnd();
   });
 
   document.body.classList.add('map-discover'); // découverte = mode par défaut

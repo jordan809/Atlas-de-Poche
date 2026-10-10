@@ -196,7 +196,7 @@
 
   <div id="gamePanel">
     <div class="gp-head">🎮 Devine le pays</div>
-    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span> · <span id="gCount">0</span> pays</div>
+    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span> · Pays : <b id="gNum">0</b> / <span id="gCount">0</span></div>
     <div class="gp-field" style="margin-top:12px;">Continent</div>
     <div class="gp-conts" id="gpConts">
       <button class="gp-chip active" data-key="Tous">🌐 Tous</button>
@@ -313,7 +313,7 @@
 
   function drawGameItem(){
     if(!gameBag.length){
-      gameBag = gamePool();
+      gameBag = gamePool().slice();   // copie : le tirage ne doit jamais vider la liste des pays
       for(let i=gameBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [gameBag[i],gameBag[j]]=[gameBag[j],gameBag[i]]; }
       // éviter que le 1er du nouveau sac soit le même que le dernier joué
       if(gameBag.length>1 && current && gameBag[gameBag.length-1].d.c===current.c){
@@ -660,6 +660,7 @@
     resetView();
     setTimeout(()=>{
       const item = drawGameItem();
+      $('gNum').textContent = gamePool().length - gameBag.length;   // « Pays : n / total »
       target = item.f;
       current = item.d;
       refreshColors();
@@ -732,7 +733,7 @@
       gameContinent = b.dataset.key;
       document.querySelectorAll('#gpConts .gp-chip').forEach(x => x.classList.toggle('active', x === b));
       gScore = 0; gAsked = 0; gameBag = [];                       // nouvelle partie : score et tirage remis à zéro
-      $('gScore').textContent = gScore; $('gAsked').textContent = gAsked;
+      $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
       if(mode === 'game') startRound();
     };
   });
@@ -741,7 +742,7 @@
   $('gStart').onclick = startRound;
   $('gStop').onclick = () => {
     gScore = 0; gAsked = 0; gameBag = [];
-    $('gScore').textContent = gScore; $('gAsked').textContent = gAsked;
+    $('gScore').textContent = gScore; $('gAsked').textContent = gAsked; $('gNum').textContent = 0;
     setMode('discover');
   };
   $('inCountry').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); $('inCapital').focus(); } });

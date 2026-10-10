@@ -106,6 +106,10 @@
   .gp-head{ font-weight:800; font-size:1.15rem; display:flex; align-items:center; gap:8px; }
   .gp-score{ font-size:.9rem; color:#6b6396; font-weight:700; margin-top:2px; }
   .gp-score b{ color:#6a5cff; font-size:1.05rem; }
+  .gp-conts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .gp-chip{ font-family:inherit; font-weight:800; font-size:.76rem; padding:5px 11px; border:2px solid #ece9ff; background:#f7f6ff; color:#2b2350; border-radius:30px; cursor:pointer; transition:all .15s ease; white-space:nowrap; }
+  .gp-chip:hover{ border-color:#6a5cff; }
+  .gp-chip.active{ background:linear-gradient(100deg,#6a5cff,#ff5d8f); border-color:transparent; color:#fff; }
   .gp-q{ margin:14px 0 10px; font-weight:700; font-size:.95rem; min-height:20px; }
   .gp-field{ display:block; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#9088ad; margin:10px 0 4px; }
   .gp-input{ width:100%; font-family:inherit; font-weight:700; font-size:1rem; padding:11px 12px;
@@ -130,6 +134,8 @@
     #gamePanel{ top:auto; bottom:0; right:0; left:0; width:100%; max-width:100%;
       transform:translateY(120%); border-radius:22px 22px 0 0; }
     #gamePanel.show{ transform:translateY(0); }
+    .gp-conts{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; }
+    .gp-conts::-webkit-scrollbar{ display:none; }
   }
 </style>
 </head>
@@ -190,7 +196,17 @@
 
   <div id="gamePanel">
     <div class="gp-head">🎮 Devine le pays</div>
-    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span></div>
+    <div class="gp-score">Score : <b id="gScore">0</b> / <span id="gAsked">0</span> · <span id="gCount">0</span> pays</div>
+    <div class="gp-field" style="margin-top:12px;">Continent</div>
+    <div class="gp-conts" id="gpConts">
+      <button class="gp-chip active" data-key="Tous">🌐 Tous</button>
+      <button class="gp-chip" data-key="Europe">🏰 Europe</button>
+      <button class="gp-chip" data-key="Asie">🌏 Asie</button>
+      <button class="gp-chip" data-key="Afrique">🌍 Afrique</button>
+      <button class="gp-chip" data-key="Amérique du Nord">🌎 Amér. Nord</button>
+      <button class="gp-chip" data-key="Amérique du Sud">🌎 Amér. Sud</button>
+      <button class="gp-chip" data-key="Océanie">🌊 Océanie</button>
+    </div>
     <div class="gp-q" id="gpQ">Appuie sur « Lancer le jeu » pour commencer.</div>
     <div id="gpForm" class="hidden">
       <label class="gp-field" for="inCountry">Pays</label>
@@ -292,10 +308,12 @@
   let current = null;        // pays à deviner (données)
   let gScore = 0, gAsked = 0;
   let gameBag = [];          // sac mélangé — chaque pays apparaît une fois par cycle
+  let gameContinent = 'Tous';   // continent choisi pour le jeu
+  const gamePool = () => gameContinent === 'Tous' ? gameItems : gameItems.filter(i => i.d.k === gameContinent);
 
   function drawGameItem(){
     if(!gameBag.length){
-      gameBag = gameItems.slice();
+      gameBag = gamePool();
       for(let i=gameBag.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [gameBag[i],gameBag[j]]=[gameBag[j],gameBag[i]]; }
       // éviter que le 1er du nouveau sac soit le même que le dernier joué
       if(gameBag.length>1 && current && gameBag[gameBag.length-1].d.c===current.c){
@@ -631,7 +649,8 @@
 
   // ---------- Mode Jeu ----------
   function startRound(){
-    if(!gameItems.length) return;
+    if(!gamePool().length) return;
+    $('gCount').textContent = gamePool().length;
     target = null; current = null; refreshColors();
     infoEl.classList.remove('show');
     $('gpForm').classList.add('hidden');
@@ -644,7 +663,6 @@
       target = item.f;
       current = item.d;
       refreshColors();
-      zoomToFeature(item.f, 5);
       gAsked += 2; $('gAsked').textContent = gAsked;
       $('gpQ').textContent = 'Quel est ce pays (en vert) et sa capitale ?';
       $('inCountry').value=''; $('inCapital').value='';
@@ -653,6 +671,9 @@
       $('gpFb').innerHTML='';
       $('gpForm').classList.remove('hidden');
       $('gValidate').classList.remove('hidden');
+      // zoom une fois le formulaire affiché : sur mobile le panneau est en bas, le pays doit rester visible au-dessus
+      if(window.innerWidth <= 600) zoomToFeature(item.f, 5, { top: 60, bottom: panel.offsetHeight + 10 });
+      else zoomToFeature(item.f, 5);
       setTimeout(()=>$('inCountry').focus({preventScroll:true}), 50);
     }, 550);
   }
@@ -705,6 +726,16 @@
 
   $('btnDiscover').onclick = ()=> setMode('discover');
   $('btnGame').onclick = ()=> setMode('game');
+  document.querySelectorAll('#gpConts .gp-chip').forEach(b => {
+    b.onclick = () => {
+      if(b.dataset.key === gameContinent) return;
+      gameContinent = b.dataset.key;
+      document.querySelectorAll('#gpConts .gp-chip').forEach(x => x.classList.toggle('active', x === b));
+      gScore = 0; gAsked = 0; gameBag = [];                       // nouvelle partie : score et tirage remis à zéro
+      $('gScore').textContent = gScore; $('gAsked').textContent = gAsked;
+      if(mode === 'game') startRound();
+    };
+  });
   $('gValidate').onclick = checkAnswer;
   $('gNext').onclick = startRound;
   $('gStart').onclick = startRound;

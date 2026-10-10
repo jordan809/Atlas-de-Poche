@@ -1940,6 +1940,13 @@ function resetPlayOptions(){
 // ---------- Barre de modes : défilement automatique (même réglage sur toutes les pages) ----------
 // Après un clic sur un bouton de la barre, la page défile pour que la barre soit tout en haut de l'écran.
 // Si la barre y est déjà (on passe d'un mode à l'autre), la page ne bouge pas du tout.
+// Position de défilement à conserver (barre en haut). La page garde au moins la hauteur nécessaire pour la tenir,
+// même si le contenu raccourcit (question suivante plus courte…) : sinon elle « remonterait » à chaque réponse.
+let modeBarKeep = null;
+function modeBarFloor(top){
+  document.body.style.minHeight = top == null ? '' : Math.ceil(top + window.innerHeight) + 'px';
+}
+window.addEventListener('resize', () => { if(modeBarKeep != null) modeBarFloor(modeBarKeep); });
 function modeBarPad(){
   let pad = document.getElementById('modeBarPad');
   if(!pad){ pad = document.createElement('div'); pad.id = 'modeBarPad'; pad.setAttribute('aria-hidden', 'true'); pad.style.pointerEvents = 'none'; document.body.appendChild(pad); }
@@ -1947,12 +1954,14 @@ function modeBarPad(){
 }
 // À appeler AVANT de changer de mode : la page garde sa hauteur pendant le changement, donc elle ne saute pas
 function modeBarHold(){
+  modeBarKeep = null; modeBarFloor();
   const pad = modeBarPad();
   pad.style.height = Math.max(pad.offsetHeight, window.scrollY + window.innerHeight) + 'px';
 }
 // À appeler APRÈS le changement de mode
 function scrollToModeBar(bar){
   if(!bar) return;
+  modeBarKeep = null; modeBarFloor();
   let used = 10;
   const go = (smooth) => {
     const r = bar.getBoundingClientRect();
@@ -1975,9 +1984,9 @@ function scrollToModeBar(bar){
     last = window.scrollY;
     if(!stopped && n < 25){ setTimeout(settle, 200); return; }
     if(Math.abs(bar.getBoundingClientRect().top - used) > 3 && !retried){ retried = true; go(false); setTimeout(settle, 200); return; }
-    const pad = modeBarPad();
-    const base = document.documentElement.scrollHeight - pad.offsetHeight;
-    pad.style.height = Math.max(0, window.scrollY + window.innerHeight - base) + 'px';
+    modeBarKeep = window.scrollY;
+    modeBarFloor(modeBarKeep);
+    modeBarPad().style.height = '0px';
   };
   setTimeout(settle, 350);
 }
@@ -3668,8 +3677,6 @@ document.getElementById('pvpInputCountry').addEventListener('keydown', e=>{ if(e
 document.getElementById('pvpInputCapital').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpSubmit(); });
 document.getElementById('pvpReplayBtn').onclick  = pvpReplayClick;
 document.getElementById('pvpQuitBtn').onclick    = pvpQuit;
-document.getElementById('pvpJoinConfirmBtn').onclick = pvpJoinConfirm;
-document.getElementById('pvpJoinPseudo').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpJoinConfirm(); });
 document.getElementById('pvpJoinBackBtn').onclick = () => pvpShowSection('pvpLobby');
 document.getElementById('pvpPseudo').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpCreate(); });
 document.getElementById('pvpModalOk').onclick = pvpReplayModalOk;

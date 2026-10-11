@@ -140,7 +140,7 @@
   var DB = 'https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app';
   // clé locale -> règle de fusion : 'max' = records (on garde le meilleur) ; 'lww' = la modification la plus récente gagne
   var SYNC_KEYS = {
-    capitales_records_v1: 'max', regions_records_v1: 'max',
+    capitales_records_v1: 'max', regions_records_v1: 'max', atlasMastered_v1: 'max',
     atlasTypeErrors: 'lww', atlasTableErrors: 'lww', regionsTypeErrors: 'lww',
     darkMode: 'lww', soundOn: 'lww', lang: 'lww'
   };
@@ -168,29 +168,47 @@
         if (PREF_KEYS[k]) return;
         rawRemove.call(localStorage, k); rawRemove.call(localStorage, TS + k);
       });
+      rawRemove.call(localStorage, 'atlasProgTmp_v1');
     } catch (e) {}
     applying = false;
   }
 
-  // Fusion des records : champ par champ, on garde la plus grande valeur
+  // Fusion des données « max » (records, éléments maîtrisés) : nombres -> plus grande valeur, listes -> union,
+  // objets -> champ par champ. La fusion ne fait donc jamais perdre de progression.
   function parseObj(v) { try { var o = JSON.parse(v); return (o && typeof o === 'object' && !Array.isArray(o)) ? o : null; } catch (e) { return null; } }
-  function sortedStr(o) { var r = {}; Object.keys(o).sort().forEach(function (k) { r[k] = o[k]; }); return JSON.stringify(r); }
+  function canon(v) {                       // forme canonique : clés triées, listes triées (pour comparer sans tenir compte de l'ordre)
+    if (Array.isArray(v)) return v.map(canon).sort(function (x, y) { x = JSON.stringify(x); y = JSON.stringify(y); return x < y ? -1 : x > y ? 1 : 0; });
+    if (v && typeof v === 'object') { var r = {}; Object.keys(v).sort().forEach(function (k) { r[k] = canon(v[k]); }); return r; }
+    return v;
+  }
   function same(a, b) {
     var x = parseObj(a), y = parseObj(b);
-    return (x && y) ? sortedStr(x) === sortedStr(y) : a === b;
+    return (x && y) ? JSON.stringify(canon(x)) === JSON.stringify(canon(y)) : a === b;
+  }
+  function mergeVal(a, b) {
+    if (a === undefined) return b;
+    if (b === undefined) return a;
+    if (typeof a === 'number' && typeof b === 'number') return Math.max(a, b);
+    if (Array.isArray(a) && Array.isArray(b)) {
+      var out = a.slice();
+      b.forEach(function (x) { if (out.indexOf(x) < 0) out.push(x); });
+      return out;
+    }
+    if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) {
+      var o = {}, k;
+      for (k in a) o[k] = a[k];
+      for (k in b) o[k] = mergeVal(a[k], b[k]);
+      return o;
+    }
+    return a;                                // formats différents : on garde la valeur locale
   }
   function mergeMax(lv, rv) {
     var a = parseObj(lv), b = parseObj(rv);
     if (!a && !b) return lv !== null ? lv : rv;
     if (!a) return rv;
     if (!b) return lv;
-    var m = {}, k;
-    for (k in a) m[k] = a[k];
-    for (k in b) {
-      if (typeof b[k] === 'number') { if (typeof m[k] !== 'number' || b[k] > m[k]) m[k] = b[k]; }
-      else if (!(k in m)) m[k] = b[k];
-    }
-    return sortedStr(m) === sortedStr(a) ? lv : JSON.stringify(m);   // inchangé : on garde la chaîne d'origine
+    var m = mergeVal(a, b);
+    return JSON.stringify(canon(m)) === JSON.stringify(canon(a)) ? lv : JSON.stringify(m);   // inchangé : on garde la chaîne d'origine
   }
 
   // La progression n'est envoyée que si les règles de la base refusent l'accès aux visiteurs non connectés à ce compte :
@@ -306,6 +324,35 @@
     }).catch(function () {});
   }
 
+  // ── Bouton « Voir mes badges » : à gauche des boutons du haut (avant Spotify) ─────────────
+  function badgesButton() {
+    var wrap = document.querySelector('.top-right-btns');
+    if (!wrap || document.getElementById('badgesBtn')) return;
+    if (/\/badges(\.html)?$/.test(location.pathname)) return;          // on y est déjà
+    if (!document.getElementById('badgesBtnCss')) {
+      var st = document.createElement('style');
+      st.id = 'badgesBtnCss';
+      st.textContent =
+        '#badgesBtn{order:-10;display:flex;align-items:center;gap:7px;height:42px;padding:0 16px;border-radius:21px;' +
+        'text-decoration:none;font-family:"Baloo 2",cursive;font-weight:700;font-size:.92rem;letter-spacing:.02em;color:#fff;' +
+        'white-space:nowrap;flex-shrink:0;background:rgba(255,255,255,.25);backdrop-filter:blur(6px);' +
+        'box-shadow:0 4px 12px rgba(0,0,0,.2);transition:transform .2s,background .2s;}' +
+        '#badgesBtn:hover{transform:scale(1.06);background:rgba(255,255,255,.4);}' +
+        'html.dark #badgesBtn{background:rgba(0,0,0,.35);}' +
+        'html.dark #badgesBtn:hover{background:rgba(0,0,0,.5);}' +
+        '#badgesBtn .bb-short{display:none;}' +
+        '@media(max-width:720px){#badgesBtn .bb-long{display:none;}#badgesBtn .bb-short{display:inline;}}' +
+        '@media(max-width:520px){#badgesBtn{height:38px;padding:0 12px;font-size:.82rem;gap:5px;}}';
+      document.head.appendChild(st);
+    }
+    var a = document.createElement('a');
+    a.id = 'badgesBtn';
+    a.href = '/badges.html';
+    a.title = 'Voir mes badges';
+    a.innerHTML = '<span aria-hidden="true">🏅</span><span class="bb-long">Voir mes badges</span><span class="bb-short">Badges</span>';
+    wrap.insertBefore(a, wrap.firstChild);
+  }
+
   window.AtlasAccount = {
     sync: sync, lastSync: function () { return lastSyncAt; },
     user: function () { var s = load(); return s ? { uid: s.uid, email: s.email, name: s.name } : null; },
@@ -314,7 +361,7 @@
   };
 
   window.addEventListener('storage', function (e) { if (e.key === STORE) updateMenu(); });   // connexion/déconnexion dans un autre onglet
-  function boot() { updateMenu(); initialSync(); }
+  function boot() { updateMenu(); badgesButton(); initialSync(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();

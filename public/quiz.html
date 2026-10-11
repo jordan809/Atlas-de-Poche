@@ -1648,6 +1648,7 @@ function buildOptions(q){
 
 // ---------- Answer handling ----------
 function registerResult(correct){
+  try{ if(window.AtlasProgress) AtlasProgress.record('cap', currentItem && currentItem.c, correct, activeMode==='type' ? 'type' : 'choice'); }catch(e){}
   asked++;
   if(correct){
     score++; streak++;
@@ -1800,6 +1801,7 @@ function endTimed(){
 
   const isRecord = score>records.bestTimed;
   if(isRecord){ records.bestTimed=score; saveRecords(); confetti(60); soundFanfare(); }
+  try{ if(window.AtlasProgress && asked>=10 && score===asked) AtlasProgress.flag('perfect_cap'); }catch(e){}   // Défi sans aucune erreur
   renderRecords();
 
   const eg=document.getElementById("endgame");
@@ -2243,6 +2245,7 @@ function renderFlagsAll(force=false){
         input.classList.add("correct");
         input.disabled = true;
         soundCorrect();
+        try{ if(window.AtlasProgress) AtlasProgress.record('cap', d.c, true, 'type'); }catch(e){}
         // Déplace le focus sur la prochaine case non validée
         const allInputs = [...document.querySelectorAll(".flag-input")];
         const currentIdx = allInputs.indexOf(input);
@@ -2380,6 +2383,7 @@ function renderTypeTable(force=false, overridePool=null, doShuffle=true){
         input.classList.add("correct");
         input.disabled = true;
         soundCorrect();
+        try{ if(window.AtlasProgress) AtlasProgress.record('cap', d.c, true, 'type'); }catch(e){}
         const allInputs = [...document.querySelectorAll("#typeTableGrid .tbl-input")];
         const currentIdx = allInputs.indexOf(input);
         const next = allInputs.slice(currentIdx + 1).find(i => !i.disabled)
@@ -2552,7 +2556,7 @@ const LANGS = {
     sub:"Révise, teste-toi et explore les capitales et drapeaux des cinq continents",
     intro:`Bienvenue sur <strong>Atlas de poche</strong>, ton atlas interactif et gratuit pour apprendre la géographie en t'amusant. Découvre les <strong>195 pays du monde</strong> et leurs capitales, puis entraîne-toi grâce aux modes <strong>révision</strong>, <strong>quiz</strong>, <strong>clavier</strong>, <strong>défi chronométré</strong> et <strong>drapeaux</strong> !`,
     // Menu
-    menuGlobe:"🌍 Globe interactif", menuSeas:"🌊 Mers & Océans", menuContact:"📬 Contact", menuAccount:"👤 Créer un compte",
+    menuGlobe:"🌍 Globe interactif", menuSeas:"🌊 Mers & Océans", menuContact:"📬 Contact", menuAccount:"👤 Créer un compte", badgesLong:"Voir mes badges", badgesShort:"Badges",
     // Modes
     modeStudy:"📖 Révision", modeQuiz:"🎯 Quiz", modeType:"⌨️ Clavier",
     modeTimed:"⏱️ Défi", modeFlags:"🚩 Drapeaux", modePvp:"🌐 Multijoueur",
@@ -2645,7 +2649,7 @@ const LANGS = {
     h1:"World Capitals",
     sub:"Study, test yourself and explore capitals and flags of all continents",
     intro:`Welcome to <strong>Atlas de poche</strong>, your free interactive atlas to learn world geography. Discover the <strong>195 countries</strong> and their capitals, then practice with <strong>review</strong>, <strong>quiz</strong>, <strong>keyboard</strong>, <strong>timed challenge</strong> and <strong>flags</strong> modes!`,
-    menuGlobe:"🌍 Interactive Globe", menuSeas:"🌊 Seas & Oceans", menuContact:"📬 Contact", menuAccount:"👤 Create an account",
+    menuGlobe:"🌍 Interactive Globe", menuSeas:"🌊 Seas & Oceans", menuContact:"📬 Contact", menuAccount:"👤 Create an account", badgesLong:"View my badges", badgesShort:"Badges",
     modeStudy:"📖 Review", modeQuiz:"🎯 Quiz", modeType:"⌨️ Keyboard",
     modeTimed:"⏱️ Challenge", modeFlags:"🚩 Flags", modePvp:"🌐 Multiplayer",
     dirCap:"🏛️ Guess the capital", dirCountry:"🌍 Guess the country",
@@ -2727,7 +2731,7 @@ const LANGS = {
     h1:"Las Capitales del Mundo",
     sub:"Repasa, ponte a prueba y explora capitales y banderas de todos los continentes",
     intro:`Bienvenido a <strong>Atlas de poche</strong>, tu atlas interactivo y gratuito para aprender geografía. Descubre los <strong>195 países del mundo</strong> y sus capitales, luego practica con los modos <strong>repaso</strong>, <strong>quiz</strong>, <strong>teclado</strong>, <strong>desafío</strong> y <strong>banderas</strong>!`,
-    menuGlobe:"🌍 Globo interactivo", menuSeas:"🌊 Mares & Océanos", menuContact:"📬 Contacto", menuAccount:"👤 Crear una cuenta",
+    menuGlobe:"🌍 Globo interactivo", menuSeas:"🌊 Mares & Océanos", menuContact:"📬 Contacto", menuAccount:"👤 Crear una cuenta", badgesLong:"Ver mis insignias", badgesShort:"Insignias",
     modeStudy:"📖 Repaso", modeQuiz:"🎯 Quiz", modeType:"⌨️ Teclado",
     modeTimed:"⏱️ Desafío", modeFlags:"🚩 Banderas", modePvp:"🌐 Multijugador",
     dirCap:"🏛️ Adivinar la capital", dirCountry:"🌍 Adivinar el país",
@@ -2819,6 +2823,8 @@ function applyLang(){
   const gl = document.querySelector('.menu-panel a[href="/globe.html"]'); if(gl) gl.textContent = t.menuGlobe;
   const se = document.querySelector('.menu-panel a[href="/mers.html"]'); if(se) se.textContent = t.menuSeas;
   const co = document.querySelector('.menu-panel a[href="/contact.html"]'); if(co) co.textContent = t.menuContact;
+  const bb = document.getElementById('badgesBtn');
+  if(bb){ const bl = bb.querySelector('.bb-long'), bs = bb.querySelector('.bb-short'); if(bl) bl.textContent = t.badgesLong; if(bs) bs.textContent = t.badgesShort; bb.title = t.badgesLong; }
   const ac = document.querySelector('.menu-panel a[href="/compte.html"]');
   if(ac){ ac.dataset.label = t.menuAccount; if(window.AtlasAccount) AtlasAccount.updateMenu(); else ac.textContent = t.menuAccount; }   // connecté : le pseudo reste affiché
   // Modes
@@ -3706,7 +3712,8 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-<script src="/account.js?v=2"></script>
+<script src="/progress.js?v=1"></script>
+<script src="/account.js?v=3"></script>
 <script src="/spotify.js?v=3"></script>
 </body>
 </html>

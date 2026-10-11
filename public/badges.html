@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>
+  /* Réouverture du site après fermeture : on repart de l'accueil. */
+  try { if (!sessionStorage.getItem('atlasNav') && !localStorage.getItem('sp_pending_code')) location.replace('/index.html'); } catch (e) {}
+</script>
+<title>Mes badges — Atlas de poche</title>
+<meta name="description" content="Ta progression et tes badges sur Atlas de poche.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #6a5cff;
+    --bg2: #ff5d8f;
+    --bg3: #ffb84d;
+    --card: #ffffff;
+    --ink: #2b2350;
+    --ink-soft: #6b6396;
+    --good: #1fae6a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    min-height: 100%;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    color: var(--ink);
+    background: transparent;
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bg {
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh; z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%);
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 900px; margin: 0 auto;
+    padding: 30px 22px 50px;
+  }
+  .hidden { display: none !important; }
+
+  /* Header */
+  header { text-align: center; margin-bottom: 24px; color: #fff; }
+  .eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 30px;
+    margin-bottom: 14px;
+    color: #fff; text-decoration: none; cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  a.eyebrow:hover { background: rgba(255,255,255,0.38); transform: translateY(-1px); }
+  h1 {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: clamp(2.2rem, 6.4vw, 3.8rem); line-height: 1;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  }
+  .sub { margin-top: 10px; font-size: 1.05rem; font-weight: 600; opacity: 0.95; }
+
+  /* Résumé */
+  .summary {
+    display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 22px;
+  }
+  .sum-box {
+    background: rgba(255,255,255,0.95); border-radius: 20px; padding: 14px 22px; text-align: center;
+    min-width: 150px; box-shadow: 0 10px 26px rgba(0,0,0,0.16);
+  }
+  .sum-box .n { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.9rem; line-height: 1.1; color: var(--bg1); }
+  .sum-box .l { font-weight: 800; font-size: 0.82rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .notice {
+    background: rgba(255,255,255,0.95); border-radius: 20px; padding: 14px 18px; margin-bottom: 22px;
+    font-weight: 700; font-size: 0.95rem; text-align: center; box-shadow: 0 10px 26px rgba(0,0,0,0.14);
+  }
+  .notice a { color: var(--bg1); }
+
+  /* Sections */
+  .panel {
+    background: #fff; border-radius: 26px; padding: 24px 26px; margin-bottom: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  }
+  .panel h2 {
+    font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.45rem; line-height: 1.2; margin-bottom: 4px;
+  }
+  .panel .hint { color: var(--ink-soft); font-weight: 600; font-size: 0.9rem; margin-bottom: 16px; }
+
+  /* Barres de progression */
+  .bars { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px 26px; }
+  .bar-row .top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-weight: 800; font-size: 0.93rem; }
+  .bar-row .top .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-row .top .val { color: var(--ink-soft); font-size: 0.82rem; white-space: nowrap; }
+  .rail { height: 12px; border-radius: 8px; background: #efecff; overflow: hidden; margin-top: 5px; }
+  .fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--bg1), var(--bg2)); transition: width 0.6s ease; }
+  .fill.full { background: linear-gradient(90deg, #1fae6a, #7be0a8); }
+
+  /* Badges */
+  .group-title { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.15rem; margin: 18px 0 10px; }
+  .group-title:first-of-type { margin-top: 6px; }
+  .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+  .badge {
+    border-radius: 20px; padding: 14px 12px 12px; text-align: center; background: #f6f4ff;
+    border: 2.5px solid #ece9ff; position: relative;
+  }
+  .badge .em { font-size: 2.4rem; line-height: 1.1; filter: grayscale(1); opacity: 0.45; }
+  .badge .t { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.02rem; line-height: 1.2; margin-top: 6px; }
+  .badge .d { font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); line-height: 1.3; margin-top: 3px; min-height: 2.1em; }
+  .badge .rail { height: 8px; margin-top: 9px; }
+  .badge .pv { font-size: 0.74rem; font-weight: 800; color: var(--ink-soft); margin-top: 4px; }
+  .badge.done {
+    background: linear-gradient(160deg, #fff8e1, #ffe9a8); border-color: #ffd04d;
+    box-shadow: 0 8px 20px rgba(255,184,77,0.35);
+  }
+  .badge.done .em { filter: none; opacity: 1; }
+  .badge.done .d, .badge.done .pv { color: #8a6500; }
+  .badge.done .rail { background: #ffe08a; }
+  .badge.done .fill { background: #f5a300; }
+  .badge.done::after {
+    content: "✓"; position: absolute; top: 8px; right: 10px; width: 22px; height: 22px; border-radius: 50%;
+    background: #1fae6a; color: #fff; font-weight: 800; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+  }
+
+  .loading { text-align: center; color: #fff; font-weight: 800; padding: 40px 0; }
+
+  /* Dark mode */
+  html.dark {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%) no-repeat;
+  }
+  html.dark .bg {
+    background: linear-gradient(135deg, #1a1530 0%, #2d1a2e 55%, #1e1a10 100%);
+  }
+  html.dark .panel, html.dark .sum-box, html.dark .notice { background: #1e1b2e; color: #e8e2ff; }
+  html.dark .sum-box .n { color: #b8aeff; }
+  html.dark .sum-box .l, html.dark .panel .hint, html.dark .bar-row .top .val, html.dark .badge .d, html.dark .badge .pv { color: #a89fd8; }
+  html.dark .rail { background: #2a2545; }
+  html.dark .badge { background: #2a2545; border-color: #3d3568; }
+  html.dark .badge.done { background: linear-gradient(160deg, #3a2f12, #4a3a0f); border-color: #a87c10; box-shadow: none; }
+  html.dark .badge.done .d, html.dark .badge.done .pv { color: #f0c860; }
+  html.dark .badge.done .rail { background: #5a4510; }
+  html.dark .notice a { color: #b8aeff; }
+
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:transform 0.2s,background 0.2s;display:flex;align-items:center;justify-content:center;}
+  .dark-toggle:hover,.sound-toggle:hover{transform:scale(1.12);background:rgba(255,255,255,0.4);}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;letter-spacing:0.03em;box-shadow:0 4px 14px rgba(0,0,0,0.2);transition:transform 0.2s ease,background 0.2s ease;display:flex;align-items:center;gap:8px;}
+  .menu-btn:hover{transform:scale(1.05);background:rgba(255,255,255,0.4);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu-panel::-webkit-scrollbar{display:none;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;transition:background 0.15s ease;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-panel a.active{background:#ede9ff;color:var(--bg1);}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  .menu-lang{display:flex;flex-direction:column;gap:2px;padding:2px 0;}
+  .lang-btn{display:flex;align-items:center;gap:11px;padding:10px 14px;border-radius:11px;border:none;cursor:pointer;background:transparent;color:var(--ink);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;text-align:left;width:100%;transition:background 0.15s ease;}
+  .lang-btn:hover{background:#f0edff;}
+  .lang-btn.active{background:#ede9ff;color:var(--bg1);}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  html.dark .menu-btn:hover{background:rgba(0,0,0,0.5);}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+
+  @media (max-width: 520px) {
+    .wrap { padding-top: 70px; }
+    .panel { padding: 20px 16px; border-radius: 22px; }
+    .menu-btn { font-size: 0.82rem; padding: 0 14px; height: 38px; }
+    .dark-toggle, .sound-toggle { width: 38px; height: 38px; font-size: 1.1rem; }
+    .top-right-btns { top: 10px; right: 12px; gap: 6px; }
+    .menu { top: 10px; left: 12px; }
+    .badges { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .bars { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <div class="menu-divider"></div>
+    <div class="menu-lang" id="menuLang">
+      <button class="lang-btn active" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+      <button class="lang-btn" data-lang="es">🇪🇸 Español</button>
+    </div>
+    <div class="menu-divider"></div>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🏅 Mes badges</h1>
+    <p class="sub">Ta progression et les badges que tu as débloqués</p>
+  </header>
+
+  <div class="notice hidden" id="guestNotice">
+    👤 <a href="/compte.html">Crée un compte ou connecte-toi</a> pour garder tes badges et ta progression sur tous tes appareils.
+  </div>
+
+  <div id="loading" class="loading">Chargement de ta progression…</div>
+
+  <div id="content" class="hidden">
+    <div class="summary">
+      <div class="sum-box"><div class="n" id="sumBadges">0</div><div class="l">Badges débloqués</div></div>
+      <div class="sum-box"><div class="n" id="sumItems">0</div><div class="l">Éléments maîtrisés</div></div>
+    </div>
+
+    <section class="panel">
+      <h2>🏅 Badges</h2>
+      <p class="hint">Joue aux quiz et au clavier pour les débloquer. Un élément est <b>maîtrisé</b> quand tu le trouves 2 fois de suite en quiz, ou 1 fois en tapant la réponse.</p>
+      <div id="badgeGroups"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🌍 Pays &amp; capitales</h2>
+      <p class="hint" id="capHint"></p>
+      <div class="bars" id="barsCap"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🇫🇷 Régions de France</h2>
+      <p class="hint" id="regHint"></p>
+      <div class="bars" id="barsReg"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🌊 Mers &amp; océans</h2>
+      <p class="hint" id="seaHint"></p>
+      <div class="bars" id="barsSea"></div>
+    </section>
+
+    <section class="panel">
+      <h2>🏛️ Monuments du monde</h2>
+      <p class="hint" id="monHint"></p>
+      <div class="bars" id="barsMon"></div>
+    </section>
+  </div>
+</div>
+
+<script src="/account.js?v=3"></script>
+<script src="/progress.js?v=1"></script>
+<script>
+  // Menu
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  // Son (préférence partagée avec les autres pages)
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = localStorage.getItem('soundOn') !== '0';
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
+  // Dark mode
+  const darkToggle = document.getElementById("darkToggle");
+  let darkOn = localStorage.getItem("darkMode") === "1";
+  function applyDark(){
+    document.documentElement.classList.toggle("dark", darkOn);
+    darkToggle.textContent = darkOn ? "☀️" : "🌙";
+  }
+  applyDark();
+  darkToggle.onclick = () => {
+    darkOn = !darkOn;
+    localStorage.setItem("darkMode", darkOn ? "1" : "0");
+    applyDark();
+  };
+
+  // ---------- Statistiques et badges ----------
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+
+  // Les listes complètes viennent des pages du site (source unique des pays, départements, mers et monuments)
+  async function grab(file, re){
+    try{
+      const html = await (await fetch(file)).text();
+      const m = html.match(re);
+      return m ? (new Function('return ' + m[1]))() : [];
+    }catch(e){ return []; }
+  }
+
+  const CONT_EMOJI = { 'Europe':'🏰', 'Asie':'🌏', 'Afrique':'🌍', 'Amérique du Nord':'🌎', 'Amérique du Sud':'🌎', 'Océanie':'🌊' };
+  const CONT_ORDER = ['Europe', 'Asie', 'Afrique', 'Amérique du Nord', 'Amérique du Sud', 'Océanie'];
+  const OCEANS = [
+    ['Atlantique', '🌎 Océan Atlantique', "Maître de l'Atlantique", '🌎'],
+    ['Pacifique',  '🌏 Océan Pacifique',  'Maître du Pacifique', '🌏'],
+    ['Arctique',   '❄️ Océan Arctique',   "Maître de l'Arctique", '❄️'],
+    ['Indien',     '🌍 Océan Indien',     "Maître de l'océan Indien", '🌍'],
+    ['Austral',    '🐧 Océan Austral',    "Maître de l'océan Austral", '🐧'],
+    ['Fermée',     '🔒 Mers fermées',     'Maître des mers fermées', '🔒']
+  ];
+
+  function readRecords(key){
+    try{ return Object.assign({bestStreak:0, bestTimed:0}, JSON.parse(localStorage.getItem(key)) || {}); }
+    catch(e){ return {bestStreak:0, bestTimed:0}; }
+  }
+
+  function barRow(name, done, total, emoji){
+    const p = pct(done, total);
+    return '<div class="bar-row"><div class="top"><span class="name">' + (emoji ? emoji + ' ' : '') + esc(name) +
+      '</span><span class="val">' + done + ' / ' + total + ' · ' + p + ' %</span></div>' +
+      '<div class="rail"><div class="fill' + (total && done >= total ? ' full' : '') + '" style="width:' + p + '%"></div></div></div>';
+  }
+
+  async function build(){
+    const [CAP, REG, SEAS, MON] = await Promise.all([
+      grab('/quiz.html', /const DATA = (\[[\s\S]*?\]);/),
+      grab('/regions.html', /const DATA = (\[[\s\S]*?\]);/),
+      grab('/mers.html', /const SEAS = (\[[\s\S]*?\]);/),
+      grab('/monuments.html', /const MONUMENTS = (\[[\s\S]*?\]);/)
+    ]);
+
+    const M = window.AtlasProgress ? AtlasProgress.all() : {};
+    const S = c => new Set(Array.isArray(M[c]) ? M[c] : []);
+    const sCap = S('cap'), sReg = S('reg'), sSea = S('sea'), sMon = S('mon'), sFlag = S('flags');
+
+    // --- pays par continent ---
+    const capRows = CONT_ORDER.map(k => {
+      const items = CAP.filter(d => d.k === k);
+      return { k, total: items.length, done: items.filter(d => sCap.has(d.c)).length };
+    }).filter(r => r.total);
+    const capDone = CAP.filter(d => sCap.has(d.c)).length;
+
+    // --- départements par région ---
+    const regNames = [];
+    REG.forEach(d => { if(regNames.indexOf(d.k) < 0) regNames.push(d.k); });
+    const regRows = regNames.map(k => {
+      const items = REG.filter(d => d.k === k);
+      return { k, total: items.length, done: items.filter(d => sReg.has(d.c)).length };
+    });
+    const regDone = REG.filter(d => sReg.has(d.c)).length;
+    const regComplete = regRows.filter(r => r.total && r.done >= r.total).length;
+
+    // --- mers par océan (une mer qui figure dans deux océans compte dans chacun) ---
+    const seaRows = OCEANS.map(o => {
+      const items = SEAS.filter(s => s.ocean === o[0]);
+      return { key: o[0], label: o[1], title: o[2], emoji: o[3], total: items.length, done: items.filter(s => sSea.has(s.name)).length };
+    }).filter(r => r.total);
+    const seaNames = new Set(SEAS.map(s => s.name));
+    const seaTotal = seaNames.size;
+    const seaDone = [...seaNames].filter(n => sSea.has(n)).length;
+
+    // --- monuments par continent ---
+    const monRows = CONT_ORDER.map(k => {
+      const items = MON.filter(m => m.continent === k);
+      return { k, total: items.length, done: items.filter(m => sMon.has(m.name)).length };
+    }).filter(r => r.total);
+    const monDone = MON.filter(m => sMon.has(m.name)).length;
+
+    // --- séries et défis (records enregistrés par les pages de quiz) ---
+    const rc = readRecords('capitales_records_v1'), rr = readRecords('regions_records_v1');
+    const bestStreak = Math.max(rc.bestStreak || 0, rr.bestStreak || 0);
+    const bestTimed = Math.max(rc.bestTimed || 0, rr.bestTimed || 0);
+    const perfect = (sFlag.has('perfect_cap') || sFlag.has('perfect_reg')) ? 1 : 0;
+
+    // --- barres ---
+    $('capHint').textContent = capDone + ' pays maîtrisés sur ' + CAP.length + ' (' + pct(capDone, CAP.length) + ' %)';
+    $('barsCap').innerHTML = capRows.map(r => barRow(r.k, r.done, r.total, CONT_EMOJI[r.k])).join('');
+    $('regHint').textContent = regDone + ' départements maîtrisés sur ' + REG.length + ' · ' + regComplete + ' région' + (regComplete > 1 ? 's' : '') + ' complète' + (regComplete > 1 ? 's' : '');
+    $('barsReg').innerHTML = regRows.map(r => barRow(r.k, r.done, r.total)).join('');
+    $('seaHint').textContent = seaDone + ' mers maîtrisées sur ' + seaTotal + ' (' + pct(seaDone, seaTotal) + ' %)';
+    $('barsSea').innerHTML = seaRows.map(r => barRow(r.label.replace(/^\S+\s/, ''), r.done, r.total, r.emoji)).join('');
+    $('monHint').textContent = monDone + ' monuments maîtrisés sur ' + MON.length + ' (' + pct(monDone, MON.length) + ' %)';
+    $('barsMon').innerHTML = monRows.map(r => barRow(r.k, r.done, r.total, CONT_EMOJI[r.k])).join('');
+
+    // --- badges ---
+    const groups = [];
+    const group = (title) => { const g = { title, list: [] }; groups.push(g); return (id, em, t, d, cur, max) => g.list.push({ id, em, t, d, cur: Math.min(cur, max), max, done: max > 0 && cur >= max }); };
+
+    let add = group('🌍 Pays & capitales');
+    add('cap10', '🌱', 'Premiers pas', 'Maîtrise 10 pays', capDone, 10);
+    add('cap50', '🧭', 'Explorateur', 'Maîtrise 50 pays', capDone, 50);
+    add('cap100', '🌍', 'Globe-trotter', 'Maîtrise 100 pays', capDone, 100);
+    add('capAll', '🏆', 'Tour du monde', 'Maîtrise les ' + CAP.length + ' pays', capDone, CAP.length);
+    capRows.forEach(r => add('cont_' + r.k, CONT_EMOJI[r.k], "Toute l'" + r.k, 'Maîtrise les ' + r.total + ' pays de ce continent', r.done, r.total));
+
+    add = group('🔥 Séries & défis');
+    add('streak10', '🔥', 'Série de 10', '10 bonnes réponses de suite', bestStreak, 10);
+    add('streak20', '🚀', 'Série de 20', '20 bonnes réponses de suite', bestStreak, 20);
+    add('streak50', '⚡', 'Série de 50', '50 bonnes réponses de suite', bestStreak, 50);
+    add('perfect', '🎯', '100 % en Défi', 'Un Défi sans aucune erreur (10 réponses minimum)', perfect, 1);
+    add('timed20', '⏱️', 'Éclair', '20 bonnes réponses dans un Défi', bestTimed, 20);
+    add('timed30', '💫', 'Foudroyant', '30 bonnes réponses dans un Défi', bestTimed, 30);
+
+    add = group('🇫🇷 Régions de France');
+    add('reg10', '🥖', 'Petit tour de France', 'Maîtrise 10 départements', regDone, 10);
+    add('reg50', '🗼', 'Grand tour', 'Maîtrise 50 départements', regDone, 50);
+    add('regOne', '🏰', 'Une région complète', 'Maîtrise tous les départements d\'une région', regComplete, 1);
+    add('reg5', '🎖️', 'Cinq régions', 'Complète 5 régions', regComplete, 5);
+    add('regAll', '🇫🇷', 'Toute la France', 'Maîtrise les ' + REG.length + ' départements', regDone, REG.length);
+
+    add = group('🌊 Mers & océans');
+    add('sea10', '⛵', 'Mousse', 'Maîtrise 10 mers', seaDone, 10);
+    add('sea50', '🧭', 'Marin', 'Maîtrise 50 mers', seaDone, 50);
+    add('seaAll', '🌊', 'Capitaine', 'Maîtrise les ' + seaTotal + ' mers', seaDone, seaTotal);
+    seaRows.forEach(r => add('ocean_' + r.key, r.emoji, r.title, 'Maîtrise les ' + r.total + ' mers de cette zone', r.done, r.total));
+
+    add = group('🏛️ Monuments');
+    add('mon10', '🏛️', 'Curieux', 'Maîtrise 10 monuments', monDone, 10);
+    add('mon50', '🗽', 'Guide touristique', 'Maîtrise 50 monuments', monDone, 50);
+    add('monAll', '🏯', 'Conservateur', 'Maîtrise les ' + MON.length + ' monuments', monDone, MON.length);
+
+    let earned = 0, count = 0;
+    $('badgeGroups').innerHTML = groups.map(g => {
+      g.list.forEach(b => { count++; if(b.done) earned++; });
+      return '<div class="group-title">' + g.title + '</div><div class="badges">' + g.list.map(b => {
+        const p = pct(b.cur, b.max);
+        return '<div class="badge' + (b.done ? ' done' : '') + '" title="' + esc(b.d) + '">' +
+          '<div class="em">' + b.em + '</div><div class="t">' + esc(b.t) + '</div><div class="d">' + esc(b.d) + '</div>' +
+          (b.done ? '' : '<div class="rail"><div class="fill" style="width:' + p + '%"></div></div><div class="pv">' + b.cur + ' / ' + b.max + '</div>') +
+          '</div>';
+      }).join('') + '</div>';
+    }).join('');
+
+    $('sumBadges').textContent = earned + ' / ' + count;
+    $('sumItems').textContent = capDone + regDone + seaDone + monDone;
+    $('loading').classList.add('hidden');
+    $('content').classList.remove('hidden');
+  }
+
+  // invité : invitation à créer un compte
+  if(!(window.AtlasAccount && AtlasAccount.user())) $('guestNotice').classList.remove('hidden');
+  build();
+</script>
+<script src="/spotify.js?v=3"></script>
+</body>
+</html>

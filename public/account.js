@@ -66,7 +66,7 @@
     for (var i = 0; i < links.length; i++) {
       var a = links[i];
       if (!a.dataset.label) a.dataset.label = a.textContent;
-      a.textContent = s ? '👤 ' + s.name : a.dataset.label;
+      a.textContent = s ? (a.dataset.labelIn || '👤 Mon compte') : a.dataset.label;
     }
   }
 

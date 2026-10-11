@@ -328,7 +328,7 @@
   function badgesButton() {
     var wrap = document.querySelector('.top-right-btns');
     if (!wrap || document.getElementById('badgesBtn')) return;
-    if (/\/badges(\.html)?$/.test(location.pathname)) return;          // on y est déjà
+    if (/\/(badges|globe)(\.html)?$/.test(location.pathname)) return;   // pas sur la page des badges (on y est) ni sur le globe interactif
     if (!document.getElementById('badgesBtnCss')) {
       var st = document.createElement('style');
       st.id = 'badgesBtnCss';

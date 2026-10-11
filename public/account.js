@@ -371,8 +371,9 @@
 
   // ── Liens légaux : pied de page de chaque page (sauf le globe plein écran) et menu ──
   function legalLinks() {
-    // menu : Confidentialité et Mentions légales sous les liens existants
-    var panels = document.querySelectorAll('.menu-panel');
+    // menu : uniquement sur le globe (page plein écran sans pied de page) ; ailleurs, les liens sont déjà en bas de page
+    var isGlobe = /\/globe(\.html)?$/.test(location.pathname);
+    var panels = isGlobe ? document.querySelectorAll('.menu-panel') : [];
     for (var i = 0; i < panels.length; i++) {
       var p = panels[i];
       if (p.querySelector('a[href="/confidentialite.html"]')) continue;

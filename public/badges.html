@@ -399,12 +399,12 @@
     add = block('🔥 Séries & défis', 'Meilleure série : ' + bestStreak + ' · Meilleur Défi : ' + plural(bestTimed, 'bonne réponse', 'bonnes réponses'), null);
     add('streak10', '🔥', 'Série de 10', '10 bonnes réponses de suite', bestStreak, 10);
     add('streak20', '🚀', 'Série de 20', '20 bonnes réponses de suite', bestStreak, 20);
-    add('perfect', '🎯', '100 % en Défi', 'Un Défi sans aucune erreur (10 réponses minimum)', perfect, 1);
     add('streak50', '⚡', 'Série de 50', '50 bonnes réponses de suite', bestStreak, 50);
-    add('timed20', '⏱️', 'Éclair', '20 bonnes réponses dans un Défi', bestTimed, 20);
     add('streak100', '💯', 'Série de 100', '100 bonnes réponses de suite', bestStreak, 100);
     add('streak196', '👑', 'Série de 196', '196 bonnes réponses de suite', bestStreak, 196);
-    add('timed30', '💫', 'Foudroyant', '30 bonnes réponses dans un Défi', bestTimed, 30);
+    add('perfect', '🎯', '100 % en Défi', '100 % de bonnes réponses dans le mode Défi (10 réponses minimum)', perfect, 1);
+    add('timed20', '⏱️', 'Éclair', '20 bonnes réponses dans le mode Défi', bestTimed, 20);
+    add('timed30', '💫', 'Foudroyant', '30 bonnes réponses dans le mode Défi', bestTimed, 30);
 
     add = block('🇫🇷 Régions de France',
       regDone + ' départements maîtrisés sur ' + REG.length + ' · ' + plural(regComplete, 'région complète', 'régions complètes') + ' sur ' + regRows.length,

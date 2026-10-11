@@ -386,7 +386,8 @@
       var st = document.createElement('style');
       st.id = 'legalCss';
       st.textContent =
-        '#legalLinks{position:relative;z-index:1;text-align:center;padding:16px 14px 30px;width:100%;' +
+        'body{position:relative;min-height:100vh;}' +
+        '#legalLinks{position:absolute;left:0;right:0;bottom:0;z-index:1;text-align:center;padding:0 14px 30px;' +
         'font:700 .82rem/1.8 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(255,255,255,.9);}' +
         '#legalLinks a{color:#fff;text-decoration:underline;text-underline-offset:3px;margin:0 6px;white-space:nowrap;}' +
         '#legalLinks a:hover{opacity:.8;}';
@@ -400,6 +401,9 @@
       '<a href="/contact.html">Contact</a>' +
       '<a href="#" id="cookieLink">Gérer mes cookies</a>';
     document.body.appendChild(d);
+    // place réservée en bas de page pour que le contenu ne passe jamais sous les liens
+    var pb = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    if (pb < 96) document.body.style.paddingBottom = '96px';
     var c = document.getElementById('cookieLink');
     c.onclick = function (e) { e.preventDefault(); if (window.AtlasConsent) AtlasConsent.open(); };
   }

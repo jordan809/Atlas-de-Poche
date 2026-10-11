@@ -101,7 +101,12 @@
     });
   }
 
-  function signOut() { clear(); updateMenu(); }
+  // Déconnexion : dernière synchronisation, puis on efface la progression de CET appareil (elle reste dans le compte)
+  // pour qu'un autre compte utilisé sur le même appareil ne la récupère pas. Si la synchronisation échoue, on garde tout.
+  function signOut() {
+    return sync().then(function (r) { if (r.synced) { clearProgress(); return true; } return false; }, function () { return false; })
+      .then(function (cleared) { clear(); updateMenu(); return cleared; });
+  }
 
   function resetPassword(email) {
     return call('sendOobCode', { requestType: 'PASSWORD_RESET', email: email });
@@ -119,16 +124,197 @@
   }
 
   function deleteAccount() {
-    return freshToken().then(function (t) { return call('delete', { idToken: t }); }).then(function () { signOut(); });
+    var s = load();
+    return freshToken().then(function (t) {
+      // on efface d'abord les données du compte, puis le compte lui-même
+      return dbProtected(s).then(function (ok) {
+        // données du compte supprimées seulement si la base est protégée (sinon rien n'y a été envoyé)
+        return ok ? request(dbUrl(s.uid, '', t), { method: 'DELETE' }).catch(function () {}) : null;
+      }).then(function () { return call('delete', { idToken: t }); });
+    }).then(function () { clear(); updateMenu(); });
+  }
+
+  // ── Synchronisation de la progression (records, erreurs à revoir, préférences) ─────────────
+  // Les données restent dans le navigateur (localStorage) ; quand on est connecté, une copie est gardée dans le compte
+  // (base de données, nœud users/{uid}/sync) et fusionnée entre les appareils.
+  var DB = 'https://atlas-de-poche-default-rtdb.europe-west1.firebasedatabase.app';
+  // clé locale -> règle de fusion : 'max' = records (on garde le meilleur) ; 'lww' = la modification la plus récente gagne
+  var SYNC_KEYS = {
+    capitales_records_v1: 'max', regions_records_v1: 'max',
+    atlasTypeErrors: 'lww', atlasTableErrors: 'lww', regionsTypeErrors: 'lww',
+    darkMode: 'lww', soundOn: 'lww', lang: 'lww'
+  };
+  var PREF_KEYS = { darkMode: 1, soundOn: 1, lang: 1 };      // gardées sur l'appareil à la déconnexion
+  var TS = 'atlas_sync_t:';                                   // horodatage local de la dernière modification de chaque clé
+  var rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
+  var applying = false, dirty = {}, pushTimer = null, running = null, queued = null, lastSyncAt = 0;
+  var securedAt = 0;    // dernier moment où la base a été vue protégée (lecture sans connexion refusée)
+
+  function dbUrl(uid, path, token) {
+    return DB + '/users/' + encodeURIComponent(uid) + (path ? '/' + path : '') + '.json?auth=' + encodeURIComponent(token);
+  }
+  function lget(k)  { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lts(k)   { return parseInt(lget(TS + k), 10) || 0; }
+  function setTs(k, t) { try { rawSet.call(localStorage, TS + k, String(t)); } catch (e) {} }
+  function applyLocal(k, v, t) {
+    applying = true;
+    try { if (v === null) rawRemove.call(localStorage, k); else rawSet.call(localStorage, k, v); setTs(k, t); } catch (e) {}
+    applying = false;
+  }
+  function clearProgress() {
+    applying = true;
+    try {
+      Object.keys(SYNC_KEYS).forEach(function (k) {
+        if (PREF_KEYS[k]) return;
+        rawRemove.call(localStorage, k); rawRemove.call(localStorage, TS + k);
+      });
+    } catch (e) {}
+    applying = false;
+  }
+
+  // Fusion des records : champ par champ, on garde la plus grande valeur
+  function parseObj(v) { try { var o = JSON.parse(v); return (o && typeof o === 'object' && !Array.isArray(o)) ? o : null; } catch (e) { return null; } }
+  function sortedStr(o) { var r = {}; Object.keys(o).sort().forEach(function (k) { r[k] = o[k]; }); return JSON.stringify(r); }
+  function same(a, b) {
+    var x = parseObj(a), y = parseObj(b);
+    return (x && y) ? sortedStr(x) === sortedStr(y) : a === b;
+  }
+  function mergeMax(lv, rv) {
+    var a = parseObj(lv), b = parseObj(rv);
+    if (!a && !b) return lv !== null ? lv : rv;
+    if (!a) return rv;
+    if (!b) return lv;
+    var m = {}, k;
+    for (k in a) m[k] = a[k];
+    for (k in b) {
+      if (typeof b[k] === 'number') { if (typeof m[k] !== 'number' || b[k] > m[k]) m[k] = b[k]; }
+      else if (!(k in m)) m[k] = b[k];
+    }
+    return sortedStr(m) === sortedStr(a) ? lv : JSON.stringify(m);   // inchangé : on garde la chaîne d'origine
+  }
+
+  // La progression n'est envoyée que si les règles de la base refusent l'accès aux visiteurs non connectés à ce compte :
+  // une lecture sans jeton doit être refusée. Sinon (base ouverte à tous), la synchronisation reste en pause.
+  function dbProtected(s) {
+    if (Date.now() - securedAt < 600000) return Promise.resolve(true);
+    return fetch(DB + '/users/' + encodeURIComponent(s.uid) + '/sync.json').then(function (r) {
+      var ok = (r.status === 401 || r.status === 403);
+      if (ok) securedAt = Date.now();
+      return ok;
+    }, function () { return false; });
+  }
+
+  // Compare avec le compte et met tout à jour dans les deux sens. Résout { changed, synced } : changed = cet appareil a reçu des changements ; synced = false si la synchronisation est en pause.
+  function sync() {
+    var s = load();
+    if (!s) return Promise.resolve({ changed: false, synced: false });
+    if (running) {
+      // une synchronisation est déjà en cours : on en refait une juste après, pour inclure les dernières modifications
+      if (!queued) queued = running.catch(function () {}).then(function () { queued = null; return sync(); });
+      return queued;
+    }
+    running = dbProtected(s).then(function (ok) {
+      if (!ok) return null;
+      return freshToken();
+    }).then(function (tok) {
+      if (!tok) return null;                                        // base non protégée : on n'envoie rien
+      return request(dbUrl(s.uid, 'sync', tok)).then(function (remote) {
+        remote = remote || {};
+        var pushes = {}, any = false, changed = false;
+        Object.keys(SYNC_KEYS).forEach(function (k) {
+          var r = remote[k], lv = lget(k), lt = lts(k);
+          if (lv !== null && !lt) lt = 1;                              // valeur antérieure à la synchronisation : la plus ancienne
+          var rv = (r && typeof r.v === 'string') ? r.v : null, rt = (r && r.t) ? r.t : 0;
+          if (SYNC_KEYS[k] === 'max') {
+            var merged = mergeMax(lv, rv);
+            if (merged !== null && !same(merged, lv)) { applyLocal(k, merged, Date.now()); changed = true; }
+            if (merged !== null && !same(merged, rv)) { pushes[k] = { v: merged, t: Date.now() }; any = true; }
+          } else if (rt > lt) {                                        // le compte est plus récent
+            if (rv !== lv) { applyLocal(k, rv, rt); changed = true; } else setTs(k, rt);
+          } else if (lt > rt && lv !== rv) {                           // cet appareil est plus récent
+            var t = lt === 1 ? Date.now() : lt;
+            if (lt === 1) setTs(k, t);
+            pushes[k] = (lv === null) ? { t: t } : { v: lv, t: t };
+            any = true;
+          }
+        });
+        if (!any) return changed;
+        return request(dbUrl(s.uid, 'sync', tok), {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pushes)
+        }).then(function () { return changed; });
+      });
+    }).then(function (changed) {
+      running = null;
+      if (changed === null) return { changed: false, synced: false };
+      dirty = {}; lastSyncAt = Date.now();
+      return { changed: changed, synced: true };
+    }, function (e) { running = null; throw e; });
+    return running;
+  }
+
+  // Toute modification locale d'une clé suivie : horodatage + envoi différé vers le compte
+  function touched(k) {
+    setTs(k, Date.now());
+    if (!load()) return;
+    dirty[k] = 1;
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function () { sync().catch(function () {}); }, 1500);
+  }
+  try {
+    Storage.prototype.setItem = function (k, v) {
+      var isLocal = (this === localStorage) && !applying && SYNC_KEYS[k];
+      var before = isLocal ? lget(k) : null;
+      rawSet.apply(this, arguments);
+      if (isLocal && lget(k) !== before) touched(k);
+    };
+    Storage.prototype.removeItem = function (k) {
+      var isLocal = (this === localStorage) && !applying && SYNC_KEYS[k];
+      var before = isLocal ? lget(k) : null;
+      rawRemove.apply(this, arguments);
+      if (isLocal && before !== null) touched(k);
+    };
+  } catch (e) {}
+
+  // Fermeture de la page : on envoie tout de suite les modifications en attente (préférences, erreurs)
+  function flush() {
+    var s = load(), keys = Object.keys(dirty).filter(function (k) { return SYNC_KEYS[k] === 'lww'; });
+    if (!s || !keys.length || s.exp - Date.now() < 5000) return;
+    var body = {};
+    keys.forEach(function (k) { var v = lget(k); body[k] = v === null ? { t: lts(k) } : { v: v, t: lts(k) }; });
+    try {
+      fetch(dbUrl(s.uid, 'sync', s.idToken), { method: 'PATCH', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      dirty = {};
+    } catch (e) {}
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') flush();
+    else if (load() && Date.now() - lastSyncAt > 20000) sync().catch(function () {});
+  });
+  window.addEventListener('pagehide', flush);
+
+  // À l'ouverture d'une page : on récupère les changements faits sur un autre appareil.
+  // Si la page vient juste de s'ouvrir, on la recharge une fois pour qu'elle affiche les données reçues.
+  function initialSync() {
+    if (!load()) return;
+    sync().then(function (r) {
+      if (!r.changed || performance.now() > 6000) return;
+      var last = 0;
+      try { last = parseInt(sessionStorage.getItem('atlas_sync_reload'), 10) || 0; } catch (e) {}
+      if (Date.now() - last < 15000) return;
+      try { sessionStorage.setItem('atlas_sync_reload', String(Date.now())); } catch (e) {}
+      location.reload();
+    }).catch(function () {});
   }
 
   window.AtlasAccount = {
+    sync: sync, lastSync: function () { return lastSyncAt; },
     user: function () { var s = load(); return s ? { uid: s.uid, email: s.email, name: s.name } : null; },
     signUp: signUp, signIn: signIn, signOut: signOut, resetPassword: resetPassword, deleteAccount: deleteAccount,
     updateMenu: updateMenu
   };
 
   window.addEventListener('storage', function (e) { if (e.key === STORE) updateMenu(); });   // connexion/déconnexion dans un autre onglet
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', updateMenu);
-  else updateMenu();
+  function boot() { updateMenu(); initialSync(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();

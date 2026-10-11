@@ -146,6 +146,14 @@
     background: #f1eeff; color: var(--bg1); border: none; transition: transform 0.15s ease, background 0.15s ease;
   }
   .ghost-btn:hover { transform: translateY(-2px); background: #e8e3ff; }
+  .sync-box {
+    margin: 4px 0 16px; padding: 12px 14px; border-radius: 16px; background: #f1eeff;
+    font-size: 0.88rem; font-weight: 700; color: var(--ink-soft); text-align: left; line-height: 1.45;
+  }
+  .sync-box b { color: var(--ink); }
+  .sync-box .st { display: block; margin-top: 4px; font-weight: 600; opacity: 0.9; }
+  html.dark .sync-box { background: #2a2545; color: #a89fd8; }
+  html.dark .sync-box b { color: #e8e2ff; }
   .home-btn {
     display: block; width: 100%; margin-top: 16px; text-align: center; text-decoration: none;
     font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1rem;
@@ -269,7 +277,7 @@
   <header>
     <a class="eyebrow" href="/">Atlas de poche</a>
     <h1>👤 Mon compte</h1>
-    <p class="sub" id="subTitle">Crée ton compte gratuitement en quelques secondes.</p>
+    <p class="sub" id="subTitle">Crée ton compte gratuitement et garde ta progression sur tous tes appareils.</p>
   </header>
 
   <div class="card">
@@ -323,6 +331,10 @@
         <h2 id="meName">Pseudo</h2>
         <div class="mail" id="meMail"></div>
       </div>
+      <div class="sync-box">
+        ☁️ <b>Ta progression te suit partout.</b> Tes records, tes erreurs à revoir et tes préférences (mode nuit, son, langue) sont sauvegardés sur ton compte et retrouvés sur tous tes appareils.
+        <span class="st" id="syncState">Synchronisation…</span>
+      </div>
       <button class="ghost-btn" type="button" id="logoutBtn">Me déconnecter</button>
       <button class="danger-btn" type="button" id="deleteBtn">Supprimer mon compte</button>
     </div>
@@ -333,7 +345,7 @@
   </div>
 </div>
 
-<script src="/account.js?v=1"></script>
+<script src="/account.js?v=2"></script>
 <script>
   // Menu
   (function(){
@@ -374,7 +386,7 @@
     $('tabIn').classList.toggle('active', !up); $('tabIn').setAttribute('aria-selected', !up);
     $('formUp').classList.toggle('hidden', !up);
     $('formIn').classList.toggle('hidden', up);
-    $('subTitle').textContent = up ? 'Crée ton compte gratuitement en quelques secondes.' : 'Content de te revoir !';
+    $('subTitle').textContent = up ? 'Crée ton compte gratuitement et garde ta progression sur tous tes appareils.' : 'Content de te revoir !';
     say('');
   }
   $('tabUp').onclick = () => showTab('up');
@@ -406,6 +418,21 @@
     }
   }
 
+  // Synchronise la progression avec le compte et met à jour l'affichage (état, mode nuit, son)
+  function syncNow(){
+    const st = $('syncState');
+    if(st) st.textContent = 'Synchronisation…';
+    return AtlasAccount.sync().then(r => {
+      if(r.changed){
+        darkOn = localStorage.getItem('darkMode') === '1'; applyDark();
+        soundOn = localStorage.getItem('soundOn') !== '0'; applySound();
+      }
+      if(!st) return;
+      if(!r.synced) st.textContent = 'ℹ️ La synchronisation sera activée très bientôt : en attendant, ta progression reste sur cet appareil.';
+      else st.textContent = '✅ Synchronisé à l\'instant' + (r.changed ? ' — des données d\'un autre appareil ont été récupérées.' : '.');
+    }).catch(() => { if(st) st.textContent = '⚠️ Synchronisation impossible pour le moment. Elle sera retentée automatiquement.'; });
+  }
+
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   function busy(btn, on, label){ btn.disabled = on; if(label) btn.textContent = label; }
 
@@ -420,6 +447,7 @@
       $('formUp').reset();
       render();
       say('Compte créé, bienvenue ' + name + ' ! 🎉', 'ok');
+      syncNow();
     }).catch(err => say(err.message, 'err')).then(() => busy($('upBtn'), false, 'Créer mon compte 🚀'));
   });
 
@@ -433,6 +461,7 @@
       $('formIn').reset();
       render();
       say('Connecté, content de te revoir ' + s.name + ' ! 👋', 'ok');
+      syncNow();
     }).catch(err => say(err.message, 'err')).then(() => busy($('inBtn'), false, 'Me connecter'));
   });
 
@@ -446,10 +475,17 @@
       .then(() => { $('forgotBtn').disabled = false; });
   };
 
-  $('logoutBtn').onclick = () => { AtlasAccount.signOut(); render(); say('Tu es déconnecté. À bientôt ! 👋', 'ok'); };
+  $('logoutBtn').onclick = () => {
+    $('logoutBtn').disabled = true;
+    AtlasAccount.signOut().then(() => {
+      $('logoutBtn').disabled = false;
+      render();
+      say('Tu es déconnecté. À bientôt ! 👋', 'ok');
+    });
+  };
 
   $('deleteBtn').onclick = () => {
-    if(!confirm('Supprimer définitivement ton compte ? Cette action est irréversible.')) return;
+    if(!confirm('Supprimer définitivement ton compte et sa progression sauvegardée ? Cette action est irréversible.')) return;
     say(''); $('deleteBtn').disabled = true;
     AtlasAccount.deleteAccount()
       .then(() => { render(); say('Ton compte a été supprimé.', 'ok'); })
@@ -462,6 +498,7 @@
 
   if(location.hash === '#connexion') showTab('in');
   render();
+  if(AtlasAccount.user()) syncNow();
 </script>
 <script src="/spotify.js?v=3"></script>
 </body>

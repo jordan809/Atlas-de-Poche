@@ -146,6 +146,13 @@
     background: #f1eeff; color: var(--bg1); border: none; transition: transform 0.15s ease, background 0.15s ease;
   }
   .ghost-btn:hover { transform: translateY(-2px); background: #e8e3ff; }
+  .home-btn {
+    display: block; width: 100%; margin-top: 16px; text-align: center; text-decoration: none;
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1rem;
+    padding: 11px 24px; border-radius: 40px; background: #f1eeff; color: var(--bg1);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .home-btn:hover { transform: translateY(-2px); background: #e8e3ff; }
   .link-btn {
     display: block; margin: 14px auto 0; background: none; border: none; cursor: pointer;
     font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.9rem;
@@ -189,6 +196,8 @@
   html.dark .seg-btn.active { background: #1e1b2e; color: #b8aeff; }
   html.dark .ghost-btn { background: #2a2545; color: #b8aeff; }
   html.dark .ghost-btn:hover { background: #342d58; }
+  html.dark .home-btn { background: #2a2545; color: #b8aeff; }
+  html.dark .home-btn:hover { background: #342d58; }
   html.dark .link-btn { color: #b8aeff; }
   html.dark .hint, html.dark .me .mail { color: #a89fd8; }
 
@@ -319,6 +328,8 @@
     </div>
 
     <div class="note" id="note" role="status" aria-live="polite"></div>
+
+    <a class="home-btn" href="/">🏠 Retour à l'accueil</a>
   </div>
 </div>
 

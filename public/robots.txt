@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /compte.html
+Disallow: /badges.html
+
+Sitemap: https://atlasdepoche.com/sitemap.xml

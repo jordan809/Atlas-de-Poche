@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1"></script>
+<title>Politique de confidentialité — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/confidentialite.html">
+<meta name="description" content="Politique de confidentialité d'Atlas de Poche : données collectées, services utilisés, cookies publicitaires et droits des utilisateurs.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d; --ink:#2b2350; --ink-soft:#6b6396; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height:100%; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat fixed; }
+  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 22px 20px; }
+  header { text-align:center; margin-bottom:24px; color:#fff; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,0.22); backdrop-filter:blur(4px); letter-spacing:0.28em; text-transform:uppercase; font-size:0.72rem; font-weight:700; padding:6px 16px; border-radius:30px; margin-bottom:14px; color:#fff; text-decoration:none; }
+  h1 { font-family:'Baloo 2',cursive; font-weight:800; font-size:clamp(2rem,6vw,3.2rem); line-height:1.05; text-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  .sub { margin-top:10px; font-size:1.02rem; font-weight:600; opacity:.95; }
+  .card { background:#fff; border-radius:26px; padding:28px 32px; box-shadow:0 20px 50px rgba(0,0,0,0.22); margin-bottom:18px; }
+  .card h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; line-height:1.2; margin:22px 0 8px; color:#4b3fd9; }
+  .card h2:first-child { margin-top:0; }
+  .card p, .card li { font-size:.98rem; }
+  .card p { margin:8px 0; }
+  .card ul { margin:8px 0 8px 22px; }
+  .card li { margin:4px 0; }
+  .card a { color:var(--bg1); font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  .card th, .card td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid #ece9ff; }
+  .card th { background:#f4f1ff; }
+  .upd { color:var(--ink-soft); font-size:.88rem; font-weight:700; }
+  html.dark { background: linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat fixed; }
+  html.dark .card { background:#1e1b2e; color:#e8e2ff; }
+  html.dark .card h2 { color:#b8aeff; }
+  html.dark .card a { color:#b8aeff; }
+  html.dark .card th { background:#2a2545; }
+  html.dark .card th, html.dark .card td { border-color:#3d3568; }
+  html.dark .upd { color:#a89fd8; }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-weight:700;font-size:0.95rem;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+  @media (max-width:520px){ .card{padding:22px 18px;} .wrap{padding-top:70px;} .menu-btn{font-size:.82rem;padding:0 14px;height:38px;} .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;} .top-right-btns{top:10px;right:12px;gap:6px;} .menu{top:10px;left:12px;} }
+</style>
+<script>try{history.scrollRestoration='manual';}catch(e){}</script>
+</head>
+<body>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🔒 Confidentialité</h1>
+    <p class="sub">Quelles données, pourquoi, et comment garder le contrôle</p>
+  </header>
+
+  <div class="card">
+    <p class="upd">Dernière mise à jour : 11 octobre 2026</p>
+    <h2>Qui est responsable ?</h2>
+    <p>Le site <strong>Atlas de Poche</strong> (atlasdepoche.com) est édité à titre non professionnel par « Atlas de Poche ». Pour toute question sur tes données : <a href="mailto:atlasdepoche@gmail.com">atlasdepoche@gmail.com</a>.</p>
+
+    <h2>L'essentiel</h2>
+    <ul>
+      <li>Tu peux jouer <strong>sans compte</strong> : dans ce cas, ta progression reste uniquement sur ton appareil.</li>
+      <li>Un compte est <strong>facultatif</strong> et gratuit.</li>
+      <li>Nous ne vendons aucune donnée.</li>
+      <li>Les cookies publicitaires ne sont utilisés <strong>qu'avec ton accord</strong>.</li>
+    </ul>
+
+    <h2>Les données que nous traitons</h2>
+    <table>
+      <tr><th>Situation</th><th>Données</th><th>Pourquoi</th></tr>
+      <tr><td>Tu joues sans compte</td><td>Préférences (mode nuit, son, langue), records, éléments maîtrisés, erreurs à revoir : enregistrés <strong>dans ton navigateur</strong> uniquement.</td><td>Faire fonctionner le site et garder ta progression sur cet appareil.</td></tr>
+      <tr><td>Tu crées un compte</td><td>Adresse e-mail, pseudo, mot de passe (jamais lisible, géré par Firebase Authentication), et ta progression synchronisée (records, éléments maîtrisés, erreurs à revoir, préférences).</td><td>Te connecter et retrouver ta progression sur tous tes appareils.</td></tr>
+      <tr><td>Tu joues en multijoueur</td><td>Pseudo choisi et réponses données, dans une salle temporaire.</td><td>Organiser la partie et afficher le classement.</td></tr>
+      <tr><td>Tu écris via le formulaire de contact</td><td>Prénom, e-mail, message.</td><td>Te répondre.</td></tr>
+      <tr><td>Tu visites le site</td><td>Données techniques (adresse IP, navigateur) traitées par nos prestataires d'hébergement.</td><td>Délivrer le site et assurer sa sécurité.</td></tr>
+    </table>
+
+    <h2>Les services tiers utilisés</h2>
+    <ul>
+      <li><strong>Google Firebase</strong> (hébergement, comptes, base de données des salles multijoueur et de la progression) — Google.</li>
+      <li><strong>Google AdSense</strong> (publicité) — uniquement si tu acceptes les cookies publicitaires.</li>
+      <li><strong>Google Fonts</strong> (polices) — ton navigateur télécharge les polices depuis les serveurs de Google.</li>
+      <li><strong>flagcdn.com</strong> (images des drapeaux) et <strong>Wikimedia / Wikipédia</strong> (photos des monuments).</li>
+      <li><strong>jsDelivr</strong> (bibliothèque de cartes utilisée par le globe interactif).</li>
+      <li><strong>Formspree</strong> (envoi des messages du formulaire de contact).</li>
+    </ul>
+    <p>Certains de ces prestataires peuvent traiter des données hors de l'Union européenne (notamment aux États-Unis), dans le cadre des garanties prévues par le RGPD.</p>
+
+    <h2>Cookies et stockage local</h2>
+    <ul>
+      <li><strong>Stockage local nécessaire</strong> (préférences, progression, session de compte, choix de consentement) : indispensable au fonctionnement, sans consentement.</li>
+      <li><strong>Publicité (Google AdSense)</strong> : peut déposer des cookies pour afficher des annonces. Ils ne sont chargés <strong>qu'après ton acceptation</strong>. Tu peux changer d'avis à tout moment avec le lien « Gérer mes cookies » en bas de chaque page.</li>
+    </ul>
+
+    <h2>Combien de temps ?</h2>
+    <ul>
+      <li><strong>Compte et progression</strong> : jusqu'à la suppression de ton compte.</li>
+      <li><strong>Salles multijoueur</strong> : uniquement le temps de la partie.</li>
+      <li><strong>Messages de contact</strong> : le temps nécessaire pour te répondre.</li>
+      <li><strong>Choix de consentement</strong> : conservé sur ton appareil jusqu'à ce que tu le modifies.</li>
+    </ul>
+
+    <h2>Tes droits</h2>
+    <p>Tu peux demander l'accès à tes données, leur rectification, leur suppression, leur portabilité, t'opposer à un traitement ou retirer ton consentement.</p>
+    <ul>
+      <li><strong>Supprimer ton compte et ta progression</strong> : directement depuis la page <a href="/compte.html">Mon compte</a> (« Supprimer mon compte »).</li>
+      <li>Pour toute autre demande : <a href="mailto:atlasdepoche@gmail.com">atlasdepoche@gmail.com</a>.</li>
+      <li>Tu peux aussi saisir la <a href="https://www.cnil.fr/" rel="noopener">CNIL</a> en cas de désaccord.</li>
+    </ul>
+
+    <h2>Les enfants</h2>
+    <p>Le site peut être utilisé sans compte, sans donnée personnelle collectée. La création d'un compte est réservée aux personnes de <strong>15 ans et plus</strong>, ou avec l'accord d'un parent ou représentant légal.</p>
+
+    <h2>Modifications</h2>
+    <p>Cette politique peut évoluer ; la date de mise à jour figure en haut de la page.</p>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = true; try { soundOn = localStorage.getItem('soundOn') !== '0'; } catch(e) {}
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; try { localStorage.setItem('soundOn', soundOn?'1':'0'); } catch(e) {} applySound(); };
+  const darkToggle = document.getElementById('darkToggle');
+  let darkOn = false; try { darkOn = localStorage.getItem('darkMode') === '1'; } catch(e) {}
+  function applyDark(){ document.documentElement.classList.toggle('dark', darkOn); darkToggle.textContent = darkOn ? '☀️' : '🌙'; }
+  applyDark();
+  darkToggle.onclick = () => { darkOn = !darkOn; try { localStorage.setItem('darkMode', darkOn?'1':'0'); } catch(e) {} applyDark(); };
+</script>
+<script src="/account.js?v=7"></script>
+</body>
+</html>

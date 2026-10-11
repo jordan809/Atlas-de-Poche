@@ -369,7 +369,42 @@
     } catch (e) {}
   }
 
-  function boot() { cleanOldSpotify(); updateMenu(); badgesButton(); initialSync(); }
+  // ── Liens légaux : pied de page de chaque page (sauf le globe plein écran) et menu ──
+  function legalLinks() {
+    // menu : Confidentialité et Mentions légales sous les liens existants
+    var panels = document.querySelectorAll('.menu-panel');
+    for (var i = 0; i < panels.length; i++) {
+      var p = panels[i];
+      if (p.querySelector('a[href="/confidentialite.html"]')) continue;
+      var mk = function (href, label) { var a = document.createElement('a'); a.href = href; a.textContent = label; return a; };
+      p.appendChild(mk('/confidentialite.html', '🔒 Confidentialité'));
+      p.appendChild(mk('/mentions-legales.html', '⚖️ Mentions légales'));
+    }
+    // pied de page
+    if (document.getElementById('legalLinks') || /\/globe(\.html)?$/.test(location.pathname)) return;
+    if (!document.getElementById('legalCss')) {
+      var st = document.createElement('style');
+      st.id = 'legalCss';
+      st.textContent =
+        '#legalLinks{position:relative;z-index:1;text-align:center;padding:16px 14px 30px;width:100%;' +
+        'font:700 .82rem/1.8 "Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;color:rgba(255,255,255,.9);}' +
+        '#legalLinks a{color:#fff;text-decoration:underline;text-underline-offset:3px;margin:0 6px;white-space:nowrap;}' +
+        '#legalLinks a:hover{opacity:.8;}';
+      document.head.appendChild(st);
+    }
+    var d = document.createElement('div');
+    d.id = 'legalLinks';
+    d.innerHTML = '<a href="/confidentialite.html">Confidentialité</a>' +
+      '<a href="/mentions-legales.html">Mentions légales</a>' +
+      '<a href="/a-propos.html">À propos</a>' +
+      '<a href="/contact.html">Contact</a>' +
+      '<a href="#" id="cookieLink">Gérer mes cookies</a>';
+    document.body.appendChild(d);
+    var c = document.getElementById('cookieLink');
+    c.onclick = function (e) { e.preventDefault(); if (window.AtlasConsent) AtlasConsent.open(); };
+  }
+
+  function boot() { cleanOldSpotify(); updateMenu(); badgesButton(); legalLinks(); initialSync(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();

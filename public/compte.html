@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1"></script>
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
   try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
@@ -127,6 +128,11 @@
     font-size: 1.15rem; cursor: pointer; border-radius: 50%;
   }
   .pw-eye:hover { background: rgba(106,92,255,0.12); }
+  .age-check { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: 0.86rem; letter-spacing: 0; margin: 2px 0 14px; color: var(--ink-soft); }
+  .age-check input { width: 20px; height: 20px; padding: 0; margin-top: 2px; flex-shrink: 0; accent-color: var(--bg1); }
+  .age-check a { color: var(--bg1); font-weight: 800; }
+  html.dark .age-check { color: #a89fd8; }
+  html.dark .age-check a { color: #b8aeff; }
   .hint { margin-top: 6px; font-size: 0.82rem; font-weight: 600; color: var(--ink-soft); }
 
   .submit-btn {
@@ -306,6 +312,10 @@
             <button type="button" class="pw-eye" data-for="upPass" aria-label="Afficher le mot de passe">👁️</button>
           </div>
         </div>
+        <label class="age-check" for="upAge">
+          <input type="checkbox" id="upAge">
+          <span>J'ai 15 ans ou plus, ou j'ai l'accord d'un parent. En créant un compte, j'accepte la <a href="/confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>.</span>
+        </label>
         <button class="submit-btn" type="submit" id="upBtn">Créer mon compte 🚀</button>
       </form>
 
@@ -347,7 +357,7 @@
   </div>
 </div>
 
-<script src="/account.js?v=6"></script>
+<script src="/account.js?v=7"></script>
 <script>
   // Menu
   (function(){
@@ -444,6 +454,7 @@
     if(name.length < 2){ say('Choisis un pseudo (2 caractères minimum).', 'err'); $('upName').focus(); return; }
     if(!EMAIL_RE.test(email)){ say("Cette adresse e-mail n'est pas valide.", 'err'); $('upEmail').focus(); return; }
     if(pass.length < 6){ say('Mot de passe trop court : 6 caractères minimum.', 'err'); $('upPass').focus(); return; }
+    if(!$('upAge').checked){ say("Coche la case : réservé aux 15 ans et plus, ou avec l'accord d'un parent.", 'err'); $('upAge').focus(); return; }
     say(''); busy($('upBtn'), true, 'Création…');
     AtlasAccount.signUp(name, email, pass).then(() => {
       $('formUp').reset();

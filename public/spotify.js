@@ -57,6 +57,24 @@
   function sSet(k,v) { try { localStorage.setItem('sp_' + k, JSON.stringify(v)); } catch {} }
   function sDel(k)   { try { localStorage.removeItem('sp_' + k); } catch {} }
 
+  // ── Reprise automatique entre les pages ──────────────────────────────────
+  // Chaque mode du site est une page séparée : en changeant de page, le navigateur détruit le lecteur. On note donc si la
+  // musique jouait, et la nouvelle page la reprend toute seule (au même endroit) dès que son lecteur est prêt.
+  var RESUME_WINDOW = 30000;            // ms : au-delà, on considère que le site a été rouvert (pas de lecture automatique)
+  var lastPlaying = false;
+  var resumeAtLoad = (function () {
+    var r = null;
+    try { r = JSON.parse(localStorage.getItem('sp_resume')); } catch (e) {}
+    return !!(r && r.playing && Date.now() - (r.ts || 0) < RESUME_WINDOW);
+  })();
+  function noteState(playing) {
+    lastPlaying = !!playing;
+    try { localStorage.setItem('sp_resume', JSON.stringify({ playing: lastPlaying, ts: Date.now() })); } catch (e) {}
+  }
+  window.addEventListener('pagehide', function () {
+    if (player) { try { localStorage.setItem('sp_resume', JSON.stringify({ playing: lastPlaying, ts: Date.now() })); } catch (e) {} }
+  });
+
   // ── Tokens ────────────────────────────────────────────────────────────────
   function getTokens() { return sGet('tok'); }
 
@@ -290,6 +308,11 @@
     document.head.appendChild(s);
   }
 
+  // Si on est déjà connecté, on commence à charger le lecteur Spotify tout de suite, sans attendre la fin du chargement de la page
+  var sdkLoaded = false, playerWanted = false;
+  window.onSpotifyWebPlaybackSDKReady = function () { sdkLoaded = true; if (playerWanted) createPlayer(); };
+  try { if (getTokens() && !iosMode) loadSDK(); } catch (e) {}
+
   async function initPlayer() {
     console.log('[SP] initPlayer called');
     var token = await getToken();
@@ -303,9 +326,9 @@
       return;
     }
 
-    window.onSpotifyWebPlaybackSDKReady = createPlayer;
+    playerWanted = true;
     loadSDK();
-    if (window.Spotify) createPlayer();
+    if (window.Spotify || sdkLoaded) createPlayer();
   }
 
   function createPlayer() {
@@ -320,7 +343,9 @@
 
     player.addListener('ready', async function(ref) {
       deviceId = ref.device_id;
-      await api('PUT', '/me/player', { device_ids: [deviceId], play: false });
+      // la musique jouait sur la page précédente : on la reprend ici, au même endroit
+      var resume = resumeAtLoad; resumeAtLoad = false;
+      await api('PUT', '/me/player', { device_ids: [deviceId], play: resume });
       await syncState();
       clearInterval(pollTimer);
       pollTimer = setInterval(syncState, 6000);
@@ -328,8 +353,14 @@
 
     player.addListener('player_state_changed', function(state) {
       if (!state) return;
+      noteState(!state.paused);
       var t = state.track_window && state.track_window.current_track;
       if (t) setTrackUI(t.name + (t.artists[0] ? '  •  ' + t.artists[0].name : ''), !state.paused);
+    });
+
+    // Le navigateur peut refuser de relancer le son sans clic de ta part (règle anti-lecture automatique)
+    player.addListener('autoplay_failed', function() {
+      toast('Le navigateur a bloqué la reprise automatique de la musique : appuie sur ▶ pour la relancer.', 'autoplay');
     });
 
     player.addListener('not_ready', function() { deviceId = null; });
@@ -379,6 +410,7 @@
     try {
       var state = await player.getCurrentState();
       if (!state) return;
+      noteState(!state.paused);
       var t = state.track_window && state.track_window.current_track;
       if (t) setTrackUI(t.name + (t.artists[0] ? '  •  ' + t.artists[0].name : ''), !state.paused);
       if (!volDragging) {

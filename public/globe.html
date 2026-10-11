@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
-  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
+  try { if (!sessionStorage.getItem('atlasNav')) { if (/[?&]utm_/.test(location.search)) sessionStorage.setItem('atlasNav', '1'); else location.replace('/index.html'); } } catch (e) {}   /* arrivée depuis une annonce (utm_) : on reste sur la page */
 </script>
 <title>Globe interactif — Atlas de poche</title>
 <meta name="description" content="Carte du monde interactive : découvre les pays ou joue à les deviner.">

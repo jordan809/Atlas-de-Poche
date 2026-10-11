@@ -29,6 +29,29 @@
     return b64url(new Uint8Array(d));
   }
 
+  // ── Messages ──────────────────────────────────────────────────────────────
+  var warned = {};
+  function toast(msg, key) {
+    if (key) { if (warned[key]) return; warned[key] = 1; }
+    try {
+      var t = document.getElementById('spToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'spToast';
+        t.setAttribute('role', 'status');
+        t.style.cssText = 'position:fixed;top:66px;right:16px;z-index:300;max-width:min(330px,calc(100vw - 32px));' +
+          'padding:11px 15px;border-radius:14px;background:rgba(25,20,20,.94);color:#fff;' +
+          'font:700 .84rem/1.4 Nunito,system-ui,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);display:none;';
+        document.body.appendChild(t);
+      }
+      t.textContent = '🎵 ' + msg;
+      t.style.display = 'block';
+      clearTimeout(t._h);
+      t._h = setTimeout(function () { t.style.display = 'none'; }, 9000);
+    } catch (e) {}
+    try { console.warn('[SP]', msg); } catch (e) {}
+  }
+
   // ── Storage ───────────────────────────────────────────────────────────────
   function sGet(k)   { try { return JSON.parse(localStorage.getItem('sp_' + k)); } catch { return null; } }
   function sSet(k,v) { try { localStorage.setItem('sp_' + k, JSON.stringify(v)); } catch {} }
@@ -81,6 +104,8 @@
       if (r.status === 204 || r.status === 202) return {};
       // 401 = token issue, but don't wipe tokens — let getToken handle refresh next call
       if (r.ok) return r.json().catch(function() { return {}; });
+      if (r.status === 403) toast("Spotify refuse l'accès à ton compte : l'application est en mode développement et ton compte doit y être ajouté (ou Spotify Premium est requis).", 'e403');
+      else if (r.status === 404) toast("Aucun appareil Spotify actif : lance une musique dans l'appli Spotify, puis choisis l'appareil « Atlas de poche ».", 'e404');
     } catch {}
     return null;
   }
@@ -235,6 +260,8 @@
         var err = await r.json().catch(function(){ return {}; });
         console.error('[SP] exchange FAIL', r.status, JSON.stringify(err));
         if ((err.error === 'invalid_grant' || r.status === 400) && !getTokens()) sDel('tok');
+        if (err.error === 'invalid_grant' || r.status === 400) { try { localStorage.removeItem('sp_pending_code'); } catch (e) {} }
+        toast('La connexion à Spotify a échoué (' + (err.error_description || err.error || r.status) + '). Clique de nouveau sur le bouton Spotify pour réessayer.', 'exch');
         return false;
       }
       var d = await r.json();
@@ -242,7 +269,7 @@
       sDel('v');
       console.log('[SP] exchange OK, token stored');
       return true;
-    } catch(ex) { console.error('[SP] exchange exception', ex); return false; }
+    } catch(ex) { console.error('[SP] exchange exception', ex); toast('La connexion à Spotify a échoué (réseau). Réessaie.', 'exch'); return false; }
   }
 
   function logout() {
@@ -317,7 +344,16 @@
     player.addListener('account_error', function() {
       // Premium required for in-browser playback — fall back to remote control
       if (player) { try { player.disconnect(); } catch {} player = null; }
+      toast("Spotify Premium est nécessaire pour écouter dans le navigateur. Tu peux quand même commander la musique de ton appli Spotify.", 'acct');
       startPoll();
+    });
+    player.addListener('initialization_error', function() {
+      toast("Ce navigateur ne peut pas lire Spotify (lecture protégée non disponible). Essaie avec Chrome, Edge ou Safari à jour.", 'init');
+      if (player) { try { player.disconnect(); } catch {} player = null; }
+      startPoll();
+    });
+    player.addListener('playback_error', function(e) {
+      toast('Lecture impossible' + (e && e.message ? ' : ' + e.message : '.'), 'play');
     });
 
     player.connect();
@@ -353,8 +389,32 @@
   }
 
   // ── Controls ──────────────────────────────────────────────────────────────
+  // Rien n'est chargé dans le lecteur du navigateur : on reprend la dernière lecture du compte Spotify ici
+  async function resumeHere() {
+    if (!deviceId) { toast('Le lecteur Spotify démarre… réessaie dans un instant.'); return; }
+    var tok = await getToken();
+    if (!tok) return;
+    try { if (player && player.activateElement) await player.activateElement(); } catch (e) {}
+    try {
+      await fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device_ids: [deviceId], play: true })
+      });
+      var r = await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + encodeURIComponent(deviceId), {
+        method: 'PUT', headers: { Authorization: 'Bearer ' + tok }
+      });
+      if (r.ok) { setTimeout(syncState, 900); return; }
+    } catch (e) {}
+    toast("Rien à reprendre : lance une musique dans l'appli Spotify, puis choisis l'appareil « Atlas de poche » (ou clique sur ▶ ensuite).", 'noctx');
+  }
+
   function togglePlay() {
-    if (player) { player.togglePlay(); return; }
+    if (player) {
+      player.getCurrentState().then(function (s) {
+        if (s) player.togglePlay(); else resumeHere();
+      }, function () { player.togglePlay(); });
+      return;
+    }
     getToken().then(async function(tok) {
       if (!tok) return;
       var s = await api('GET', '/me/player');
@@ -392,6 +452,15 @@
     }
     return false;
   }
+
+  // Code de connexion transmis dans l'adresse par la page de retour (site ouvert sur un autre domaine que celui de la page de retour)
+  function takeCodeFromHash() {
+    var m = /(?:^#|&)spcode=([^&]+)/.exec(location.hash || '');
+    if (!m) return;
+    try { localStorage.setItem('sp_pending_code', decodeURIComponent(m[1])); } catch (e) {}
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+  }
+  takeCodeFromHash();
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', async function() {

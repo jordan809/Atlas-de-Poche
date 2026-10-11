@@ -316,6 +316,7 @@
     if (!load()) return;
     sync().then(function (r) {
       if (!r.changed || performance.now() > 6000) return;
+      try { if (localStorage.getItem('sp_pending_code')) return; } catch (e) {}   // connexion Spotify en cours : on ne recharge pas
       var last = 0;
       try { last = parseInt(sessionStorage.getItem('atlas_sync_reload'), 10) || 0; } catch (e) {}
       if (Date.now() - last < 15000) return;

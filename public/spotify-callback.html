@@ -35,25 +35,42 @@
   var state  = params.get('state');
   var error  = params.get('error');
 
+  // Adresse de retour : uniquement vers les domaines du site (évite une redirection vers un site tiers).
+  // Si le site a été ouvert sur un autre domaine que celui-ci (ex. atlasdepoche.com), le code de connexion ne peut pas
+  // passer par le stockage du navigateur (propre à chaque domaine) : il est transmis dans le fragment de l'adresse.
+  function safeTarget(ret, withCode) {
+    var u;
+    try { u = new URL(ret || '/', location.origin); } catch (e) { u = new URL('/', location.origin); }
+    var ok = /^(localhost|127\.0\.0\.1|(www\.)?atlasdepoche\.com|atlas-de-poche\.(web\.app|firebaseapp\.com))$/.test(u.hostname) &&
+             (u.protocol === 'https:' || u.hostname === 'localhost' || u.hostname === '127.0.0.1');
+    if (!ok) u = new URL('/', location.origin);
+    if (withCode && u.origin !== location.origin) u.hash = 'spcode=' + encodeURIComponent(withCode);
+    return u.toString();
+  }
+
   if (error) {
     document.getElementById('ico').textContent = '❌';
     document.getElementById('msg').textContent = 'Connexion annulée.';
     setTimeout(function() {
       var ret = null;
-      try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch {}
-      location.replace(ret || '/');
+      try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch (e) {}
+      try { ret = ret || (state ? decodeURIComponent(state) : null); } catch (e) {}
+      location.replace(safeTarget(ret, null));
     }, 1500);
   } else if (code) {
     document.getElementById('ico').textContent = '✅';
     document.getElementById('msg').textContent = 'Connecté !';
     document.getElementById('sub').textContent = 'Redirection en cours…';
     localStorage.setItem('sp_pending_code', code);
-    // Return URL: prefer state param (Spotify passes it back unchanged), fall back to localStorage
+    // Adresse de retour : on préfère le paramètre « state » (Spotify le renvoie tel quel), sinon le stockage local
     var ret = null;
-    try { ret = state ? decodeURIComponent(state) : null; } catch {}
-    if (!ret) { try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch {} }
+    try { ret = state ? decodeURIComponent(state) : null; } catch (e) {}
+    if (!ret) { try { ret = JSON.parse(localStorage.getItem('sp_ret')); } catch (e) {} }
     localStorage.removeItem('sp_ret');
-    setTimeout(function() { location.replace(ret || '/'); }, 400);
+    var target = safeTarget(ret, code);
+    // le code est parti avec l'adresse (autre domaine) : inutile de le garder ici
+    if (new URL(target).origin !== location.origin) localStorage.removeItem('sp_pending_code');
+    setTimeout(function() { location.replace(target); }, 400);
   } else {
     document.getElementById('ico').textContent = '❓';
     document.getElementById('msg').textContent = 'Paramètre manquant.';

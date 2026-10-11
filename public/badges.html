@@ -260,7 +260,7 @@
 </div>
 
 <script src="/account.js?v=3"></script>
-<script src="/progress.js?v=1"></script>
+<script src="/progress.js?v=2"></script>
 <script>
   // Menu
   (function(){
@@ -374,7 +374,7 @@
     const rc = readRecords('capitales_records_v1'), rr = readRecords('regions_records_v1');
     const bestStreak = Math.max(rc.bestStreak || 0, rr.bestStreak || 0);
     const bestTimed = Math.max(rc.bestTimed || 0, rr.bestTimed || 0);
-    const perfect = (sFlag.has('perfect_cap') || sFlag.has('perfect_reg')) ? 1 : 0;
+    const defiTotal = (M.n && typeof M.n.defi === 'number') ? M.n.defi : 0;       // bonnes réponses en mode Défi, tous Défis confondus
 
     // --- barres (collées sous les badges des régions et des monuments) ---
     const regBars = regRows.map(r => barRow(r.k, r.done, r.total)).join('');
@@ -396,15 +396,15 @@
     add('capAll', '🏆', 'Tour du monde', 'Maîtrise les ' + CAP.length + ' pays', capDone, CAP.length);
     capRows.forEach(r => add('cont_' + r.k, CONT_EMOJI[r.k], "Toute l'" + r.k, 'Maîtrise les ' + r.total + ' pays de ce continent', r.done, r.total));
 
-    add = block('🔥 Séries & défis', 'Meilleure série : ' + bestStreak + ' · Meilleur Défi : ' + plural(bestTimed, 'bonne réponse', 'bonnes réponses'), null);
+    add = block('🔥 Séries & défis', 'Meilleure série : ' + bestStreak + ' · ' + plural(defiTotal, 'bonne réponse', 'bonnes réponses') + ' en mode Défi', null);
     add('streak10', '🔥', 'Série de 10', '10 bonnes réponses de suite', bestStreak, 10);
     add('streak20', '🚀', 'Série de 20', '20 bonnes réponses de suite', bestStreak, 20);
     add('streak50', '⚡', 'Série de 50', '50 bonnes réponses de suite', bestStreak, 50);
     add('streak100', '💯', 'Série de 100', '100 bonnes réponses de suite', bestStreak, 100);
     add('streak196', '👑', 'Série de 196', '196 bonnes réponses de suite', bestStreak, 196);
-    add('perfect', '🎯', '100 % en Défi', '100 % de bonnes réponses dans le mode Défi (10 réponses minimum)', perfect, 1);
-    add('timed20', '⏱️', 'Éclair', '20 bonnes réponses dans le mode Défi', bestTimed, 20);
-    add('timed30', '💫', 'Foudroyant', '30 bonnes réponses dans le mode Défi', bestTimed, 30);
+    add('defi20', '⏱️', 'Éclair', '20 bonnes réponses dans le mode Défi', defiTotal, 20);
+    add('defi50', '💫', 'Foudroyant', '50 bonnes réponses dans le mode Défi', defiTotal, 50);
+    add('defi196', '🌠', 'Légende du Défi', '196 bonnes réponses dans le mode Défi', defiTotal, 196);
 
     add = block('🇫🇷 Régions de France',
       regDone + ' départements maîtrisés sur ' + REG.length + ' · ' + plural(regComplete, 'région complète', 'régions complètes') + ' sur ' + regRows.length,

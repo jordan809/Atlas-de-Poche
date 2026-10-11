@@ -41,9 +41,17 @@
     f.push(id); m.flags = f; write(KEY, m);
   }
 
+  // Compteur cumulé (ex. « defi » : bonnes réponses données en mode Défi, tous les Défis confondus)
+  function count(id, n) {
+    var m = read(KEY), c = (m.n && typeof m.n === 'object' && !Array.isArray(m.n)) ? m.n : {};
+    c[id] = (c[id] || 0) + (n || 1);
+    m.n = c; write(KEY, m);
+  }
+
   window.AtlasProgress = {
     record: record,
     flag: flag,
+    count: count,
     all: function () { return read(KEY); },
     KEY: KEY, TMP: TMP
   };

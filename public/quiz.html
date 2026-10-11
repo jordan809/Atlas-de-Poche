@@ -1648,6 +1648,7 @@ function buildOptions(q){
 
 // ---------- Answer handling ----------
 function registerResult(correct){
+  try{ if(window.AtlasProgress && correct && activeMode==='timed') AtlasProgress.count('defi', 1); }catch(e){}
   try{ if(window.AtlasProgress) AtlasProgress.record('cap', currentItem && currentItem.c, correct, activeMode==='type' ? 'type' : 'choice'); }catch(e){}
   asked++;
   if(correct){
@@ -3712,7 +3713,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-<script src="/progress.js?v=1"></script>
+<script src="/progress.js?v=2"></script>
 <script src="/account.js?v=3"></script>
 <script src="/spotify.js?v=3"></script>
 </body>

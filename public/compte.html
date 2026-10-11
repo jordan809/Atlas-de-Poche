@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
-  try { if (!sessionStorage.getItem('atlasNav') && !localStorage.getItem('sp_pending_code') && !/spcode=/.test(location.hash)) location.replace('/index.html'); } catch (e) {}
+  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
 </script>
 <title>Mon compte — Atlas de poche</title>
 <meta name="description" content="Crée ton compte Atlas de poche ou connecte-toi.">
@@ -345,7 +345,7 @@
   </div>
 </div>
 
-<script src="/account.js?v=4"></script>
+<script src="/account.js?v=5"></script>
 <script>
   // Menu
   (function(){
@@ -500,6 +500,5 @@
   render();
   if(AtlasAccount.user()) syncNow();
 </script>
-<script src="/spotify.js?v=5"></script>
 </body>
 </html>

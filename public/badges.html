@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
-  try { if (!sessionStorage.getItem('atlasNav') && !localStorage.getItem('sp_pending_code') && !/spcode=/.test(location.hash)) location.replace('/index.html'); } catch (e) {}
+  try { if (!sessionStorage.getItem('atlasNav')) location.replace('/index.html'); } catch (e) {}
 </script>
 <title>Mes badges — Atlas de poche</title>
 <meta name="description" content="Ta progression et tes badges sur Atlas de poche.">
@@ -259,7 +259,7 @@
   </div>
 </div>
 
-<script src="/account.js?v=4"></script>
+<script src="/account.js?v=5"></script>
 <script src="/progress.js?v=2"></script>
 <script>
   // Menu
@@ -454,6 +454,5 @@
   if(!(window.AtlasAccount && AtlasAccount.user())) $('guestNotice').classList.remove('hidden');
   build();
 </script>
-<script src="/spotify.js?v=5"></script>
 </body>
 </html>

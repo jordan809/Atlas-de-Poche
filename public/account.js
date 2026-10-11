@@ -316,7 +316,6 @@
     if (!load()) return;
     sync().then(function (r) {
       if (!r.changed || performance.now() > 6000) return;
-      try { if (localStorage.getItem('sp_pending_code')) return; } catch (e) {}   // connexion Spotify en cours : on ne recharge pas
       var last = 0;
       try { last = parseInt(sessionStorage.getItem('atlas_sync_reload'), 10) || 0; } catch (e) {}
       if (Date.now() - last < 15000) return;
@@ -325,7 +324,7 @@
     }).catch(function () {});
   }
 
-  // ── Bouton « Voir mes badges » : à gauche des boutons du haut (avant Spotify) ─────────────
+  // ── Bouton « Voir mes badges » : à gauche des boutons du haut ─────────────
   function badgesButton() {
     var wrap = document.querySelector('.top-right-btns');
     if (!wrap || document.getElementById('badgesBtn')) return;
@@ -362,7 +361,15 @@
   };
 
   window.addEventListener('storage', function (e) { if (e.key === STORE) updateMenu(); });   // connexion/déconnexion dans un autre onglet
-  function boot() { updateMenu(); badgesButton(); initialSync(); }
+  // Ancienne intégration Spotify retirée : on efface ses données restées dans le navigateur
+  function cleanOldSpotify() {
+    try {
+      Object.keys(localStorage).filter(function (k) { return k.indexOf('sp_') === 0; })
+        .forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) {}
+  }
+
+  function boot() { cleanOldSpotify(); updateMenu(); badgesButton(); initialSync(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();

@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
 <script>
   /* Réouverture du site après fermeture : on repart de l'accueil. */
   try { if (!sessionStorage.getItem('atlasNav')) { if (/[?&]utm_/.test(location.search)) sessionStorage.setItem('atlasNav', '1'); else location.replace('/index.html'); } } catch (e) {}   /* arrivée depuis une annonce (utm_) : on reste sur la page */
 </script>
 <title>Globe interactif — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/globe.html">
 <meta name="description" content="Carte du monde interactive : découvre les pays ou joue à les deviner.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">

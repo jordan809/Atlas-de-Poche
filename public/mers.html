@@ -915,13 +915,14 @@ function modeBarPad(){
 }
 // À appeler AVANT de changer de mode : la page garde sa hauteur pendant le changement, donc elle ne saute pas
 function modeBarHold(){
-  modeBarKeep = null; modeBarFloor();
   const pad = modeBarPad();
   pad.style.height = Math.max(pad.offsetHeight, window.scrollY + window.innerHeight) + 'px';
+  modeBarKeep = null; modeBarFloor();
 }
 // À appeler APRÈS le changement de mode
 function scrollToModeBar(bar){
   if(!bar) return;
+  { const p = modeBarPad(); p.style.height = Math.max(p.offsetHeight, window.scrollY + window.innerHeight) + 'px'; }
   modeBarKeep = null; modeBarFloor();
   let used = 10;
   const go = (smooth) => {

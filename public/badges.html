@@ -119,8 +119,8 @@
   .fill.full { background: linear-gradient(90deg, #1fae6a, #7be0a8); }
 
   /* Badges */
-  .group-title { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.15rem; margin: 18px 0 10px; }
-  .group-title:first-of-type { margin-top: 6px; }
+  .bars-title { font-family: 'Baloo 2', cursive; font-weight: 800; font-size: 1.1rem; margin: 24px 0 12px; padding-top: 18px; border-top: 2px dashed #ece9ff; }
+  html.dark .bars-title { border-top-color: #3d3568; }
   .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
   .badge {
     border-radius: 20px; padding: 14px 12px 12px; text-align: center; background: #f6f4ff;
@@ -248,35 +248,14 @@
       <div class="sum-box"><div class="n" id="sumItems">0</div><div class="l">Éléments maîtrisés</div></div>
     </div>
 
+    <!-- premier bloc : explication -->
     <section class="panel">
       <h2>🏅 Badges</h2>
       <p class="hint">Joue aux quiz et au clavier pour les débloquer. Un élément est <b>maîtrisé</b> quand tu le trouves 2 fois de suite en quiz, ou 1 fois en tapant la réponse.</p>
-      <div id="badgeGroups"></div>
     </section>
 
-    <section class="panel">
-      <h2>🌍 Pays &amp; capitales</h2>
-      <p class="hint" id="capHint"></p>
-      <div class="bars" id="barsCap"></div>
-    </section>
-
-    <section class="panel">
-      <h2>🇫🇷 Régions de France</h2>
-      <p class="hint" id="regHint"></p>
-      <div class="bars" id="barsReg"></div>
-    </section>
-
-    <section class="panel">
-      <h2>🌊 Mers &amp; océans</h2>
-      <p class="hint" id="seaHint"></p>
-      <div class="bars" id="barsSea"></div>
-    </section>
-
-    <section class="panel">
-      <h2>🏛️ Monuments du monde</h2>
-      <p class="hint" id="monHint"></p>
-      <div class="bars" id="barsMon"></div>
-    </section>
+    <!-- un bloc par catégorie de badges (la progression des régions et des monuments est collée sous leurs badges) -->
+    <div id="badgeBlocks"></div>
   </div>
 </div>
 
@@ -397,63 +376,72 @@
     const bestTimed = Math.max(rc.bestTimed || 0, rr.bestTimed || 0);
     const perfect = (sFlag.has('perfect_cap') || sFlag.has('perfect_reg')) ? 1 : 0;
 
-    // --- barres ---
-    $('capHint').textContent = capDone + ' pays maîtrisés sur ' + CAP.length + ' (' + pct(capDone, CAP.length) + ' %)';
-    $('barsCap').innerHTML = capRows.map(r => barRow(r.k, r.done, r.total, CONT_EMOJI[r.k])).join('');
-    $('regHint').textContent = regDone + ' départements maîtrisés sur ' + REG.length + ' · ' + regComplete + ' région' + (regComplete > 1 ? 's' : '') + ' complète' + (regComplete > 1 ? 's' : '');
-    $('barsReg').innerHTML = regRows.map(r => barRow(r.k, r.done, r.total)).join('');
-    $('seaHint').textContent = seaDone + ' mers maîtrisées sur ' + seaTotal + ' (' + pct(seaDone, seaTotal) + ' %)';
-    $('barsSea').innerHTML = seaRows.map(r => barRow(r.label.replace(/^\S+\s/, ''), r.done, r.total, r.emoji)).join('');
-    $('monHint').textContent = monDone + ' monuments maîtrisés sur ' + MON.length + ' (' + pct(monDone, MON.length) + ' %)';
-    $('barsMon').innerHTML = monRows.map(r => barRow(r.k, r.done, r.total, CONT_EMOJI[r.k])).join('');
+    // --- barres (collées sous les badges des régions et des monuments) ---
+    const regBars = regRows.map(r => barRow(r.k, r.done, r.total)).join('');
+    const monBars = monRows.map(r => barRow(r.k, r.done, r.total, CONT_EMOJI[r.k])).join('');
 
-    // --- badges ---
-    const groups = [];
-    const group = (title) => { const g = { title, list: [] }; groups.push(g); return (id, em, t, d, cur, max) => g.list.push({ id, em, t, d, cur: Math.min(cur, max), max, done: max > 0 && cur >= max }); };
+    // --- badges : un bloc (carte) par catégorie ---
+    const blocks = [];
+    const block = (title, summary, bars) => {
+      const g = { title, summary, bars, list: [] };
+      blocks.push(g);
+      return (id, em, t, d, cur, max) => g.list.push({ id, em, t, d, cur: Math.min(cur, max), max, done: max > 0 && cur >= max });
+    };
+    const plural = (n, one, many) => n + ' ' + (n > 1 ? many : one);
 
-    let add = group('🌍 Pays & capitales');
+    let add = block('🌍 Pays & capitales', capDone + ' pays maîtrisés sur ' + CAP.length + ' (' + pct(capDone, CAP.length) + ' %)', null);
     add('cap10', '🌱', 'Premiers pas', 'Maîtrise 10 pays', capDone, 10);
     add('cap50', '🧭', 'Explorateur', 'Maîtrise 50 pays', capDone, 50);
     add('cap100', '🌍', 'Globe-trotter', 'Maîtrise 100 pays', capDone, 100);
     add('capAll', '🏆', 'Tour du monde', 'Maîtrise les ' + CAP.length + ' pays', capDone, CAP.length);
     capRows.forEach(r => add('cont_' + r.k, CONT_EMOJI[r.k], "Toute l'" + r.k, 'Maîtrise les ' + r.total + ' pays de ce continent', r.done, r.total));
 
-    add = group('🔥 Séries & défis');
+    add = block('🔥 Séries & défis', 'Meilleure série : ' + bestStreak + ' · Meilleur Défi : ' + plural(bestTimed, 'bonne réponse', 'bonnes réponses'), null);
     add('streak10', '🔥', 'Série de 10', '10 bonnes réponses de suite', bestStreak, 10);
     add('streak20', '🚀', 'Série de 20', '20 bonnes réponses de suite', bestStreak, 20);
     add('streak50', '⚡', 'Série de 50', '50 bonnes réponses de suite', bestStreak, 50);
+    add('streak100', '💯', 'Série de 100', '100 bonnes réponses de suite', bestStreak, 100);
+    add('streak196', '👑', 'Série de 196', '196 bonnes réponses de suite', bestStreak, 196);
     add('perfect', '🎯', '100 % en Défi', 'Un Défi sans aucune erreur (10 réponses minimum)', perfect, 1);
     add('timed20', '⏱️', 'Éclair', '20 bonnes réponses dans un Défi', bestTimed, 20);
     add('timed30', '💫', 'Foudroyant', '30 bonnes réponses dans un Défi', bestTimed, 30);
 
-    add = group('🇫🇷 Régions de France');
+    add = block('🇫🇷 Régions de France',
+      regDone + ' départements maîtrisés sur ' + REG.length + ' · ' + plural(regComplete, 'région complète', 'régions complètes') + ' sur ' + regRows.length,
+      { title: 'Progression par région', html: regBars });
     add('reg10', '🥖', 'Petit tour de France', 'Maîtrise 10 départements', regDone, 10);
     add('reg50', '🗼', 'Grand tour', 'Maîtrise 50 départements', regDone, 50);
-    add('regOne', '🏰', 'Une région complète', 'Maîtrise tous les départements d\'une région', regComplete, 1);
-    add('reg5', '🎖️', 'Cinq régions', 'Complète 5 régions', regComplete, 5);
     add('regAll', '🇫🇷', 'Toute la France', 'Maîtrise les ' + REG.length + ' départements', regDone, REG.length);
+    add('regOne', '🏰', 'Une région complète', "Maîtrise tous les départements d'une région", regComplete, 1);
+    add('reg5', '🎖️', 'Cinq régions', 'Complète 5 régions', regComplete, 5);
+    add('regEvery', '🗺️', 'Toutes les régions', 'Complète les ' + regRows.length + ' régions', regComplete, regRows.length);
 
-    add = group('🌊 Mers & océans');
+    add = block('🌊 Mers & océans', seaDone + ' mers maîtrisées sur ' + seaTotal + ' (' + pct(seaDone, seaTotal) + ' %)', null);
     add('sea10', '⛵', 'Mousse', 'Maîtrise 10 mers', seaDone, 10);
     add('sea50', '🧭', 'Marin', 'Maîtrise 50 mers', seaDone, 50);
     add('seaAll', '🌊', 'Capitaine', 'Maîtrise les ' + seaTotal + ' mers', seaDone, seaTotal);
     seaRows.forEach(r => add('ocean_' + r.key, r.emoji, r.title, 'Maîtrise les ' + r.total + ' mers de cette zone', r.done, r.total));
 
-    add = group('🏛️ Monuments');
+    add = block('🏛️ Monuments', monDone + ' monuments maîtrisés sur ' + MON.length + ' (' + pct(monDone, MON.length) + ' %)',
+      { title: 'Progression par continent', html: monBars });
     add('mon10', '🏛️', 'Curieux', 'Maîtrise 10 monuments', monDone, 10);
     add('mon50', '🗽', 'Guide touristique', 'Maîtrise 50 monuments', monDone, 50);
     add('monAll', '🏯', 'Conservateur', 'Maîtrise les ' + MON.length + ' monuments', monDone, MON.length);
 
     let earned = 0, count = 0;
-    $('badgeGroups').innerHTML = groups.map(g => {
-      g.list.forEach(b => { count++; if(b.done) earned++; });
-      return '<div class="group-title">' + g.title + '</div><div class="badges">' + g.list.map(b => {
+    $('badgeBlocks').innerHTML = blocks.map(g => {
+      const cards = g.list.map(b => {
+        count++; if(b.done) earned++;
         const p = pct(b.cur, b.max);
         return '<div class="badge' + (b.done ? ' done' : '') + '" title="' + esc(b.d) + '">' +
           '<div class="em">' + b.em + '</div><div class="t">' + esc(b.t) + '</div><div class="d">' + esc(b.d) + '</div>' +
           (b.done ? '' : '<div class="rail"><div class="fill" style="width:' + p + '%"></div></div><div class="pv">' + b.cur + ' / ' + b.max + '</div>') +
           '</div>';
-      }).join('') + '</div>';
+      }).join('');
+      return '<section class="panel"><h2>' + g.title + '</h2><p class="hint">' + g.summary + '</p>' +
+        '<div class="badges">' + cards + '</div>' +
+        (g.bars ? '<h3 class="bars-title">' + g.bars.title + '</h3><div class="bars">' + g.bars.html + '</div>' : '') +
+        '</section>';
     }).join('');
 
     $('sumBadges').textContent = earned + ' / ' + count;

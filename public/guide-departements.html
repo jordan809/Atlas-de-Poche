@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1" data-ads></script>
+<title>Les départements de France — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/guide-departements.html">
+<meta name="description" content="Liste des 101 départements français avec leur numéro, leur préfecture et leur région, plus une explication du système de numérotation.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d; --ink:#2b2350; --ink-soft:#6b6396; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height:100%; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat fixed; }
+  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 22px 20px; }
+  header { text-align:center; margin-bottom:24px; color:#fff; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,0.22); backdrop-filter:blur(4px); letter-spacing:0.28em; text-transform:uppercase; font-size:0.72rem; font-weight:700; padding:6px 16px; border-radius:30px; margin-bottom:14px; color:#fff; text-decoration:none; }
+  h1 { font-family:'Baloo 2',cursive; font-weight:800; font-size:clamp(2rem,6vw,3.2rem); line-height:1.05; text-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  .sub { margin-top:10px; font-size:1.02rem; font-weight:600; opacity:.95; }
+  .card { background:#fff; border-radius:26px; padding:28px 32px; box-shadow:0 20px 50px rgba(0,0,0,0.22); margin-bottom:18px; }
+  .card h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; line-height:1.2; margin:22px 0 8px; color:#4b3fd9; }
+  .card h2:first-child { margin-top:0; }
+  .card p, .card li { font-size:.98rem; }
+  .card p { margin:8px 0; }
+  .card ul { margin:8px 0 8px 22px; }
+  .card li { margin:4px 0; }
+  .card a { color:var(--bg1); font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  .card th, .card td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid #ece9ff; }
+  .card th { background:#f4f1ff; }
+  .upd { color:var(--ink-soft); font-size:.88rem; font-weight:700; }
+  html.dark { background: linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat fixed; }
+  html.dark .card { background:#1e1b2e; color:#e8e2ff; }
+  html.dark .card h2 { color:#b8aeff; }
+  html.dark .card a { color:#b8aeff; }
+  html.dark .card th { background:#2a2545; }
+  html.dark .card th, html.dark .card td { border-color:#3d3568; }
+  html.dark .upd { color:#a89fd8; }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-weight:700;font-size:0.95rem;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+  @media (max-width:520px){ .card{padding:22px 18px;} .wrap{padding-top:70px;} .menu-btn{font-size:.82rem;padding:0 14px;height:38px;} .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;} .top-right-btns{top:10px;right:12px;gap:6px;} .menu{top:10px;left:12px;} }
+  .card .cta{display:inline-block;margin:10px 8px 4px 0;padding:11px 22px;border-radius:30px;background:linear-gradient(135deg,#6a5cff,#ff5d8f);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;text-decoration:none;}
+  .card a.cta{color:#fff;}
+  .card .toc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;}
+  .card .toc a{background:#f4f1ff;border-radius:20px;padding:5px 14px;font-size:.88rem;text-decoration:none;}
+  html.dark .card .toc a{background:#2a2545;}
+</style>
+<script>try{history.scrollRestoration='manual';}catch(e){}</script>
+</head>
+<body>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <a href="/guides.html">📚 Guides</a>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🇫🇷 Les départements de France</h1>
+    <p class="sub">Numéros, préfectures et régions des 101 départements</p>
+  </header>
+
+  <div class="card">
+    <p>La France compte <strong>101 départements</strong> : 96 en métropole (Corse comprise) et 5 en outre-mer. Ils ont été créés en 1790, pendant la Révolution, pour découper le territoire en circonscriptions de taille comparable. Chacun a un nom, un numéro et une <strong>préfecture</strong>, la ville où siège le représentant de l'État. Cette page les rassemble par région. Pour t'entraîner, utilise le <a href="/regions.html">quiz des départements</a>.</p>
+    <div class="toc"><a href="#auvergne-rhone-alpes">Auvergne-Rhône-Alpes</a><a href="#bourgogne-franche-comte">Bourgogne-Franche-Comté</a><a href="#bretagne">Bretagne</a><a href="#centre-val-de-loire">Centre-Val de Loire</a><a href="#corse">Corse</a><a href="#grand-est">Grand Est</a><a href="#hauts-de-france">Hauts-de-France</a><a href="#ile-de-france">Île-de-France</a><a href="#normandie">Normandie</a><a href="#nouvelle-aquitaine">Nouvelle-Aquitaine</a><a href="#occitanie">Occitanie</a><a href="#pays-de-la-loire">Pays de la Loire</a><a href="#provence-alpes-cote-d-azur">Provence-Alpes-Côte d'Azur</a><a href="#guadeloupe">Guadeloupe</a><a href="#martinique">Martinique</a><a href="#guyane">Guyane</a><a href="#la-reunion">La Réunion</a><a href="#mayotte">Mayotte</a></div>
+    <h2>Comprendre la numérotation</h2>
+    <ul>
+      <li>Les numéros de <strong>01 à 95</strong> suivent à l'origine l'ordre alphabétique des noms : l'Ain porte le 01, l'Aisne le 02, l'Allier le 03.</li>
+      <li>La <strong>Corse</strong> avait le numéro 20 ; elle a été divisée en 1976 en <strong>2A</strong> (Corse-du-Sud) et <strong>2B</strong> (Haute-Corse).</li>
+      <li>Les départements de la région parisienne créés en 1964 ont les numéros <strong>91 à 95</strong> (Essonne, Hauts-de-Seine, Seine-Saint-Denis, Val-de-Marne, Val-d'Oise), et <strong>90</strong> est le Territoire de Belfort.</li>
+      <li>Les départements d'outre-mer ont un numéro à trois chiffres commençant par <strong>97</strong> : 971 Guadeloupe, 972 Martinique, 973 Guyane, 974 La Réunion, 976 Mayotte.</li>
+      <li>Les deux premiers chiffres d'un code postal correspondent en général au numéro du département.</li>
+    </ul>
+  </div>
+  <div class="card" id="auvergne-rhone-alpes">
+    <h2>Auvergne-Rhône-Alpes</h2>
+    <p>La région Auvergne-Rhône-Alpes a pour chef-lieu Lyon et compte 12 départements : Ain, Allier, Ardèche, Cantal, Drôme, Isère, Loire, Haute-Loire, Puy-de-Dôme, Rhône, Savoie et Haute-Savoie.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>01</td><td>Ain</td><td>Bourg-en-Bresse</td></tr>
+      <tr><td>03</td><td>Allier</td><td>Moulins</td></tr>
+      <tr><td>07</td><td>Ardèche</td><td>Privas</td></tr>
+      <tr><td>15</td><td>Cantal</td><td>Aurillac</td></tr>
+      <tr><td>26</td><td>Drôme</td><td>Valence</td></tr>
+      <tr><td>38</td><td>Isère</td><td>Grenoble</td></tr>
+      <tr><td>42</td><td>Loire</td><td>Saint-Étienne</td></tr>
+      <tr><td>43</td><td>Haute-Loire</td><td>Le Puy-en-Velay</td></tr>
+      <tr><td>63</td><td>Puy-de-Dôme</td><td>Clermont-Ferrand</td></tr>
+      <tr><td>69</td><td>Rhône</td><td>Lyon</td></tr>
+      <tr><td>73</td><td>Savoie</td><td>Chambéry</td></tr>
+      <tr><td>74</td><td>Haute-Savoie</td><td>Annecy</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="bourgogne-franche-comte">
+    <h2>Bourgogne-Franche-Comté</h2>
+    <p>La région Bourgogne-Franche-Comté a pour chef-lieu Dijon et compte 8 départements : Côte-d'Or, Doubs, Jura, Nièvre, Haute-Saône, Saône-et-Loire, Yonne et Territoire de Belfort.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>21</td><td>Côte-d'Or</td><td>Dijon</td></tr>
+      <tr><td>25</td><td>Doubs</td><td>Besançon</td></tr>
+      <tr><td>39</td><td>Jura</td><td>Lons-le-Saunier</td></tr>
+      <tr><td>58</td><td>Nièvre</td><td>Nevers</td></tr>
+      <tr><td>70</td><td>Haute-Saône</td><td>Vesoul</td></tr>
+      <tr><td>71</td><td>Saône-et-Loire</td><td>Mâcon</td></tr>
+      <tr><td>89</td><td>Yonne</td><td>Auxerre</td></tr>
+      <tr><td>90</td><td>Territoire de Belfort</td><td>Belfort</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="bretagne">
+    <h2>Bretagne</h2>
+    <p>La région Bretagne a pour chef-lieu Rennes et compte 4 départements : Côtes-d'Armor, Finistère, Ille-et-Vilaine et Morbihan.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>22</td><td>Côtes-d'Armor</td><td>Saint-Brieuc</td></tr>
+      <tr><td>29</td><td>Finistère</td><td>Quimper</td></tr>
+      <tr><td>35</td><td>Ille-et-Vilaine</td><td>Rennes</td></tr>
+      <tr><td>56</td><td>Morbihan</td><td>Vannes</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="centre-val-de-loire">
+    <h2>Centre-Val de Loire</h2>
+    <p>La région Centre-Val de Loire a pour chef-lieu Orléans et compte 6 départements : Cher, Eure-et-Loir, Indre, Indre-et-Loire, Loir-et-Cher et Loiret.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>18</td><td>Cher</td><td>Bourges</td></tr>
+      <tr><td>28</td><td>Eure-et-Loir</td><td>Chartres</td></tr>
+      <tr><td>36</td><td>Indre</td><td>Châteauroux</td></tr>
+      <tr><td>37</td><td>Indre-et-Loire</td><td>Tours</td></tr>
+      <tr><td>41</td><td>Loir-et-Cher</td><td>Blois</td></tr>
+      <tr><td>45</td><td>Loiret</td><td>Orléans</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="corse">
+    <h2>Corse</h2>
+    <p>La région Corse a pour chef-lieu Ajaccio et compte 2 départements : Corse-du-Sud et Haute-Corse.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>2A</td><td>Corse-du-Sud</td><td>Ajaccio</td></tr>
+      <tr><td>2B</td><td>Haute-Corse</td><td>Bastia</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="grand-est">
+    <h2>Grand Est</h2>
+    <p>La région Grand Est a pour chef-lieu Strasbourg et compte 10 départements : Ardennes, Aube, Marne, Haute-Marne, Meurthe-et-Moselle, Meuse, Moselle, Bas-Rhin, Haut-Rhin et Vosges.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>08</td><td>Ardennes</td><td>Charleville-Mézières</td></tr>
+      <tr><td>10</td><td>Aube</td><td>Troyes</td></tr>
+      <tr><td>51</td><td>Marne</td><td>Châlons-en-Champagne</td></tr>
+      <tr><td>52</td><td>Haute-Marne</td><td>Chaumont</td></tr>
+      <tr><td>54</td><td>Meurthe-et-Moselle</td><td>Nancy</td></tr>
+      <tr><td>55</td><td>Meuse</td><td>Bar-le-Duc</td></tr>
+      <tr><td>57</td><td>Moselle</td><td>Metz</td></tr>
+      <tr><td>67</td><td>Bas-Rhin</td><td>Strasbourg</td></tr>
+      <tr><td>68</td><td>Haut-Rhin</td><td>Colmar</td></tr>
+      <tr><td>88</td><td>Vosges</td><td>Épinal</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="hauts-de-france">
+    <h2>Hauts-de-France</h2>
+    <p>La région Hauts-de-France a pour chef-lieu Lille et compte 5 départements : Aisne, Nord, Oise, Pas-de-Calais et Somme.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>02</td><td>Aisne</td><td>Laon</td></tr>
+      <tr><td>59</td><td>Nord</td><td>Lille</td></tr>
+      <tr><td>60</td><td>Oise</td><td>Beauvais</td></tr>
+      <tr><td>62</td><td>Pas-de-Calais</td><td>Arras</td></tr>
+      <tr><td>80</td><td>Somme</td><td>Amiens</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="ile-de-france">
+    <h2>Île-de-France</h2>
+    <p>La région Île-de-France a pour chef-lieu Paris et compte 8 départements : Paris, Seine-et-Marne, Yvelines, Essonne, Hauts-de-Seine, Seine-Saint-Denis, Val-de-Marne et Val-d'Oise.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>75</td><td>Paris</td><td>Paris</td></tr>
+      <tr><td>77</td><td>Seine-et-Marne</td><td>Melun</td></tr>
+      <tr><td>78</td><td>Yvelines</td><td>Versailles</td></tr>
+      <tr><td>91</td><td>Essonne</td><td>Évry-Courcouronnes</td></tr>
+      <tr><td>92</td><td>Hauts-de-Seine</td><td>Nanterre</td></tr>
+      <tr><td>93</td><td>Seine-Saint-Denis</td><td>Bobigny</td></tr>
+      <tr><td>94</td><td>Val-de-Marne</td><td>Créteil</td></tr>
+      <tr><td>95</td><td>Val-d'Oise</td><td>Pontoise</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="normandie">
+    <h2>Normandie</h2>
+    <p>La région Normandie a pour chef-lieu Rouen et compte 5 départements : Calvados, Eure, Manche, Orne et Seine-Maritime.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>14</td><td>Calvados</td><td>Caen</td></tr>
+      <tr><td>27</td><td>Eure</td><td>Évreux</td></tr>
+      <tr><td>50</td><td>Manche</td><td>Saint-Lô</td></tr>
+      <tr><td>61</td><td>Orne</td><td>Alençon</td></tr>
+      <tr><td>76</td><td>Seine-Maritime</td><td>Rouen</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="nouvelle-aquitaine">
+    <h2>Nouvelle-Aquitaine</h2>
+    <p>La région Nouvelle-Aquitaine a pour chef-lieu Bordeaux et compte 12 départements : Charente, Charente-Maritime, Corrèze, Creuse, Dordogne, Gironde, Landes, Lot-et-Garonne, Pyrénées-Atlantiques, Deux-Sèvres, Vienne et Haute-Vienne.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>16</td><td>Charente</td><td>Angoulême</td></tr>
+      <tr><td>17</td><td>Charente-Maritime</td><td>La Rochelle</td></tr>
+      <tr><td>19</td><td>Corrèze</td><td>Tulle</td></tr>
+      <tr><td>23</td><td>Creuse</td><td>Guéret</td></tr>
+      <tr><td>24</td><td>Dordogne</td><td>Périgueux</td></tr>
+      <tr><td>33</td><td>Gironde</td><td>Bordeaux</td></tr>
+      <tr><td>40</td><td>Landes</td><td>Mont-de-Marsan</td></tr>
+      <tr><td>47</td><td>Lot-et-Garonne</td><td>Agen</td></tr>
+      <tr><td>64</td><td>Pyrénées-Atlantiques</td><td>Pau</td></tr>
+      <tr><td>79</td><td>Deux-Sèvres</td><td>Niort</td></tr>
+      <tr><td>86</td><td>Vienne</td><td>Poitiers</td></tr>
+      <tr><td>87</td><td>Haute-Vienne</td><td>Limoges</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="occitanie">
+    <h2>Occitanie</h2>
+    <p>La région Occitanie a pour chef-lieu Toulouse et compte 13 départements : Ariège, Aude, Aveyron, Gard, Haute-Garonne, Gers, Hérault, Lot, Lozère, Hautes-Pyrénées, Pyrénées-Orientales, Tarn et Tarn-et-Garonne.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>09</td><td>Ariège</td><td>Foix</td></tr>
+      <tr><td>11</td><td>Aude</td><td>Carcassonne</td></tr>
+      <tr><td>12</td><td>Aveyron</td><td>Rodez</td></tr>
+      <tr><td>30</td><td>Gard</td><td>Nîmes</td></tr>
+      <tr><td>31</td><td>Haute-Garonne</td><td>Toulouse</td></tr>
+      <tr><td>32</td><td>Gers</td><td>Auch</td></tr>
+      <tr><td>34</td><td>Hérault</td><td>Montpellier</td></tr>
+      <tr><td>46</td><td>Lot</td><td>Cahors</td></tr>
+      <tr><td>48</td><td>Lozère</td><td>Mende</td></tr>
+      <tr><td>65</td><td>Hautes-Pyrénées</td><td>Tarbes</td></tr>
+      <tr><td>66</td><td>Pyrénées-Orientales</td><td>Perpignan</td></tr>
+      <tr><td>81</td><td>Tarn</td><td>Albi</td></tr>
+      <tr><td>82</td><td>Tarn-et-Garonne</td><td>Montauban</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="pays-de-la-loire">
+    <h2>Pays de la Loire</h2>
+    <p>La région Pays de la Loire a pour chef-lieu Nantes et compte 5 départements : Loire-Atlantique, Maine-et-Loire, Mayenne, Sarthe et Vendée.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>44</td><td>Loire-Atlantique</td><td>Nantes</td></tr>
+      <tr><td>49</td><td>Maine-et-Loire</td><td>Angers</td></tr>
+      <tr><td>53</td><td>Mayenne</td><td>Laval</td></tr>
+      <tr><td>72</td><td>Sarthe</td><td>Le Mans</td></tr>
+      <tr><td>85</td><td>Vendée</td><td>La Roche-sur-Yon</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="provence-alpes-cote-d-azur">
+    <h2>Provence-Alpes-Côte d'Azur</h2>
+    <p>La région Provence-Alpes-Côte d'Azur a pour chef-lieu Marseille et compte 6 départements : Alpes-de-Haute-Provence, Hautes-Alpes, Alpes-Maritimes, Bouches-du-Rhône, Var et Vaucluse.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>04</td><td>Alpes-de-Haute-Provence</td><td>Digne-les-Bains</td></tr>
+      <tr><td>05</td><td>Hautes-Alpes</td><td>Gap</td></tr>
+      <tr><td>06</td><td>Alpes-Maritimes</td><td>Nice</td></tr>
+      <tr><td>13</td><td>Bouches-du-Rhône</td><td>Marseille</td></tr>
+      <tr><td>83</td><td>Var</td><td>Toulon</td></tr>
+      <tr><td>84</td><td>Vaucluse</td><td>Avignon</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="guadeloupe">
+    <h2>Guadeloupe</h2>
+    <p>La région Guadeloupe a pour chef-lieu Basse-Terre et compte 1 département : Guadeloupe.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>971</td><td>Guadeloupe</td><td>Basse-Terre</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="martinique">
+    <h2>Martinique</h2>
+    <p>La région Martinique a pour chef-lieu Fort-de-France et compte 1 département : Martinique.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>972</td><td>Martinique</td><td>Fort-de-France</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="guyane">
+    <h2>Guyane</h2>
+    <p>La région Guyane a pour chef-lieu Cayenne et compte 1 département : Guyane.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>973</td><td>Guyane</td><td>Cayenne</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="la-reunion">
+    <h2>La Réunion</h2>
+    <p>La région La Réunion a pour chef-lieu Saint-Denis et compte 1 département : La Réunion.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>974</td><td>La Réunion</td><td>Saint-Denis</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="mayotte">
+    <h2>Mayotte</h2>
+    <p>La région Mayotte a pour chef-lieu Mamoudzou et compte 1 département : Mayotte.</p>
+    <table><thead><tr><th>N°</th><th>Département</th><th>Préfecture</th></tr></thead><tbody>
+      <tr><td>976</td><td>Mayotte</td><td>Mamoudzou</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h2>Pour aller plus loin</h2>
+    <p>Retrouve les départements sur la carte de France interactive, joue en mode quiz ou écris les noms au clavier : chaque mode te fait progresser autrement.</p>
+    <a class="cta" href="/regions.html">🇫🇷 Jouer avec les départements</a>
+  </div>
+  <div class="card"><h2>À lire aussi</h2><p><a href="/guide-capitales.html">🗺️ Les capitales du monde</a> · <a href="/guide-drapeaux.html">🚩 Les drapeaux du monde</a> · <a href="/guide-mers-oceans.html">🌊 Les mers et les océans</a> · <a href="/guide-monuments.html">🏛️ Les monuments du monde</a> · <a href="/guides.html">📚 Tous les guides</a></p></div>
+</div>
+
+<script>
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = true; try { soundOn = localStorage.getItem('soundOn') !== '0'; } catch(e) {}
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; try { localStorage.setItem('soundOn', soundOn?'1':'0'); } catch(e) {} applySound(); };
+  const darkToggle = document.getElementById('darkToggle');
+  let darkOn = false; try { darkOn = localStorage.getItem('darkMode') === '1'; } catch(e) {}
+  function applyDark(){ document.documentElement.classList.toggle('dark', darkOn); darkToggle.textContent = darkOn ? '☀️' : '🌙'; }
+  applyDark();
+  darkToggle.onclick = () => { darkOn = !darkOn; try { localStorage.setItem('darkMode', darkOn?'1':'0'); } catch(e) {} applyDark(); };
+</script>
+<script src="/account.js?v=11"></script>
+</body>
+</html>

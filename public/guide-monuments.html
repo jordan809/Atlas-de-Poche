@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1" data-ads></script>
+<title>Les monuments du monde — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/guide-monuments.html">
+<meta name="description" content="Liste de 100 monuments célèbres du monde avec leur ville et leur pays, classés par continent, pour apprendre la géographie en images.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d; --ink:#2b2350; --ink-soft:#6b6396; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height:100%; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat fixed; }
+  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 22px 20px; }
+  header { text-align:center; margin-bottom:24px; color:#fff; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,0.22); backdrop-filter:blur(4px); letter-spacing:0.28em; text-transform:uppercase; font-size:0.72rem; font-weight:700; padding:6px 16px; border-radius:30px; margin-bottom:14px; color:#fff; text-decoration:none; }
+  h1 { font-family:'Baloo 2',cursive; font-weight:800; font-size:clamp(2rem,6vw,3.2rem); line-height:1.05; text-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  .sub { margin-top:10px; font-size:1.02rem; font-weight:600; opacity:.95; }
+  .card { background:#fff; border-radius:26px; padding:28px 32px; box-shadow:0 20px 50px rgba(0,0,0,0.22); margin-bottom:18px; }
+  .card h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; line-height:1.2; margin:22px 0 8px; color:#4b3fd9; }
+  .card h2:first-child { margin-top:0; }
+  .card p, .card li { font-size:.98rem; }
+  .card p { margin:8px 0; }
+  .card ul { margin:8px 0 8px 22px; }
+  .card li { margin:4px 0; }
+  .card a { color:var(--bg1); font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  .card th, .card td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid #ece9ff; }
+  .card th { background:#f4f1ff; }
+  .upd { color:var(--ink-soft); font-size:.88rem; font-weight:700; }
+  html.dark { background: linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat fixed; }
+  html.dark .card { background:#1e1b2e; color:#e8e2ff; }
+  html.dark .card h2 { color:#b8aeff; }
+  html.dark .card a { color:#b8aeff; }
+  html.dark .card th { background:#2a2545; }
+  html.dark .card th, html.dark .card td { border-color:#3d3568; }
+  html.dark .upd { color:#a89fd8; }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-weight:700;font-size:0.95rem;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+  @media (max-width:520px){ .card{padding:22px 18px;} .wrap{padding-top:70px;} .menu-btn{font-size:.82rem;padding:0 14px;height:38px;} .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;} .top-right-btns{top:10px;right:12px;gap:6px;} .menu{top:10px;left:12px;} }
+  .card .cta{display:inline-block;margin:10px 8px 4px 0;padding:11px 22px;border-radius:30px;background:linear-gradient(135deg,#6a5cff,#ff5d8f);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;text-decoration:none;}
+  .card a.cta{color:#fff;}
+  .card .toc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;}
+  .card .toc a{background:#f4f1ff;border-radius:20px;padding:5px 14px;font-size:.88rem;text-decoration:none;}
+  html.dark .card .toc a{background:#2a2545;}
+</style>
+<script>try{history.scrollRestoration='manual';}catch(e){}</script>
+</head>
+<body>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <a href="/guides.html">📚 Guides</a>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🏛️ Les monuments du monde</h1>
+    <p class="sub">100 monuments célèbres classés par continent</p>
+  </header>
+
+  <div class="card">
+    <p>Un monument est un repère : il aide à situer un pays, une ville, une époque. Ce guide présente les <strong>100 monuments</strong> d'Atlas de Poche avec leur ville et leur pays, classés par continent. Pour mémoriser leur localisation, joue au <a href="/monuments.html">quiz des monuments</a>.</p>
+    <div class="toc"><a href="#europe">Europe</a><a href="#asie">Asie</a><a href="#afrique">Afrique</a><a href="#amerique-du-nord">Amérique du Nord</a><a href="#amerique-du-sud">Amérique du Sud</a><a href="#oceanie">Océanie</a></div>
+    <h2>Pourquoi apprendre les monuments ?</h2>
+    <p>Associer un monument à un lieu est l'une des façons les plus efficaces de mémoriser la géographie : une image est plus facile à retenir qu'un nom. Savoir que la tour Eiffel est à Paris, le Colisée à Rome ou Machu Picchu au Pérou, c'est aussi poser des repères pour comprendre l'histoire de chaque région.</p>
+  </div>
+  <div class="card" id="europe">
+    <h2>Europe (30)</h2>
+    <p>L'Europe concentre un grand nombre de monuments célèbres : cathédrales gothiques, châteaux, forums antiques et places monumentales. Beaucoup sont classés au patrimoine mondial de l'UNESCO.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Tour Eiffel</td><td>Paris</td><td>France</td></tr>
+      <tr><td>Arc de Triomphe</td><td>Paris</td><td>France</td></tr>
+      <tr><td>Mont-Saint-Michel</td><td>Le Mont-Saint-Michel</td><td>France</td></tr>
+      <tr><td>Cathédrale Notre-Dame</td><td>Paris</td><td>France</td></tr>
+      <tr><td>Colisée</td><td>Rome</td><td>Italie</td></tr>
+      <tr><td>Tour de Pise</td><td>Pise</td><td>Italie</td></tr>
+      <tr><td>Basilique Saint-Pierre</td><td>Vatican</td><td>Italie</td></tr>
+      <tr><td>Duomo de Milan</td><td>Milan</td><td>Italie</td></tr>
+      <tr><td>Sagrada Família</td><td>Barcelone</td><td>Espagne</td></tr>
+      <tr><td>Alhambra</td><td>Grenade</td><td>Espagne</td></tr>
+      <tr><td>Casa Batlló</td><td>Barcelone</td><td>Espagne</td></tr>
+      <tr><td>Big Ben</td><td>Londres</td><td>Royaume-Uni</td></tr>
+      <tr><td>Tower Bridge</td><td>Londres</td><td>Royaume-Uni</td></tr>
+      <tr><td>Stonehenge</td><td>Wiltshire</td><td>Royaume-Uni</td></tr>
+      <tr><td>Porte de Brandebourg</td><td>Berlin</td><td>Allemagne</td></tr>
+      <tr><td>Château de Neuschwanstein</td><td>Schwangau</td><td>Allemagne</td></tr>
+      <tr><td>Acropole</td><td>Athènes</td><td>Grèce</td></tr>
+      <tr><td>Parthénon</td><td>Athènes</td><td>Grèce</td></tr>
+      <tr><td>Tour de Belém</td><td>Lisbonne</td><td>Portugal</td></tr>
+      <tr><td>Rijksmuseum</td><td>Amsterdam</td><td>Pays-Bas</td></tr>
+      <tr><td>Atomium</td><td>Bruxelles</td><td>Belgique</td></tr>
+      <tr><td>Pont Charles</td><td>Prague</td><td>Tchéquie</td></tr>
+      <tr><td>Château de Schönbrunn</td><td>Vienne</td><td>Autriche</td></tr>
+      <tr><td>Parlement de Budapest</td><td>Budapest</td><td>Hongrie</td></tr>
+      <tr><td>Cathédrale Saint-Basile</td><td>Moscou</td><td>Russie</td></tr>
+      <tr><td>Sainte-Sophie</td><td>Istanbul</td><td>Turquie</td></tr>
+      <tr><td>Château de Blarney</td><td>Blarney</td><td>Irlande</td></tr>
+      <tr><td>Église en bois de Borgund</td><td>Borgund</td><td>Norvège</td></tr>
+      <tr><td>Château de Bran</td><td>Bran</td><td>Roumanie</td></tr>
+      <tr><td>Palais de Dioclétien</td><td>Split</td><td>Croatie</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="asie">
+    <h2>Asie (25)</h2>
+    <p>L'Asie rassemble des temples, des palais et des fortifications parmi les plus anciens du monde, de la Grande Muraille aux temples d'Angkor.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Grande Muraille de Chine</td><td>Pékin</td><td>Chine</td></tr>
+      <tr><td>Cité interdite</td><td>Pékin</td><td>Chine</td></tr>
+      <tr><td>Taj Mahal</td><td>Agra</td><td>Inde</td></tr>
+      <tr><td>Qutub Minar</td><td>Delhi</td><td>Inde</td></tr>
+      <tr><td>Temple Kinkaku-ji</td><td>Kyoto</td><td>Japon</td></tr>
+      <tr><td>Fushimi Inari-taisha</td><td>Kyoto</td><td>Japon</td></tr>
+      <tr><td>Angkor Wat</td><td>Siem Reap</td><td>Cambodge</td></tr>
+      <tr><td>Temple de Borobudur</td><td>Java</td><td>Indonésie</td></tr>
+      <tr><td>Temple de Prambanan</td><td>Java</td><td>Indonésie</td></tr>
+      <tr><td>Wat Arun</td><td>Bangkok</td><td>Thaïlande</td></tr>
+      <tr><td>Wat Phra Kaew</td><td>Bangkok</td><td>Thaïlande</td></tr>
+      <tr><td>Cité impériale de Hué</td><td>Hué</td><td>Vietnam</td></tr>
+      <tr><td>Marina Bay Sands</td><td>Singapour</td><td>Singapour</td></tr>
+      <tr><td>Tours Petronas</td><td>Kuala Lumpur</td><td>Malaisie</td></tr>
+      <tr><td>Église San Agustin</td><td>Manille</td><td>Philippines</td></tr>
+      <tr><td>Palais de Gyeongbokgung</td><td>Séoul</td><td>Corée du Sud</td></tr>
+      <tr><td>Mosquée Nasir-ol-Molk</td><td>Chiraz</td><td>Iran</td></tr>
+      <tr><td>Pétra</td><td>Pétra</td><td>Jordanie</td></tr>
+      <tr><td>Mur occidental</td><td>Jérusalem</td><td>Israël</td></tr>
+      <tr><td>Al-Ukhdud</td><td>Najran</td><td>Arabie saoudite</td></tr>
+      <tr><td>Burj Khalifa</td><td>Dubaï</td><td>Émirats arabes unis</td></tr>
+      <tr><td>Taipei 101</td><td>Taipei</td><td>Taïwan</td></tr>
+      <tr><td>Pagode Shwedagon</td><td>Yangon</td><td>Myanmar</td></tr>
+      <tr><td>Temple de Swayambhunath</td><td>Katmandou</td><td>Népal</td></tr>
+      <tr><td>Temple de la Dent</td><td>Kandy</td><td>Sri Lanka</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="afrique">
+    <h2>Afrique (15)</h2>
+    <p>L'Afrique abrite des monuments millénaires, des pyramides d'Égypte aux églises rupestres d'Éthiopie, ainsi que des sites naturels et historiques remarquables.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Pyramides de Gizeh</td><td>Gizeh</td><td>Égypte</td></tr>
+      <tr><td>Sphinx de Gizeh</td><td>Gizeh</td><td>Égypte</td></tr>
+      <tr><td>Aït-Ben-Haddou</td><td>Ouarzazate</td><td>Maroc</td></tr>
+      <tr><td>Mosquée Hassan II</td><td>Casablanca</td><td>Maroc</td></tr>
+      <tr><td>Mémorial du Martyr</td><td>Alger</td><td>Algérie</td></tr>
+      <tr><td>Amphithéâtre d'El Jem</td><td>El Jem</td><td>Tunisie</td></tr>
+      <tr><td>Robben Island</td><td>Le Cap</td><td>Afrique du Sud</td></tr>
+      <tr><td>Union Buildings</td><td>Pretoria</td><td>Afrique du Sud</td></tr>
+      <tr><td>Monument de la Renaissance africaine</td><td>Dakar</td><td>Sénégal</td></tr>
+      <tr><td>Grande Mosquée de Djenné</td><td>Djenné</td><td>Mali</td></tr>
+      <tr><td>Églises de Lalibela</td><td>Lalibela</td><td>Éthiopie</td></tr>
+      <tr><td>Great Zimbabwe</td><td>Masvingo</td><td>Zimbabwe</td></tr>
+      <tr><td>Mosquée nationale d'Abuja</td><td>Abuja</td><td>Nigeria</td></tr>
+      <tr><td>Old Fort de Zanzibar</td><td>Zanzibar</td><td>Tanzanie</td></tr>
+      <tr><td>Cape Coast Castle</td><td>Cape Coast</td><td>Ghana</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="amerique-du-nord">
+    <h2>Amérique du Nord (10)</h2>
+    <p>L'Amérique du Nord associe des symboles modernes et des vestiges des civilisations précolombiennes, comme les pyramides mayas et aztèques.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Statue de la Liberté</td><td>New York</td><td>États-Unis</td></tr>
+      <tr><td>Empire State Building</td><td>New York</td><td>États-Unis</td></tr>
+      <tr><td>Golden Gate Bridge</td><td>San Francisco</td><td>États-Unis</td></tr>
+      <tr><td>Mont Rushmore</td><td>Dakota du Sud</td><td>États-Unis</td></tr>
+      <tr><td>Maison-Blanche</td><td>Washington D.C.</td><td>États-Unis</td></tr>
+      <tr><td>Chichén Itzá</td><td>Yucatán</td><td>Mexique</td></tr>
+      <tr><td>Teotihuacan</td><td>Mexico</td><td>Mexique</td></tr>
+      <tr><td>CN Tower</td><td>Toronto</td><td>Canada</td></tr>
+      <tr><td>Château Frontenac</td><td>Québec</td><td>Canada</td></tr>
+      <tr><td>Capitole de La Havane</td><td>La Havane</td><td>Cuba</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="amerique-du-sud">
+    <h2>Amérique du Sud (10)</h2>
+    <p>L'Amérique du Sud est marquée par l'héritage des Incas et des civilisations andines, ainsi que par des monuments modernes devenus des emblèmes de leurs villes.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Christ Rédempteur</td><td>Rio de Janeiro</td><td>Brésil</td></tr>
+      <tr><td>Pain de Sucre</td><td>Rio de Janeiro</td><td>Brésil</td></tr>
+      <tr><td>Machu Picchu</td><td>Cusco</td><td>Pérou</td></tr>
+      <tr><td>Lignes de Nazca</td><td>Nazca</td><td>Pérou</td></tr>
+      <tr><td>Obélisque de Buenos Aires</td><td>Buenos Aires</td><td>Argentine</td></tr>
+      <tr><td>Moai de l'île de Pâques</td><td>Île de Pâques</td><td>Chili</td></tr>
+      <tr><td>Sanctuaire de Las Lajas</td><td>Ipiales</td><td>Colombie</td></tr>
+      <tr><td>Porte du Soleil</td><td>Tiwanaku</td><td>Bolivie</td></tr>
+      <tr><td>Mitad del Mundo</td><td>Quito</td><td>Équateur</td></tr>
+      <tr><td>Palacio Salvo</td><td>Montevideo</td><td>Uruguay</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="oceanie">
+    <h2>Océanie (10)</h2>
+    <p>L'Océanie réunit des édifices contemporains devenus mondialement célèbres et des sites sacrés des peuples autochtones.</p>
+    <table><thead><tr><th>Monument</th><th>Ville</th><th>Pays</th></tr></thead><tbody>
+      <tr><td>Opéra de Sydney</td><td>Sydney</td><td>Australie</td></tr>
+      <tr><td>Harbour Bridge</td><td>Sydney</td><td>Australie</td></tr>
+      <tr><td>Shrine of Remembrance</td><td>Melbourne</td><td>Australie</td></tr>
+      <tr><td>Sky Tower</td><td>Auckland</td><td>Nouvelle-Zélande</td></tr>
+      <tr><td>Beehive</td><td>Wellington</td><td>Nouvelle-Zélande</td></tr>
+      <tr><td>Stone Monoliths of Ngarchelong</td><td>Ngarchelong</td><td>Palaos</td></tr>
+      <tr><td>Sri Siva Subramaniya Temple</td><td>Nadi</td><td>Fidji</td></tr>
+      <tr><td>Robert Louis Stevenson Museum</td><td>Apia</td><td>Samoa</td></tr>
+      <tr><td>Ha'amonga 'a Maui</td><td>Tongatapu</td><td>Tonga</td></tr>
+      <tr><td>Chief Roi Mata's Domain</td><td>Efate</td><td>Vanuatu</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h2>Passe à la pratique</h2>
+    <p>Dans Atlas de Poche, chaque monument est présenté avec une photo : révise par continent, joue au quiz ou écris les noms dans le tableau du mode clavier.</p>
+    <a class="cta" href="/monuments.html">🏛️ Jouer aux monuments</a>
+  </div>
+  <div class="card"><h2>À lire aussi</h2><p><a href="/guide-capitales.html">🗺️ Les capitales du monde</a> · <a href="/guide-drapeaux.html">🚩 Les drapeaux du monde</a> · <a href="/guide-departements.html">🇫🇷 Les départements de France</a> · <a href="/guide-mers-oceans.html">🌊 Les mers et les océans</a> · <a href="/guides.html">📚 Tous les guides</a></p></div>
+</div>
+
+<script>
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = true; try { soundOn = localStorage.getItem('soundOn') !== '0'; } catch(e) {}
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; try { localStorage.setItem('soundOn', soundOn?'1':'0'); } catch(e) {} applySound(); };
+  const darkToggle = document.getElementById('darkToggle');
+  let darkOn = false; try { darkOn = localStorage.getItem('darkMode') === '1'; } catch(e) {}
+  function applyDark(){ document.documentElement.classList.toggle('dark', darkOn); darkToggle.textContent = darkOn ? '☀️' : '🌙'; }
+  applyDark();
+  darkToggle.onclick = () => { darkOn = !darkOn; try { localStorage.setItem('darkMode', darkOn?'1':'0'); } catch(e) {} applyDark(); };
+</script>
+<script src="/account.js?v=11"></script>
+</body>
+</html>

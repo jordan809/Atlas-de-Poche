@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1" data-ads></script>
+<title>Les mers et les océans — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/guide-mers-oceans.html">
+<meta name="description" content="Guide des océans et des mers du monde : Atlantique, Pacifique, Indien, Arctique, Austral, avec une description de chaque mer et golfe.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d; --ink:#2b2350; --ink-soft:#6b6396; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height:100%; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat fixed; }
+  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 22px 20px; }
+  header { text-align:center; margin-bottom:24px; color:#fff; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,0.22); backdrop-filter:blur(4px); letter-spacing:0.28em; text-transform:uppercase; font-size:0.72rem; font-weight:700; padding:6px 16px; border-radius:30px; margin-bottom:14px; color:#fff; text-decoration:none; }
+  h1 { font-family:'Baloo 2',cursive; font-weight:800; font-size:clamp(2rem,6vw,3.2rem); line-height:1.05; text-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  .sub { margin-top:10px; font-size:1.02rem; font-weight:600; opacity:.95; }
+  .card { background:#fff; border-radius:26px; padding:28px 32px; box-shadow:0 20px 50px rgba(0,0,0,0.22); margin-bottom:18px; }
+  .card h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; line-height:1.2; margin:22px 0 8px; color:#4b3fd9; }
+  .card h2:first-child { margin-top:0; }
+  .card p, .card li { font-size:.98rem; }
+  .card p { margin:8px 0; }
+  .card ul { margin:8px 0 8px 22px; }
+  .card li { margin:4px 0; }
+  .card a { color:var(--bg1); font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  .card th, .card td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid #ece9ff; }
+  .card th { background:#f4f1ff; }
+  .upd { color:var(--ink-soft); font-size:.88rem; font-weight:700; }
+  html.dark { background: linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat fixed; }
+  html.dark .card { background:#1e1b2e; color:#e8e2ff; }
+  html.dark .card h2 { color:#b8aeff; }
+  html.dark .card a { color:#b8aeff; }
+  html.dark .card th { background:#2a2545; }
+  html.dark .card th, html.dark .card td { border-color:#3d3568; }
+  html.dark .upd { color:#a89fd8; }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-weight:700;font-size:0.95rem;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+  @media (max-width:520px){ .card{padding:22px 18px;} .wrap{padding-top:70px;} .menu-btn{font-size:.82rem;padding:0 14px;height:38px;} .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;} .top-right-btns{top:10px;right:12px;gap:6px;} .menu{top:10px;left:12px;} }
+  .card .cta{display:inline-block;margin:10px 8px 4px 0;padding:11px 22px;border-radius:30px;background:linear-gradient(135deg,#6a5cff,#ff5d8f);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;text-decoration:none;}
+  .card a.cta{color:#fff;}
+  .card .toc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;}
+  .card .toc a{background:#f4f1ff;border-radius:20px;padding:5px 14px;font-size:.88rem;text-decoration:none;}
+  html.dark .card .toc a{background:#2a2545;}
+</style>
+<script>try{history.scrollRestoration='manual';}catch(e){}</script>
+</head>
+<body>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <a href="/guides.html">📚 Guides</a>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🌊 Les mers et les océans</h1>
+    <p class="sub">Océans, mers, golfes et détroits expliqués</p>
+  </header>
+
+  <div class="card">
+    <p>Les océans couvrent environ <strong>71 %</strong> de la surface de la Terre. On les divise en cinq grands ensembles (Pacifique, Atlantique, Indien, Arctique et Austral), eux-mêmes découpés en mers, golfes et détroits. Ce guide présente les <strong>153 mers, golfes et océans</strong> d'Atlas de Poche, classés par océan. Pour t'entraîner, joue au <a href="/mers.html">jeu des mers et océans</a>.</p>
+    <div class="toc"><a href="#atlantique">Atlantique</a><a href="#pacifique">Pacifique</a><a href="#indien">Indien</a><a href="#arctique">Arctique</a><a href="#austral">Austral</a><a href="#fermee">Mers fermées et lacs salés</a></div>
+    <h2>Quelle différence entre une mer et un océan ?</h2>
+    <p>Un océan est une immense étendue d'eau salée qui sépare les continents. Une mer est une partie de l'océan plus petite, souvent bordée de terres et reliée à lui par un passage plus ou moins étroit. Un golfe est une échancrure de la côte ; un détroit est un passage resserré entre deux terres qui relie deux mers ou deux océans.</p>
+  </div>
+  <div class="card" id="atlantique">
+    <h2>Atlantique (56)</h2>
+    <p>L'océan Atlantique sépare l'Europe et l'Afrique des Amériques. Deuxième océan du monde par la taille, il abrite la Méditerranée, la mer du Nord, la mer des Caraïbes ou le golfe du Mexique.</p>
+    <ul>
+      <li><strong>Mer Méditerranée</strong> <em>(principale)</em> : Enclavée entre l'Europe du Sud, l'Afrique du Nord et le Moyen-Orient. Berceau des civilisations grecque, romaine et égyptienne. Reliée à l'Atlantique par le détroit de Gibraltar.</li>
+      <li><strong>Mer des Caraïbes</strong> <em>(principale)</em> : Mer tropicale bordée par l'Amérique centrale, du Sud et les Antilles. Connue pour ses eaux turquoise et ses récifs coralliens. Aussi appelée mer des Antilles.</li>
+      <li><strong>Mer du Nord</strong> <em>(principale)</em> : Mer peu profonde entre le Royaume-Uni, la Scandinavie et l'Europe du Nord-Ouest. Zone de pêche et d'exploitation pétrolière. Relie l'Atlantique à la mer Baltique.</li>
+      <li><strong>Mer Baltique</strong> <em>(principale)</em> : Mer presque fermée entourée par les pays scandinaves et l'Europe centrale. Plus grande mer d'eau saumâtre du monde. Reliée à la mer du Nord par le détroit de Skagerrak.</li>
+      <li><strong>Mer de Norvège</strong> <em>(principale)</em> : Mer froide entre la Norvège, l'Islande et Jan Mayen. Traversée par le Gulf Stream qui réchauffe l'Europe du Nord. Importante zone de pêche à la morue et au hareng.</li>
+      <li><strong>Mer du Labrador</strong> <em>(principale)</em> : Bras de l'Atlantique entre le Canada (Labrador) et le Groenland. Connue pour ses icebergs et ses eaux très froides. C'est là que le Titanic a heurté un iceberg en 1912.</li>
+      <li><strong>Mer de Scotia</strong> <em>(principale)</em> : Mer agitée entre la Patagonie, les Malouines, la Géorgie du Sud et l'Antarctique. Nommée d'après le navire Scotia de l'expédition écossaise (1902-04).</li>
+      <li><strong>Mer des Sargasses</strong> <em>(principale)</em> : Unique mer sans côtes, délimitée par des courants. Envahie par des algues sargasses. Située dans le triangle des Bermudes. Lieu de reproduction des anguilles d'Europe et d'Amérique.</li>
+      <li><strong>Mer d'Irlande</strong> <em>(principale)</em> : Mer étroite entre l'Irlande et la Grande-Bretagne. Traversée par de nombreuses liaisons maritimes. Profondeur maximale seulement 175 m.</li>
+      <li><strong>Mer Celtique</strong> <em>(principale)</em> : Mer entre la Bretagne, l'Irlande, le Pays de Galles et les Cornouailles. Zone de transition entre l'Atlantique et la Manche. Riche en ressources halieutiques et en hydrocarbures.</li>
+      <li><strong>Mer d'Alboran</strong> <em>(mer secondaire)</em> : Partie la plus occidentale de la Méditerranée, entre l'Espagne et le Maroc. Point d'entrée de l'eau atlantique. Séparée de l'Atlantique par le détroit de Gibraltar.</li>
+      <li><strong>Mer des Baléares</strong> <em>(mer secondaire)</em> : Mer entre la côte est de l'Espagne et les îles Baléares (Majorque, Minorque, Ibiza). Fait partie du bassin occidental de la Méditerranée.</li>
+      <li><strong>Mer Ligure</strong> <em>(mer secondaire)</em> : Mer entre la Riviera italienne, la Riviera française et la Corse. Entourée par Gênes, Nice et Bastia. Nommée d'après la Ligurie, région du nord-ouest de l'Italie.</li>
+      <li><strong>Mer Tyrrhénienne</strong> <em>(mer secondaire)</em> : Mer entre l'Italie continentale, la Corse, la Sardaigne et la Sicile. Abrite de nombreux volcans sous-marins. Le Stromboli, volcan actif, se trouve sur ses bords.</li>
+      <li><strong>Mer Adriatique</strong> <em>(mer secondaire)</em> : Mer allongée entre l'Italie et les Balkans (Croatie, Monténégro, Albanie). Connue pour Venise et les îles dalmates. Peu profonde au nord, jusqu'à 1 200 m au sud.</li>
+      <li><strong>Mer Ionienne</strong> <em>(mer secondaire)</em> : Mer entre le sud de l'Italie, la Sicile et la Grèce. La partie la plus profonde de la Méditerranée. Point le plus profond : 5 267 m (fosse Calypso).</li>
+      <li><strong>Mer Égée</strong> <em>(mer secondaire)</em> : Mer parsemée d'îles entre la Grèce et la Turquie. Berceau de la civilisation grecque antique. Doit son nom à Égée, père mythologique de Thésée.</li>
+      <li><strong>Mer de Thrace</strong> <em>(mer secondaire)</em> : Partie nord-est de la mer Égée, entre la Grèce et la Turquie. Reliée à la mer Noire par le détroit des Dardanelles. Zone stratégique pour l'accès à Istanbul.</li>
+      <li><strong>Mer de Crète</strong> <em>(mer secondaire)</em> : Partie de la mer Égée entre la Grèce continentale et l'île de Crète, parsemée des îles Cyclades. La Crète est la plus grande île de Grèce.</li>
+      <li><strong>Mer de Libye</strong> <em>(mer secondaire)</em> : Partie de la Méditerranée au nord de la Libye et à l'est de la Tunisie. Communique avec la mer Ionienne à l'est.</li>
+      <li><strong>Mer de Cilicie</strong> <em>(mer secondaire)</em> : Partie nord-est de la Méditerranée, bordée par la côte sud de la Turquie et Chypre. La Cilicie était une région de l'Antiquité en Anatolie.</li>
+      <li><strong>Golfe de Botnie</strong> <em>(golfe)</em> : Partie la plus septentrionale de la mer Baltique, entre la Suède et la Finlande. Gèle en hiver. Eau presque douce en raison de nombreuses rivières.</li>
+      <li><strong>Golfe de Finlande</strong> <em>(golfe)</em> : Prolongement est de la Baltique entre la Finlande, l'Estonie et la Russie. Saint-Pétersbourg est au fond. Saint-Pétersbourg y a été fondé en 1703 par Pierre le Grand.</li>
+      <li><strong>Golfe de Riga</strong> <em>(golfe)</em> : Golfe de la Baltique entre la Lettonie et l'Estonie. La capitale lettone Riga lui doit son nom. Gèle partiellement chaque hiver.</li>
+      <li><strong>Golfe du Mexique</strong> <em>(golfe)</em> : Grand golfe entre les États-Unis, le Mexique et Cuba. Important pour la pêche, le pétrole et le tourisme. Frappé par les ouragans en été et en automne.</li>
+      <li><strong>Mer des Antilles</strong> <em>(mer secondaire)</em> : Autre nom de la mer des Caraïbes, utilisé surtout par les Français. Délimitée par les îles des Antilles. Les Grandes Antilles incluent Cuba, Haïti, Porto Rico et la Jamaïque.</li>
+      <li><strong>Mer de Marmara</strong> <em>(mer secondaire)</em> : Petite mer intérieure en Turquie entre la mer Égée et la mer Noire. C'est le point de passage obligé entre les deux mers. Istanbul est divisée par ce bras de mer.</li>
+      <li><strong>Mer du Levant</strong> <em>(mer secondaire)</em> : Partie orientale de la Méditerranée, au large d'Israël, du Liban, de la Syrie et de la Turquie du Sud. Zone stratégique et géopolitique. Le terme 'Levant' signifie 'est' en français ancien.</li>
+      <li><strong>Mer de Sardaigne</strong> <em>(mer secondaire)</em> : Zone maritime entre la Sardaigne et les îles Baléares, à l'ouest de la mer Tyrrhénienne. La Sardaigne est la deuxième plus grande île de la Méditerranée.</li>
+      <li><strong>Mer de Sicile</strong> <em>(mer secondaire)</em> : Partie de la Méditerranée entre l'Italie du Sud (Sicile) et la Tunisie. Sépare les bassins occidental et oriental. Le détroit de Sicile, à son point le plus étroit, mesure 145 km.</li>
+      <li><strong>Mer de Corse</strong> <em>(mer secondaire)</em> : Zone maritime entre la Corse et l'Italie (Toscane), parfois distinguée de la mer Ligure. La Corse est surnommée 'l'île de Beauté'.</li>
+      <li><strong>Baie de Gdańsk</strong> <em>(mer secondaire)</em> : Baie de la mer Baltique au nord de la Pologne, au fond de laquelle se trouvent les villes de Gdańsk, Gdynia et Sopot. C'est là que débuta la Seconde Guerre mondiale, le 1er septembre 1939.</li>
+      <li><strong>Baie de Poméranie</strong> <em>(mer secondaire)</em> : Baie de la Baltique à la frontière entre l'Allemagne et la Pologne, à l'embouchure de l'Oder. Importante zone de pêche historique.</li>
+      <li><strong>Baie de Bothnie</strong> <em>(mer secondaire)</em> : Partie sud du golfe de Botnie, entre la Suède et la Finlande. Parfois distinguée du golfe plus au nord. Ses eaux très peu salées gèlent presque entièrement chaque hiver.</li>
+      <li><strong>Golfe du Honduras</strong> <em>(golfe)</em> : Golfe au fond de la mer des Caraïbes, entre le Honduras, le Guatemala et le Belize. Connu pour ses récifs. La Grande Barrière de Belize est la 2e plus grande barrière de corail du monde.</li>
+      <li><strong>Golfe du Darién</strong> <em>(golfe)</em> : Golfe à la frontière entre le Panama et la Colombie, au fond de la mer des Caraïbes. La jungle du Darién est l'un des endroits les plus difficiles d'accès au monde.</li>
+      <li><strong>Bassin de Colombie</strong> <em>(mer secondaire)</em> : Grande dépression sous-marine dans la partie centrale de la mer des Caraïbes, utilisée en océanographie. Terme scientifique désignant le fond profond des Caraïbes (jusqu'à 4 500 m).</li>
+      <li><strong>Mer du Groenland</strong> <em>(principale)</em> : Mer entre le Groenland, le Svalbard et l'Islande. Classée tantôt dans l'Atlantique Nord, tantôt dans l'Arctique. Joue un rôle clé dans la circulation thermohaline de l'Atlantique Nord.</li>
+      <li><strong>Mer de Barents</strong> <em>(principale)</em> : Mer entre la Norvège et la Russie, parfois rattachée à l'Atlantique Nord en raison des courants chauds qui la traversent. Nommée d'après l'explorateur néerlandais Willem Barents (1596).</li>
+      <li><strong>Golfe du Mexique</strong> <em>(principale)</em> : Grand golfe souvent traité comme mer indépendante entre les États-Unis, le Mexique et Cuba. Important pour la pêche et le pétrole. Frappé régulièrement par des ouragans en été et en automne.</li>
+      <li><strong>Bassin du Venezuela</strong> <em>(mer secondaire)</em> : Dépression sous-marine dans la partie sud-ouest de la mer des Caraïbes, au large du Venezuela. Terme océanographique. Profondeur maximale : environ 5 630 m.</li>
+      <li><strong>Mer d'Irminger</strong> <em>(principale)</em> : Mer entre le sud du Groenland, l'Islande et les îles Féroé. Zone clé pour la formation des eaux profondes de l'Atlantique Nord. Nommée d'après l'amiral danois Carl Ludvig Christian Irminger.</li>
+      <li><strong>Mer de Baffin</strong> <em>(principale)</em> : Mer entre le Groenland et l'île de Baffin (Canada). Passage de nombreux icebergs descendant de l'Arctique. Nommée d'après l'explorateur anglais William Baffin (1616).</li>
+      <li><strong>Mer des Hébrides</strong> <em>(principale)</em> : Mer entre les Hébrides extérieures et la côte ouest de l'Écosse. Zone de pêche importante et de navigation côtière. Les Hébrides comptent plus de 700 îles, dont une centaine habitées.</li>
+      <li><strong>Mer d'Iroise</strong> <em>(principale)</em> : Mer au large du Finistère (Bretagne, France), entre la pointe du Raz, l'île d'Ouessant et les îles de Sein. Zone aux courants puissants, réputée dangereuse pour la navigation.</li>
+      <li><strong>Mer Cantabrique</strong> <em>(principale)</em> : Partie du golfe de Gascogne au large du nord de l'Espagne (Pays basque, Cantabrie, Asturies, Galice). Importante zone de pêche traditionnelle basque et espagnole.</li>
+      <li><strong>Mer d'Argentine</strong> <em>(principale)</em> : Plateau continental au large de l'Argentine, dans l'Atlantique Sud. L'une des zones de pêche les plus riches au monde. Abrite des colonies de manchots, otaries et baleines franches australes.</li>
+      <li><strong>Golfe de Guinée</strong> <em>(principale)</em> : Grand golfe de l'Atlantique longeant la côte ouest de l'Afrique, du Sénégal au Gabon. Proche de l'équateur. Bordé par 16 pays africains, riche en pétrole offshore (Nigeria, Angola).</li>
+      <li><strong>Baie d'Hudson</strong> <em>(principale)</em> : Vaste mer intérieure du Canada, entourée par le Québec, l'Ontario, le Manitoba et le Nunavut. Gèle complètement en hiver. 2e plus grande baie du monde (1,2 million de km²).</li>
+      <li><strong>Détroit de Davis</strong> <em>(principale)</em> : Passage maritime entre le Groenland et l'île de Baffin. Relie la mer de Baffin à l'Atlantique Nord. Nommé d'après l'explorateur anglais John Davis qui l'a traversé en 1587.</li>
+      <li><strong>Bassin de Grenade</strong> <em>(mer secondaire)</em> : Dépression sous-marine dans les petites Antilles, au sud-est de la mer des Caraïbes, au large de l'île de Grenade. Profondeur maximale : environ 4 120 m.</li>
+      <li><strong>Bassin du Yucatán</strong> <em>(mer secondaire)</em> : Dépression sous-marine entre le Yucatán (Mexique) et Cuba, dans la mer des Caraïbes occidentale. Profondeur maximale : environ 4 700 m — l'un des plus profonds des Caraïbes.</li>
+      <li><strong>Canal du Yucatán</strong> <em>(mer secondaire)</em> : Passage maritime entre la péninsule du Yucatán et l'île de Cuba. Entrée principale du golfe du Mexique. Large d'environ 217 km, c'est une route maritime très fréquentée.</li>
+      <li><strong>Mer de la Manche</strong> <em>(principale)</em> : Bras de mer entre la France et l'Angleterre. L'une des voies maritimes les plus fréquentées au monde, avec plus de 500 navires par jour. Le tunnel sous la Manche (Eurotunnel) la relie depuis 1994.</li>
+      <li><strong>Mer de Caïmans</strong> <em>(mer secondaire)</em> : Zone profonde de la mer des Caraïbes au nord des îles Caïmans et au sud de Cuba. Contient la fosse des Caïmans. La fosse des Caïmans est la plus profonde des Caraïbes (7 686 m).</li>
+      <li><strong>Mer de Weddell</strong> <em>(principale)</em> : Mer antarctique parfois rattachée à l'Atlantique Sud selon les classifications. Connue pour ses icebergs tabulaires géants. L'Endurance de Shackleton y fut piégée dans les glaces en 1915.</li>
+    </ul>
+  </div>
+  <div class="card" id="pacifique">
+    <h2>Pacifique (41)</h2>
+    <p>Le Pacifique est le plus grand et le plus profond des océans : il couvre à lui seul près d'un tiers de la surface de la Terre. C'est là que se trouve la fosse des Mariannes, le point le plus profond connu, à environ 11 000 mètres.</p>
+    <ul>
+      <li><strong>Mer de Chine méridionale</strong> <em>(principale)</em> : Grande mer d'Asie du Sud-Est entourée par la Chine, le Vietnam, les Philippines et la Malaisie. Zone stratégique disputée. Contient les îles Spratleys et Paracels, sources de conflits.</li>
+      <li><strong>Mer de Chine orientale</strong> <em>(principale)</em> : Mer entre la Chine, le Japon, la Corée du Sud et Taïwan. Importantes routes maritimes commerciales. Les îles Senkaku/Diaoyu sont disputées entre le Japon et la Chine.</li>
+      <li><strong>Mer du Japon</strong> <em>(principale)</em> : Mer entre le Japon, la Corée et la Russie. Appelée 'mer de l'Est' par les Coréens. Séparée du Pacifique par les îles japonaises.</li>
+      <li><strong>Mer de Béring</strong> <em>(principale)</em> : Mer froide entre l'Alaska et la Russie. Là où l'Amérique et l'Asie sont les plus proches (86 km). Séparée de l'Arctique par le détroit de Béring.</li>
+      <li><strong>Mer d'Okhotsk</strong> <em>(principale)</em> : Mer entre la Russie (Sibérie) et l'île de Sakhaline, bordée par les Kouriles et le Kamtchatka. Gèle en hiver. Importante zone de pêche au crabe et au saumon.</li>
+      <li><strong>Mer des Philippines</strong> <em>(principale)</em> : Vaste mer à l'est des Philippines, entre les Mariannes, les Carolines et Taïwan. La fosse des Mariannes (11 034 m) se trouve dans cette mer.</li>
+      <li><strong>Mer de Corail</strong> <em>(principale)</em> : Mer au nord-est de l'Australie abritant la Grande Barrière de Corail, le plus grand récif du monde. Théâtre d'une bataille navale décisive en mai 1942.</li>
+      <li><strong>Mer de Tasman</strong> <em>(principale)</em> : Mer entre l'Australie et la Nouvelle-Zélande. Nommée d'après l'explorateur néerlandais Abel Tasman (1642).</li>
+      <li><strong>Mer de Java</strong> <em>(principale)</em> : Mer entre Java, Sumatra, Bornéo et Sulawesi en Indonésie. Peu profonde mais très fréquentée. Profondeur moyenne : seulement 46 m.</li>
+      <li><strong>Mer de Banda</strong> <em>(principale)</em> : Mer entre les îles Moluques en Indonésie. Historiquement connue comme les 'Îles aux épices'. Les Moluques étaient la principale source de muscade au XVIIe s.</li>
+      <li><strong>Mer de Célèbes</strong> <em>(principale)</em> : Mer entre les Philippines et l'île indonésienne de Sulawesi (Célèbes). Riche biodiversité marine. Sulawesi est l'île aux quatre péninsules.</li>
+      <li><strong>Mer de Salomon</strong> <em>(principale)</em> : Mer entre la Papouasie-Nouvelle-Guinée et les îles Salomon. Théâtre de violents combats navals en 1942-43. Les îles Salomon constituent un État indépendant depuis 1978.</li>
+      <li><strong>Mer de Sulu</strong> <em>(mer secondaire)</em> : Mer entre les Philippines (archipel de Sulu) et la Malaisie (Bornéo). Connue pour sa biodiversité. L'archipel de Sulu compte plus de 900 îles.</li>
+      <li><strong>Mer de Mindanao</strong> <em>(mer secondaire)</em> : Mer dans la partie sud des Philippines autour de l'île de Mindanao. Contient de profondes fosses. La fosse de Mindanao atteint 10 500 m de profondeur.</li>
+      <li><strong>Mer des Moluques</strong> <em>(mer secondaire)</em> : Mer entre les îles Moluques du Nord. Carrefour des routes maritimes historiques des épices. Fait partie de l'archipel indonésien.</li>
+      <li><strong>Mer de Flores</strong> <em>(mer secondaire)</em> : Mer entre les îles de Lombok, Sumbawa, Flores et Sulawesi en Indonésie. Flores signifie 'fleurs' en portugais.</li>
+      <li><strong>Mer de Savu</strong> <em>(mer secondaire)</em> : Petite mer entre les îles de Sumba, Savu et Timor en Indonésie. L'île de Savu est connue pour l'élevage de chevaux.</li>
+      <li><strong>Mer de Halmahera</strong> <em>(mer secondaire)</em> : Mer autour de l'île d'Halmahera (Moluques du Nord). Wallace y élabora sa théorie de l'évolution. Halmahera est la plus grande île des Moluques.</li>
+      <li><strong>Mer de Bismarck</strong> <em>(mer secondaire)</em> : Mer entre la Nouvelle-Bretagne et la Nouvelle-Irlande en PNG. Théâtre de la bataille de la mer de Bismarck (1943). Nommée d'après le chancelier allemand Otto von Bismarck.</li>
+      <li><strong>Mer Jaune</strong> <em>(principale)</em> : Mer entre la Chine orientale et la péninsule coréenne. Peu profonde et très importante pour la pêche et le commerce. Sa couleur jaunâtre est due aux sédiments apportés par le fleuve Jaune (Huang He).</li>
+      <li><strong>Mer de Chine occidentale</strong> <em>(mer secondaire)</em> : Terme parfois utilisé pour désigner la partie ouest de la mer de Chine méridionale, longeant la côte vietnamienne. Zone de navigation très fréquentée pour le commerce entre Asie du Sud-Est et Chine.</li>
+      <li><strong>Mer d'Arafura</strong> <em>(mer secondaire)</em> : Mer entre l'Australie du Nord et la Nouvelle-Guinée. Peu profonde, riche en ressources marines et pétrolières. Contient l'île de Seram et de nombreuses petites îles indonésiennes.</li>
+      <li><strong>Mer de Bali</strong> <em>(mer secondaire)</em> : Petite mer entre les îles de Bali, Lombok, Java orientale et Madura en Indonésie. Bali est l'une des destinations touristiques les plus visitées d'Asie.</li>
+      <li><strong>Mer de Seram</strong> <em>(mer secondaire)</em> : Mer entre l'île de Seram et la péninsule nord de Sulawesi, aux Moluques. Aussi orthographiée mer de Ceram. L'île de Seram est la plus grande des Moluques centrales.</li>
+      <li><strong>Mer de Camotes</strong> <em>(mer secondaire)</em> : Mer intérieure des Philippines, entre les îles de Cebu, Leyte, Bohol et Masbate. L'archipel des Camotes se trouve au centre de cette mer.</li>
+      <li><strong>Mer de Visayan</strong> <em>(mer secondaire)</em> : Mer centrale des Philippines, entourée par les îles des Visayas (Panay, Cebu, Negros, Leyte). Cœur de l'archipel philippin. Les Visayas regroupent plus de 7 000 îles.</li>
+      <li><strong>Mer de Sibuyan</strong> <em>(mer secondaire)</em> : Mer entre Luzon, Mindoro, Panay et Sibuyan aux Philippines. Entourée par plusieurs îles importantes. L'île de Sibuyan abrite le mont Guiting-Guiting, l'une des ascensions les plus difficiles d'Asie.</li>
+      <li><strong>Mer de Timor</strong> <em>(mer secondaire)</em> : Mer entre Timor et l'Australie du Nord, parfois classée dans le Pacifique en raison de sa proximité avec l'archipel indonésien. Le Timor oriental a accédé à l'indépendance en 2002.</li>
+      <li><strong>Bassin des Philippines</strong> <em>(principale)</em> : Vaste dépression sous-marine à l'ouest du Pacifique, entre les Philippines, le Japon et les Mariannes. Zone scientifique. L'une des zones les plus profondes du Pacifique occidental (jusqu'à 5 700 m).</li>
+      <li><strong>Mer de Koro</strong> <em>(principale)</em> : Mer intérieure des Fidji, entre les îles Koro, Gau, Ovalau et Viti Levu. Eaux calmes et riches en biodiversité. L'île de Koro est souvent touchée par les cyclones tropicaux.</li>
+      <li><strong>Mer de Fidji</strong> <em>(principale)</em> : Mer au cœur de l'archipel fidjien, dans le Pacifique Sud-Ouest. Connue pour ses récifs coralliens et eaux turquoise. Les Fidji sont composées de plus de 330 îles.</li>
+      <li><strong>Mer des Samoa</strong> <em>(principale)</em> : Mer autour de l'archipel des Samoa, dans le Pacifique central-Sud. Entre les Samoa américaines et les Samoa occidentales. Les Samoa sont à cheval sur la ligne de changement de date.</li>
+      <li><strong>Mer des Tonga</strong> <em>(principale)</em> : Mer autour de l'archipel des Tonga (Polynésie), dans le Pacifique Sud. Connue pour les migrations des baleines à bosse. La fosse des Tonga est la 2e plus profonde du monde (10 882 m).</li>
+      <li><strong>Mer de Natuna</strong> <em>(mer secondaire)</em> : Partie sud de la mer de Chine méridionale, au large des îles Natuna (Indonésie). Zone disputée entre l'Indonésie et la Chine. L'Indonésie a rebaptisé sa ZEE ici 'mer de Natuna du Nord' en 2017.</li>
+      <li><strong>Mer de Karimata</strong> <em>(mer secondaire)</em> : Détroit et mer entre Sumatra, Bornéo et Java en Indonésie. Passage maritime très fréquenté entre Pacifique et Indien. Le détroit de Karimata est l'un des passages maritimes les plus stratégiques d'Asie.</li>
+      <li><strong>Mer de Makassar</strong> <em>(mer secondaire)</em> : Détroit et mer entre l'île de Bornéo et Sulawesi (Célèbes) en Indonésie. Importante voie de navigation. Nommée d'après la ville de Makassar (aujourd'hui Ujung Pandang) à Sulawesi.</li>
+      <li><strong>Mer de Sangihe</strong> <em>(mer secondaire)</em> : Mer entre les îles Sangihe et Talaud au nord de Sulawesi (Indonésie) et les Philippines. Zone volcanique active. L'archipel Sangihe-Talaud compte plusieurs volcans actifs.</li>
+      <li><strong>Mer de Bohol</strong> <em>(mer secondaire)</em> : Mer entre les îles de Bohol, Cebu et Leyte aux Philippines. Connue pour ses eaux cristallines et ses dauphins. Le sanctuaire marin de Balicasag se trouve dans cette mer.</li>
+      <li><strong>Mer de Mindoro</strong> <em>(mer secondaire)</em> : Mer entre l'île de Mindoro et Luzon aux Philippines. Accès principal entre la mer de Chine méridionale et les Visayas. L'île de Mindoro abrite les Mangyans, peuple autochtone des Philippines.</li>
+      <li><strong>Mer de Ceram</strong> <em>(mer secondaire)</em> : Mer entre l'île de Seram (Ceram) et la péninsule nord de Sulawesi. Variante orthographique de la mer de Seram, parfois traitée distinctement. L'île de Seram/Ceram est la plus grande des Moluques centrales.</li>
+      <li><strong>Mer des Salomon occidentale</strong> <em>(mer secondaire)</em> : Partie occidentale de la mer des Salomon, entre la Papouasie-Nouvelle-Guinée et les îles Salomon. Zone de grande biodiversité marine. Théâtre de violents combats navals américano-japonais en 1942-1943.</li>
+    </ul>
+  </div>
+  <div class="card" id="indien">
+    <h2>Indien (18)</h2>
+    <p>L'océan Indien baigne l'Afrique de l'Est, le sous-continent indien et l'Australie. Il est rythmé par la mousson, un vent saisonnier qui a longtemps guidé les navigateurs.</p>
+    <ul>
+      <li><strong>Mer Rouge</strong> <em>(principale)</em> : Mer étroite entre l'Afrique et la péninsule arabique. Reliée à la Méditerranée par le canal de Suez. L'une des mers les plus salées du monde (41 g/l).</li>
+      <li><strong>Mer d'Arabie</strong> <em>(principale)</em> : Partie nord-ouest de l'océan Indien, bordée par l'Arabie, l'Inde et la Corne de l'Afrique. Les moussons y dominent la navigation depuis l'Antiquité.</li>
+      <li><strong>Mer d'Oman</strong> <em>(principale)</em> : Mer entre l'Oman, le Pakistan et l'Inde. Débouche sur le Golfe Persique. Le détroit d'Ormuz est l'un des passages pétroliers les plus critiques.</li>
+      <li><strong>Mer d'Andaman</strong> <em>(principale)</em> : Mer entre le Myanmar, la Thaïlande, la Malaisie et les îles Andaman. Touchée par le tsunami de 2004. Les îles Andaman abritent des tribus restées isolées du monde moderne.</li>
+      <li><strong>Mer de Timor</strong> <em>(principale)</em> : Mer entre Timor oriental, l'Indonésie et l'Australie du Nord. Riche en pétrole et gaz offshore. Le Timor oriental a accédé à l'indépendance en 2002.</li>
+      <li><strong>Mer de Laquedives</strong> <em>(principale)</em> : Mer entre les îles Laquedives (Lakshadweep), les Maldives et la côte ouest de l'Inde. Les Lakshadweep sont le plus petit territoire de l'Inde.</li>
+      <li><strong>Golfe du Bengale</strong> <em>(principale)</em> : Le plus grand golfe du monde, à l'est de l'Inde, entre le sous-continent indien et la péninsule indochinoise. Reçoit les eaux du Gange, du Brahmapoutre et de l'Irrawaddy.</li>
+      <li><strong>Golfe Persique</strong> <em>(principale)</em> : Golfe entre l'Iran et la péninsule arabique. L'une des zones les plus riches en pétrole du monde. Aussi appelé golfe Arabique par les pays arabes.</li>
+      <li><strong>Golfe d'Aden</strong> <em>(principale)</em> : Golfe entre le Yémen, la Somalie et Djibouti. Route maritime obligatoire entre l'océan Indien et la mer Rouge. Zone tristement connue pour la piraterie somalienne dans les années 2000-2010.</li>
+      <li><strong>Mer du Mozambique</strong> <em>(principale)</em> : Canal maritime entre la côte est de l'Afrique (Mozambique, Tanzania) et l'île de Madagascar. Aussi appelé canal du Mozambique. L'île de Madagascar est la 4e plus grande île du monde.</li>
+      <li><strong>Bassin d'Australie</strong> <em>(principale)</em> : Grande dépression sous-marine au cœur de l'océan Indien, au sud-ouest de l'Australie. Terme océanographique. S'étend sur environ 3 000 km de long, jusqu'à 5 600 m de profondeur.</li>
+      <li><strong>Golfe d'Aqaba</strong> <em>(mer secondaire)</em> : Bras nord-est de la mer Rouge, entre l'Égypte (Sinaï), Israël, la Jordanie et l'Arabie saoudite. La ville d'Aqaba (Jordanie) et Eilat (Israël) se font face au fond du golfe.</li>
+      <li><strong>Golfe de Suez</strong> <em>(mer secondaire)</em> : Bras nord-ouest de la mer Rouge, entre l'Égypte continentale et la péninsule du Sinaï. Débouche sur le canal de Suez. Le canal de Suez a été inauguré en 1869, réduisant la route Europe-Asie de 7 000 km.</li>
+      <li><strong>Golfe de Mannar</strong> <em>(principale)</em> : Golfe entre le sud-ouest de l'Inde et le nord-ouest du Sri Lanka. Séparé du golfe du Bengale par le détroit de Palk. Abrite l'une des zones de pêche aux perles les plus riches d'Asie.</li>
+      <li><strong>Bassin des Mascareignes</strong> <em>(principale)</em> : Bassin océanographique dans l'océan Indien occidental, à l'ouest des îles Mascareignes (La Réunion, Maurice, Rodrigues). S'étend jusqu'à 5 800 m de profondeur.</li>
+      <li><strong>Mer somalienne</strong> <em>(principale)</em> : Partie de l'océan Indien au large de la Somalie et de la Corne de l'Afrique. Zone tristement connue pour la piraterie maritime dans les années 2000. Le courant somalien y est l'un des plus puissants de l'océan Indien.</li>
+      <li><strong>Mer des Chagos</strong> <em>(principale)</em> : Zone maritime autour de l'archipel des Chagos (territoire britannique de l'océan Indien), au centre de l'océan Indien. Diego Garcia, la principale île, abrite une base militaire américaine stratégique.</li>
+      <li><strong>Mer des Maldives</strong> <em>(principale)</em> : Zone maritime entourant l'archipel des Maldives, dans l'océan Indien central. Eaux tropicales parmi les plus claires du monde. Les Maldives sont le pays le plus bas du monde (altitude moyenne : 1,5 m).</li>
+    </ul>
+  </div>
+  <div class="card" id="arctique">
+    <h2>Arctique (14)</h2>
+    <p>L'océan Arctique entoure le pôle Nord. Il est en grande partie recouvert de banquise, une glace de mer dont l'étendue varie avec les saisons et recule avec le réchauffement climatique.</p>
+    <ul>
+      <li><strong>Mer de Barents</strong> <em>(principale)</em> : Mer arctique entre la Norvège, la Russie et le Svalbard. Zone de pêche et d'exploration pétrolière. Nommée d'après l'explorateur néerlandais Willem Barents (1596).</li>
+      <li><strong>Mer de Kara</strong> <em>(principale)</em> : Mer entre la Sibérie occidentale et les îles Nouvelle-Zemble. Reçoit les eaux de l'Ob et de l'Ienisseï. L'URSS y a effectué des essais nucléaires sous-marins.</li>
+      <li><strong>Mer de Laptev</strong> <em>(principale)</em> : Mer arctique au nord de la Sibérie centrale. Très peu profonde et gelée la majeure partie de l'année. Nommée d'après les frères Laptev, explorateurs russes du XVIIIe s.</li>
+      <li><strong>Mer de Sibérie orientale</strong> <em>(principale)</em> : La mer arctique la plus froide et la plus plate, au nord-est de la Sibérie. Sa profondeur moyenne est de seulement 54 m.</li>
+      <li><strong>Mer des Tchouktches</strong> <em>(principale)</em> : Mer entre l'Alaska et la Chukotka russe, au nord du détroit de Béring. Zone de migration des baleines grises. Nommée d'après les Tchouktches, peuple autochtone de Sibérie.</li>
+      <li><strong>Mer de Beaufort</strong> <em>(principale)</em> : Mer arctique au nord de l'Alaska et du Canada. Sous-sol riche en pétrole et gaz. Nommée d'après l'amiral britannique Francis Beaufort.</li>
+      <li><strong>Mer du Groenland</strong> <em>(principale)</em> : Mer entre le Groenland, le Svalbard et l'Islande. Importante pour la formation des eaux profondes de l'Atlantique. Participe à la régulation du climat de l'hémisphère nord.</li>
+      <li><strong>Mer de Lincoln</strong> <em>(principale)</em> : Mer arctique entre le nord du Groenland et l'île d'Ellesmere au Canada. L'une des plus septentrionales. Presque toujours recouverte de glace permanente.</li>
+      <li><strong>Mer de Wandel</strong> <em>(principale)</em> : Mer arctique au nord du Groenland, l'une des plus septentrionales et des moins connues. Presque entièrement gelée toute l'année. Nommée d'après l'officier danois Carl Emil Wandel.</li>
+      <li><strong>Mer du Prince Gustave-Adolphe</strong> <em>(principale)</em> : Petite mer arctique au Canada, dans l'archipel arctique canadien entre plusieurs îles peu connues. Nommée en hommage au prince Gustave-Adolphe de Suède (futur Gustave VI).</li>
+      <li><strong>Mer de Norvège</strong> <em>(principale)</em> : Mer froide entre la Norvège, l'Islande et Jan Mayen. Certaines classifications la rattachent à l'Arctique. Le Gulf Stream la traverse, adoucissant le climat norvégien.</li>
+      <li><strong>Baie de Baffin</strong> <em>(principale)</em> : Vaste baie entre le Groenland et l'île de Baffin. Parfois distinguée de la mer de Baffin. Traversée par des icebergs. C'est ici que sont extraites les grandes icebergs qui descendent vers l'Atlantique.</li>
+      <li><strong>Baie de Melville</strong> <em>(principale)</em> : Baie au nord-ouest du Groenland dans l'Arctique canadien. Couverte de glace la majeure partie de l'année. Zone de chasse traditionnelle des Inuits du Groenland.</li>
+      <li><strong>Mer de Pechora</strong> <em>(mer secondaire)</em> : Partie sud-est de la mer de Barents, au large de la région de Pechora en Russie. Riche en hydrocarbures. Abrite d'importants gisements pétroliers et gaziers offshore russes.</li>
+    </ul>
+  </div>
+  <div class="card" id="austral">
+    <h2>Austral (14)</h2>
+    <p>L'océan Austral entoure l'Antarctique. Ses eaux froides, où circule le plus puissant courant marin de la planète, jouent un rôle clé dans la régulation du climat.</p>
+    <ul>
+      <li><strong>Mer de Weddell</strong> <em>(principale)</em> : Mer au large de l'Antarctique, à l'est de la péninsule antarctique. Connue pour ses icebergs tabulaires géants. L'Endurance de Shackleton y fut piégée dans les glaces en 1915.</li>
+      <li><strong>Mer de Ross</strong> <em>(principale)</em> : Mer profonde au sud du Pacifique, bordant l'Antarctique. Contient la plateforme de glace de Ross. Nommée d'après l'explorateur britannique James Clark Ross (1841).</li>
+      <li><strong>Mer d'Amundsen</strong> <em>(principale)</em> : Mer côtière de l'Antarctique occidental. La banquise y fond plus vite qu'ailleurs à cause du réchauffement. Nommée d'après Roald Amundsen, premier homme au pôle Sud (1911).</li>
+      <li><strong>Mer de Bellingshausen</strong> <em>(principale)</em> : Mer entre la péninsule antarctique et les îles Pierre Ier et Alexandre Ier. Nommée d'après l'explorateur russe Fabian von Bellingshausen.</li>
+      <li><strong>Mer de Davis</strong> <em>(principale)</em> : Mer entre la Terre d'Adélie (Antarctique) et l'Australie. Traversée par des expéditions scientifiques australiennes. Nommée d'après John King Davis, capitaine de navire polaire.</li>
+      <li><strong>Mer de Somov</strong> <em>(principale)</em> : Mer côtière de l'Antarctique oriental, au large de la Terre de Wilkes. Nommée d'après Mikhaïl Somov, explorateur polaire soviétique.</li>
+      <li><strong>Mer de Lazarev</strong> <em>(principale)</em> : Mer côtière de l'Antarctique occidental au large de la Terre de la Reine Maud. Nommée d'après l'amiral russe Mikhaïl Lazarev.</li>
+      <li><strong>Mer de Riiser-Larsen</strong> <em>(principale)</em> : Mer antarctique entre la mer de Weddell et la mer de Lazarev. Zone de formation de glace en hiver. Nommée d'après l'aviateur et explorateur norvégien Hjalmar Riiser-Larsen.</li>
+      <li><strong>Mer de Cosmonautes</strong> <em>(principale)</em> : Mer côtière de l'Antarctique oriental, entre la Terre de la Reine Maud et la Terre d'Enderby. Très peu explorée. Nommée en hommage aux cosmonautes soviétiques lors des expéditions antarctiques.</li>
+      <li><strong>Mer de Coopération</strong> <em>(principale)</em> : Mer antarctique au large de la Terre d'Enderby, dans l'océan Austral oriental. Nommée lors de l'Année géophysique internationale (1957-58) en hommage à la coopération scientifique.</li>
+      <li><strong>Mer du Commonwealth</strong> <em>(principale)</em> : Mer côtière de l'Antarctique oriental, au large de la Terre de Wilkes, entre les mers de Davis et d'Adélie. Nommée en référence au Commonwealth des nations lors des expéditions australiennes.</li>
+      <li><strong>Mer d'Enderby</strong> <em>(principale)</em> : Mer antarctique au large de la Terre d'Enderby, entre les mers de Lazarev et de Cosmonautes. Nommée d'après la compagnie baleinière Enderby Brothers qui explora ces eaux au XIXe s.</li>
+      <li><strong>Mer du Roi Haakon VII</strong> <em>(principale)</em> : Mer antarctique au large de la Terre de la Reine Maud (Norvège antarctique). Zone peu explorée de l'Antarctique. Nommée en hommage au roi Haakon VII de Norvège (1905-1957).</li>
+      <li><strong>Mer de Mawson</strong> <em>(principale)</em> : Mer côtière de l'Antarctique oriental, au large de la Terre de Mac-Robertson (Australie antarctique). Nommée d'après l'explorateur australien Douglas Mawson (expédition 1911-14).</li>
+    </ul>
+  </div>
+  <div class="card" id="fermee">
+    <h2>Mers fermées et lacs salés (10)</h2>
+    <p>Quelques étendues d'eau salée n'ont aucun lien avec l'océan : ce sont des mers fermées ou des lacs. La mer Caspienne, la mer d'Aral ou la mer Morte en font partie.</p>
+    <ul>
+      <li><strong>Mer Caspienne</strong> <em>(mer fermée)</em> : Le plus grand lac du monde, souvent appelé mer. Entourée par la Russie, le Kazakhstan, l'Azerbaïdjan, l'Iran et le Turkménistan. Riche en réserves de pétrole et de gaz naturel.</li>
+      <li><strong>Mer Noire</strong> <em>(mer fermée)</em> : Mer intérieure entre l'Europe de l'Est et la Turquie. Reliée à la Méditerranée par le détroit du Bosphore. Presque dépourvue d'oxygène en profondeur (eau anoxique).</li>
+      <li><strong>Mer d'Azov</strong> <em>(mer fermée)</em> : Petite mer peu profonde au nord de la mer Noire, entre l'Ukraine et la Russie. La mer la moins profonde du monde : maximum 14 m.</li>
+      <li><strong>Mer Morte</strong> <em>(mer fermée)</em> : Lac hypersalin entre Israël, la Jordanie et la Cisjordanie. Aucun poisson n'y vit. On y flotte naturellement. Point le plus bas de la Terre (430 m sous le niveau de la mer).</li>
+      <li><strong>Mer d'Aral</strong> <em>(mer fermée)</em> : Ancien grand lac salé entre le Kazakhstan et l'Ouzbékistan. A perdu 90% de son volume depuis les années 1960. L'une des pires catastrophes environnementales causées par l'homme.</li>
+      <li><strong>Mer de Marmara</strong> <em>(mer fermée)</em> : Petite mer intérieure en Turquie, entre la mer Égée et la mer Noire. Reliée via les détroits du Bosphore et des Dardanelles. Aussi classée comme sous-mer de la Méditerranée. Istanbul est divisée en deux parties par cette mer.</li>
+      <li><strong>Mer de Galilée</strong> <em>(mer fermée)</em> : Lac d'eau douce en Israël, appelé 'mer' pour des raisons historiques et religieuses. Aussi nommé lac de Tibériade ou lac Kinneret. Mentionnée dans la Bible, Jésus-Christ y aurait marché sur les eaux.</li>
+      <li><strong>Mer de Baffin</strong> <em>(mer fermée)</em> : Vaste mer semi-fermée entre le Groenland et l'île de Baffin (Canada). Parfois classée mer fermée en raison de son enclavement relatif. Nommée d'après l'explorateur William Baffin (1616).</li>
+      <li><strong>Grand Lac Salé</strong> <em>(mer fermée)</em> : Lac hypersalin de l'Utah (États-Unis), parfois appelé 'mer intérieure' dans les contextes historiques et géographiques américains. 3 à 5 fois plus salé que l'océan — aucun poisson n'y vit.</li>
+      <li><strong>Mer de Seto</strong> <em>(mer fermée)</em> : Mer intérieure du Japon, entre les îles de Honshū, Shikoku et Kyūshū. L'une des voies navigables les plus fréquentées d'Asie. Contient plus de 3 000 petites îles et îlots.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Passe à la pratique</h2>
+    <p>Le jeu des mers et océans propose une révision par océan, un quiz à choix multiples et un vocabulaire géographique (golfe, détroit, cap, archipel…).</p>
+    <a class="cta" href="/mers.html">🌊 Jouer aux mers et océans</a>
+  </div>
+  <div class="card"><h2>À lire aussi</h2><p><a href="/guide-capitales.html">🗺️ Les capitales du monde</a> · <a href="/guide-drapeaux.html">🚩 Les drapeaux du monde</a> · <a href="/guide-departements.html">🇫🇷 Les départements de France</a> · <a href="/guide-monuments.html">🏛️ Les monuments du monde</a> · <a href="/guides.html">📚 Tous les guides</a></p></div>
+</div>
+
+<script>
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = true; try { soundOn = localStorage.getItem('soundOn') !== '0'; } catch(e) {}
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; try { localStorage.setItem('soundOn', soundOn?'1':'0'); } catch(e) {} applySound(); };
+  const darkToggle = document.getElementById('darkToggle');
+  let darkOn = false; try { darkOn = localStorage.getItem('darkMode') === '1'; } catch(e) {}
+  function applyDark(){ document.documentElement.classList.toggle('dark', darkOn); darkToggle.textContent = darkOn ? '☀️' : '🌙'; }
+  applyDark();
+  darkToggle.onclick = () => { darkOn = !darkOn; try { localStorage.setItem('darkMode', darkOn?'1':'0'); } catch(e) {} applyDark(); };
+</script>
+<script src="/account.js?v=11"></script>
+</body>
+</html>

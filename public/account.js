@@ -396,7 +396,8 @@
     }
     var d = document.createElement('div');
     d.id = 'legalLinks';
-    d.innerHTML = '<a href="/confidentialite.html">Confidentialité</a>' +
+    d.innerHTML = '<a href="/guides.html">Guides</a>' +
+      '<a href="/confidentialite.html">Confidentialité</a>' +
       '<a href="/mentions-legales.html">Mentions légales</a>' +
       '<a href="/a-propos.html">À propos</a>' +
       '<a href="/contact.html">Contact</a>' +

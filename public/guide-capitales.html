@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="/domain.js?v=1"></script>
+<script src="/consent.js?v=1" data-ads></script>
+<title>Les capitales du monde — Atlas de poche</title>
+<link rel="canonical" href="https://atlasdepoche.com/guide-capitales.html">
+<meta name="description" content="La liste des 196 pays du monde avec leur capitale, classés par continent, avec les pièges à éviter et des conseils pour les retenir.">
+<meta name="theme-color" content="#6a5cff">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg1:#6a5cff; --bg2:#ff5d8f; --bg3:#ffb84d; --ink:#2b2350; --ink-soft:#6b6396; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { min-height:100%; background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, var(--bg3) 100%) no-repeat fixed; }
+  body { font-family:'Nunito',sans-serif; color:var(--ink); background:transparent; min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { position:relative; z-index:1; max-width:820px; margin:0 auto; padding:30px 22px 20px; }
+  header { text-align:center; margin-bottom:24px; color:#fff; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,0.22); backdrop-filter:blur(4px); letter-spacing:0.28em; text-transform:uppercase; font-size:0.72rem; font-weight:700; padding:6px 16px; border-radius:30px; margin-bottom:14px; color:#fff; text-decoration:none; }
+  h1 { font-family:'Baloo 2',cursive; font-weight:800; font-size:clamp(2rem,6vw,3.2rem); line-height:1.05; text-shadow:0 4px 20px rgba(0,0,0,0.18); }
+  .sub { margin-top:10px; font-size:1.02rem; font-weight:600; opacity:.95; }
+  .card { background:#fff; border-radius:26px; padding:28px 32px; box-shadow:0 20px 50px rgba(0,0,0,0.22); margin-bottom:18px; }
+  .card h2 { font-family:'Baloo 2',cursive; font-weight:800; font-size:1.3rem; line-height:1.2; margin:22px 0 8px; color:#4b3fd9; }
+  .card h2:first-child { margin-top:0; }
+  .card p, .card li { font-size:.98rem; }
+  .card p { margin:8px 0; }
+  .card ul { margin:8px 0 8px 22px; }
+  .card li { margin:4px 0; }
+  .card a { color:var(--bg1); font-weight:700; }
+  .card table { width:100%; border-collapse:collapse; margin:10px 0; font-size:.92rem; }
+  .card th, .card td { text-align:left; vertical-align:top; padding:8px 10px; border-bottom:1px solid #ece9ff; }
+  .card th { background:#f4f1ff; }
+  .upd { color:var(--ink-soft); font-size:.88rem; font-weight:700; }
+  html.dark { background: linear-gradient(135deg,#1a1530 0%,#2d1a2e 55%,#1e1a10 100%) no-repeat fixed; }
+  html.dark .card { background:#1e1b2e; color:#e8e2ff; }
+  html.dark .card h2 { color:#b8aeff; }
+  html.dark .card a { color:#b8aeff; }
+  html.dark .card th { background:#2a2545; }
+  html.dark .card th, html.dark .card td { border-color:#3d3568; }
+  html.dark .upd { color:#a89fd8; }
+  .top-right-btns{position:fixed;top:14px;right:16px;z-index:100;display:flex;gap:8px;align-items:center;}
+  .dark-toggle,.sound-toggle{font-size:1.3rem;width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;}
+  html.dark .dark-toggle,html.dark .sound-toggle{background:rgba(0,0,0,0.35);}
+  .menu{position:fixed;top:14px;left:16px;z-index:100;}
+  .menu-btn{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.95rem;padding:0 20px;height:42px;border:none;border-radius:30px;cursor:pointer;background:rgba(255,255,255,0.25);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 14px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;}
+  html.dark .menu-btn{background:rgba(0,0,0,0.35);}
+  .menu-panel{position:absolute;top:50px;left:0;min-width:215px;max-height:80vh;overflow-y:auto;padding:8px;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);border-radius:20px;box-shadow:0 14px 36px rgba(0,0,0,0.3);display:none;flex-direction:column;gap:3px;}
+  .menu.open .menu-panel{display:flex;}
+  .menu-panel a{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;text-decoration:none;color:#2b2350;font-weight:700;font-size:0.95rem;}
+  .menu-panel a:hover{background:#f0edff;}
+  .menu-divider{height:1px;background:#e7e3f5;margin:4px 6px;}
+  html.dark .menu-panel{background:rgba(28,22,42,0.97);}
+  html.dark .menu-panel a{color:#f4eefb;}
+  html.dark .menu-panel a:hover{background:rgba(255,255,255,0.1);}
+  html.dark .menu-divider{background:rgba(255,255,255,0.12);}
+  @media (max-width:520px){ .card{padding:22px 18px;} .wrap{padding-top:70px;} .menu-btn{font-size:.82rem;padding:0 14px;height:38px;} .dark-toggle,.sound-toggle{width:38px;height:38px;font-size:1.1rem;} .top-right-btns{top:10px;right:12px;gap:6px;} .menu{top:10px;left:12px;} }
+  .card .cta{display:inline-block;margin:10px 8px 4px 0;padding:11px 22px;border-radius:30px;background:linear-gradient(135deg,#6a5cff,#ff5d8f);color:#fff;font-family:'Baloo 2',cursive;font-weight:700;text-decoration:none;}
+  .card a.cta{color:#fff;}
+  .card .toc{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px;}
+  .card .toc a{background:#f4f1ff;border-radius:20px;padding:5px 14px;font-size:.88rem;text-decoration:none;}
+  html.dark .card .toc a{background:#2a2545;}
+</style>
+<script>try{history.scrollRestoration='manual';}catch(e){}</script>
+</head>
+<body>
+<div class="top-right-btns">
+  <button class="sound-toggle" id="soundToggle" title="Son">🔊</button>
+  <button class="dark-toggle" id="darkToggle" title="Mode nuit">🌙</button>
+</div>
+<div class="menu" id="menu">
+  <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
+  <div class="menu-panel">
+    <a href="/">🏠 Accueil</a>
+    <a href="/quiz.html">🗺️ Drapeaux &amp; Capitales</a>
+    <a href="/regions.html"><img src="https://flagcdn.com/w20/fr.png" alt="" style="width:18px;height:auto;border-radius:2px;"> Régions &amp; Départements</a>
+    <a href="/globe.html">🌍 Globe interactif</a>
+    <a href="/mers.html">🌊 Mers &amp; Océans</a>
+    <a href="/monuments.html">🏛️ Monuments du Monde</a>
+    <div class="menu-divider"></div>
+    <a href="/guides.html">📚 Guides</a>
+    <a href="/contact.html">📬 Contact</a>
+    <a href="/compte.html">👤 Créer un compte</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a class="eyebrow" href="/">Atlas de poche</a>
+    <h1>🗺️ Les capitales du monde</h1>
+    <p class="sub">Les 196 pays et leurs capitales, continent par continent</p>
+  </header>
+
+  <div class="card">
+    <p>Connaître les capitales du monde est la base de la géographie : c'est utile à l'école, pour comprendre l'actualité et pour voyager. Cette page rassemble les <strong>196 pays</strong> présents dans Atlas de Poche avec leur capitale, classés par continent. Lis-la comme une fiche de révision, puis teste-toi avec le <a href="/quiz.html">quiz des capitales</a>.</p>
+    <div class="toc"><a href="#europe">Europe</a><a href="#asie">Asie</a><a href="#afrique">Afrique</a><a href="#amerique-du-nord">Amérique du Nord</a><a href="#amerique-du-sud">Amérique du Sud</a><a href="#oceanie">Océanie</a></div>
+    <h2>Comment retenir une capitale ?</h2>
+    <ul>
+      <li><strong>Procéder par continent</strong> : une cinquantaine de noms à la fois est bien plus abordable que près de deux cents.</li>
+      <li><strong>Repérer les pièges</strong> : la capitale d'un pays n'est presque jamais sa plus grande ville quand celle-ci est célèbre (Canberra, Brasilia, Ottawa, Ankara, Berne).</li>
+      <li><strong>Créer des associations</strong> : relier le nom à une image, un son ou une anecdote aide la mémoire à long terme.</li>
+      <li><strong>Revenir régulièrement</strong> : trois courtes séances par semaine valent mieux qu'une longue séance par mois.</li>
+    </ul>
+  </div>
+  <div class="card" id="europe">
+    <h2>Europe : 46 pays</h2>
+    <p>L'Europe est le continent des capitales que l'on croit connaître, et c'est justement là que se cachent les confusions. La capitale de la Suisse est Berne, pas Zurich ni Genève ; celle des Pays-Bas est Amsterdam, même si le gouvernement siège à La Haye ; celle de la Turquie, Ankara, est souvent confondue avec Istanbul (le pays est à cheval sur deux continents). Pour les petits États comme Monaco, le Liechtenstein, Saint-Marin ou le Vatican, la capitale porte parfois le même nom que le pays ou se résume à une seule ville.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Albanie</td><td>Tirana</td></tr>
+      <tr><td>Allemagne</td><td>Berlin</td></tr>
+      <tr><td>Andorre</td><td>Andorre-la-Vieille</td></tr>
+      <tr><td>Autriche</td><td>Vienne</td></tr>
+      <tr><td>Belgique</td><td>Bruxelles</td></tr>
+      <tr><td>Biélorussie</td><td>Minsk</td></tr>
+      <tr><td>Bosnie-Herzégovine</td><td>Sarajevo</td></tr>
+      <tr><td>Bulgarie</td><td>Sofia</td></tr>
+      <tr><td>Chypre</td><td>Nicosie</td></tr>
+      <tr><td>Croatie</td><td>Zagreb</td></tr>
+      <tr><td>Danemark</td><td>Copenhague</td></tr>
+      <tr><td>Espagne</td><td>Madrid</td></tr>
+      <tr><td>Estonie</td><td>Tallinn</td></tr>
+      <tr><td>Finlande</td><td>Helsinki</td></tr>
+      <tr><td>France</td><td>Paris</td></tr>
+      <tr><td>Grèce</td><td>Athènes</td></tr>
+      <tr><td>Hongrie</td><td>Budapest</td></tr>
+      <tr><td>Irlande</td><td>Dublin</td></tr>
+      <tr><td>Islande</td><td>Reykjavik</td></tr>
+      <tr><td>Italie</td><td>Rome</td></tr>
+      <tr><td>Kosovo</td><td>Pristina</td></tr>
+      <tr><td>Lettonie</td><td>Riga</td></tr>
+      <tr><td>Liechtenstein</td><td>Vaduz</td></tr>
+      <tr><td>Lituanie</td><td>Vilnius</td></tr>
+      <tr><td>Luxembourg</td><td>Luxembourg</td></tr>
+      <tr><td>Macédoine du Nord</td><td>Skopje</td></tr>
+      <tr><td>Malte</td><td>La Valette</td></tr>
+      <tr><td>Moldavie</td><td>Chisinau</td></tr>
+      <tr><td>Monaco</td><td>Monaco</td></tr>
+      <tr><td>Monténégro</td><td>Podgorica</td></tr>
+      <tr><td>Norvège</td><td>Oslo</td></tr>
+      <tr><td>Pays-Bas</td><td>Amsterdam</td></tr>
+      <tr><td>Pologne</td><td>Varsovie</td></tr>
+      <tr><td>Portugal</td><td>Lisbonne</td></tr>
+      <tr><td>Roumanie</td><td>Bucarest</td></tr>
+      <tr><td>Royaume-Uni</td><td>Londres</td></tr>
+      <tr><td>Russie</td><td>Moscou</td></tr>
+      <tr><td>Saint-Marin</td><td>Saint-Marin</td></tr>
+      <tr><td>Serbie</td><td>Belgrade</td></tr>
+      <tr><td>Slovaquie</td><td>Bratislava</td></tr>
+      <tr><td>Slovénie</td><td>Ljubljana</td></tr>
+      <tr><td>Suède</td><td>Stockholm</td></tr>
+      <tr><td>Suisse</td><td>Berne</td></tr>
+      <tr><td>Tchéquie</td><td>Prague</td></tr>
+      <tr><td>Ukraine</td><td>Kiev</td></tr>
+      <tr><td>Vatican</td><td>Cité du Vatican</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="asie">
+    <h2>Asie : 47 pays</h2>
+    <p>L'Asie est le plus grand continent et celui qui compte le plus d'habitants. Plusieurs capitales ont changé au fil de l'histoire : le Kazakhstan a déplacé la sienne d'Almaty vers Astana, et la Birmanie (Myanmar) a installé son gouvernement à Naypyidaw plutôt qu'à Rangoun. À retenir aussi : la capitale du Pakistan est Islamabad (et non Karachi), celle de la Malaisie est Kuala Lumpur, et celle de l'Inde est New Delhi.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Afghanistan</td><td>Kaboul</td></tr>
+      <tr><td>Arabie saoudite</td><td>Riyad</td></tr>
+      <tr><td>Arménie</td><td>Erevan</td></tr>
+      <tr><td>Azerbaïdjan</td><td>Bakou</td></tr>
+      <tr><td>Bahreïn</td><td>Manama</td></tr>
+      <tr><td>Bangladesh</td><td>Dacca</td></tr>
+      <tr><td>Bhoutan</td><td>Thimphou</td></tr>
+      <tr><td>Birmanie</td><td>Naypyidaw</td></tr>
+      <tr><td>Brunei</td><td>Bandar Seri Begawan</td></tr>
+      <tr><td>Cambodge</td><td>Phnom Penh</td></tr>
+      <tr><td>Chine</td><td>Pékin</td></tr>
+      <tr><td>Corée du Nord</td><td>Pyongyang</td></tr>
+      <tr><td>Corée du Sud</td><td>Séoul</td></tr>
+      <tr><td>Émirats arabes unis</td><td>Abou Dabi</td></tr>
+      <tr><td>Géorgie</td><td>Tbilissi</td></tr>
+      <tr><td>Inde</td><td>New Delhi</td></tr>
+      <tr><td>Indonésie</td><td>Jakarta</td></tr>
+      <tr><td>Irak</td><td>Bagdad</td></tr>
+      <tr><td>Iran</td><td>Téhéran</td></tr>
+      <tr><td>Israël</td><td>Jérusalem</td></tr>
+      <tr><td>Japon</td><td>Tokyo</td></tr>
+      <tr><td>Jordanie</td><td>Amman</td></tr>
+      <tr><td>Kazakhstan</td><td>Astana</td></tr>
+      <tr><td>Kirghizistan</td><td>Bichkek</td></tr>
+      <tr><td>Koweït</td><td>Koweït</td></tr>
+      <tr><td>Laos</td><td>Vientiane</td></tr>
+      <tr><td>Liban</td><td>Beyrouth</td></tr>
+      <tr><td>Malaisie</td><td>Kuala Lumpur</td></tr>
+      <tr><td>Maldives</td><td>Malé</td></tr>
+      <tr><td>Mongolie</td><td>Oulan-Bator</td></tr>
+      <tr><td>Népal</td><td>Katmandou</td></tr>
+      <tr><td>Oman</td><td>Mascate</td></tr>
+      <tr><td>Ouzbékistan</td><td>Tachkent</td></tr>
+      <tr><td>Pakistan</td><td>Islamabad</td></tr>
+      <tr><td>Philippines</td><td>Manille</td></tr>
+      <tr><td>Qatar</td><td>Doha</td></tr>
+      <tr><td>Singapour</td><td>Singapour</td></tr>
+      <tr><td>Sri Lanka</td><td>Colombo</td></tr>
+      <tr><td>Syrie</td><td>Damas</td></tr>
+      <tr><td>Tadjikistan</td><td>Douchanbé</td></tr>
+      <tr><td>Taïwan</td><td>Taipei</td></tr>
+      <tr><td>Thaïlande</td><td>Bangkok</td></tr>
+      <tr><td>Timor oriental</td><td>Dili</td></tr>
+      <tr><td>Turkménistan</td><td>Achgabat</td></tr>
+      <tr><td>Turquie</td><td>Ankara</td></tr>
+      <tr><td>Vietnam</td><td>Hanoï</td></tr>
+      <tr><td>Yémen</td><td>Sanaa</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="afrique">
+    <h2>Afrique : 54 pays</h2>
+    <p>L'Afrique compte 54 États reconnus, soit plus d'un quart des pays du monde. C'est un continent riche en pièges : la capitale du Maroc est Rabat (pas Casablanca), celle du Nigeria est Abuja (pas Lagos), celle de la Tanzanie est officiellement Dodoma (et non Dar es Salaam), et la Côte d'Ivoire a pour capitale officielle Yamoussoukro alors que la plus grande ville est Abidjan. L'Afrique du Sud, elle, possède trois capitales : Pretoria, Le Cap et Bloemfontein.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Afrique du Sud</td><td>Pretoria</td></tr>
+      <tr><td>Algérie</td><td>Alger</td></tr>
+      <tr><td>Angola</td><td>Luanda</td></tr>
+      <tr><td>Bénin</td><td>Porto-Novo</td></tr>
+      <tr><td>Botswana</td><td>Gaborone</td></tr>
+      <tr><td>Burkina Faso</td><td>Ouagadougou</td></tr>
+      <tr><td>Burundi</td><td>Gitega</td></tr>
+      <tr><td>Cameroun</td><td>Yaoundé</td></tr>
+      <tr><td>Cap-Vert</td><td>Praia</td></tr>
+      <tr><td>Comores</td><td>Moroni</td></tr>
+      <tr><td>Congo</td><td>Brazzaville</td></tr>
+      <tr><td>Côte d'Ivoire</td><td>Yamoussoukro</td></tr>
+      <tr><td>Djibouti</td><td>Djibouti</td></tr>
+      <tr><td>Égypte</td><td>Le Caire</td></tr>
+      <tr><td>Érythrée</td><td>Asmara</td></tr>
+      <tr><td>Eswatini</td><td>Mbabane</td></tr>
+      <tr><td>Éthiopie</td><td>Addis-Abeba</td></tr>
+      <tr><td>Gabon</td><td>Libreville</td></tr>
+      <tr><td>Gambie</td><td>Banjul</td></tr>
+      <tr><td>Ghana</td><td>Accra</td></tr>
+      <tr><td>Guinée</td><td>Conakry</td></tr>
+      <tr><td>Guinée équatoriale</td><td>Malabo</td></tr>
+      <tr><td>Guinée-Bissau</td><td>Bissau</td></tr>
+      <tr><td>Kenya</td><td>Nairobi</td></tr>
+      <tr><td>Lesotho</td><td>Maseru</td></tr>
+      <tr><td>Liberia</td><td>Monrovia</td></tr>
+      <tr><td>Libye</td><td>Tripoli</td></tr>
+      <tr><td>Madagascar</td><td>Antananarivo</td></tr>
+      <tr><td>Malawi</td><td>Lilongwe</td></tr>
+      <tr><td>Mali</td><td>Bamako</td></tr>
+      <tr><td>Maroc</td><td>Rabat</td></tr>
+      <tr><td>Maurice</td><td>Port-Louis</td></tr>
+      <tr><td>Mauritanie</td><td>Nouakchott</td></tr>
+      <tr><td>Mozambique</td><td>Maputo</td></tr>
+      <tr><td>Namibie</td><td>Windhoek</td></tr>
+      <tr><td>Niger</td><td>Niamey</td></tr>
+      <tr><td>Nigéria</td><td>Abuja</td></tr>
+      <tr><td>Ouganda</td><td>Kampala</td></tr>
+      <tr><td>République centrafricaine</td><td>Bangui</td></tr>
+      <tr><td>République démocratique du Congo</td><td>Kinshasa</td></tr>
+      <tr><td>Rwanda</td><td>Kigali</td></tr>
+      <tr><td>Sao Tomé-et-Principe</td><td>São Tomé</td></tr>
+      <tr><td>Sénégal</td><td>Dakar</td></tr>
+      <tr><td>Seychelles</td><td>Victoria</td></tr>
+      <tr><td>Sierra Leone</td><td>Freetown</td></tr>
+      <tr><td>Somalie</td><td>Mogadiscio</td></tr>
+      <tr><td>Soudan</td><td>Khartoum</td></tr>
+      <tr><td>Soudan du Sud</td><td>Djouba</td></tr>
+      <tr><td>Tanzanie</td><td>Dodoma</td></tr>
+      <tr><td>Tchad</td><td>N'Djaména</td></tr>
+      <tr><td>Togo</td><td>Lomé</td></tr>
+      <tr><td>Tunisie</td><td>Tunis</td></tr>
+      <tr><td>Zambie</td><td>Lusaka</td></tr>
+      <tr><td>Zimbabwe</td><td>Harare</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="amerique-du-nord">
+    <h2>Amérique du Nord : 23 pays</h2>
+    <p>Dans ce classement, l'Amérique du Nord regroupe aussi l'Amérique centrale et les Caraïbes. Les grands États n'ont pas pour capitale leur plus grande ville : Ottawa pour le Canada (et non Toronto), Washington pour les États-Unis (et non New York). Les petites îles des Caraïbes sont souvent les plus difficiles à retenir, d'où l'intérêt de les réviser par groupes.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Antigua-et-Barbuda</td><td>Saint John's</td></tr>
+      <tr><td>Bahamas</td><td>Nassau</td></tr>
+      <tr><td>Barbade</td><td>Bridgetown</td></tr>
+      <tr><td>Belize</td><td>Belmopan</td></tr>
+      <tr><td>Canada</td><td>Ottawa</td></tr>
+      <tr><td>Costa Rica</td><td>San José</td></tr>
+      <tr><td>Cuba</td><td>La Havane</td></tr>
+      <tr><td>Dominique</td><td>Roseau</td></tr>
+      <tr><td>États-Unis</td><td>Washington</td></tr>
+      <tr><td>Grenade</td><td>Saint-Georges</td></tr>
+      <tr><td>Guatemala</td><td>Guatemala</td></tr>
+      <tr><td>Haïti</td><td>Port-au-Prince</td></tr>
+      <tr><td>Honduras</td><td>Tegucigalpa</td></tr>
+      <tr><td>Jamaïque</td><td>Kingston</td></tr>
+      <tr><td>Mexique</td><td>Mexico</td></tr>
+      <tr><td>Nicaragua</td><td>Managua</td></tr>
+      <tr><td>Panama</td><td>Panama</td></tr>
+      <tr><td>République dominicaine</td><td>Saint-Domingue</td></tr>
+      <tr><td>Saint-Christophe-et-Niévès</td><td>Basseterre</td></tr>
+      <tr><td>Saint-Vincent-et-les-Grenadines</td><td>Kingstown</td></tr>
+      <tr><td>Sainte-Lucie</td><td>Castries</td></tr>
+      <tr><td>Salvador</td><td>San Salvador</td></tr>
+      <tr><td>Trinité-et-Tobago</td><td>Port-d'Espagne</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="amerique-du-sud">
+    <h2>Amérique du Sud : 12 pays</h2>
+    <p>L'Amérique du Sud compte douze États. Le grand piège est le Brésil : sa capitale est Brasilia, une ville construite à partir de 1956 et inaugurée en 1960, et non Rio de Janeiro ni São Paulo. La Bolivie a deux sièges de pouvoir : Sucre est la capitale constitutionnelle, tandis que La Paz accueille le gouvernement.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Argentine</td><td>Buenos Aires</td></tr>
+      <tr><td>Bolivie</td><td>Sucre</td></tr>
+      <tr><td>Brésil</td><td>Brasilia</td></tr>
+      <tr><td>Chili</td><td>Santiago</td></tr>
+      <tr><td>Colombie</td><td>Bogota</td></tr>
+      <tr><td>Équateur</td><td>Quito</td></tr>
+      <tr><td>Guyana</td><td>Georgetown</td></tr>
+      <tr><td>Paraguay</td><td>Asuncion</td></tr>
+      <tr><td>Pérou</td><td>Lima</td></tr>
+      <tr><td>Suriname</td><td>Paramaribo</td></tr>
+      <tr><td>Uruguay</td><td>Montevideo</td></tr>
+      <tr><td>Venezuela</td><td>Caracas</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card" id="oceanie">
+    <h2>Océanie : 14 pays</h2>
+    <p>L'Océanie réunit l'Australie, la Nouvelle-Zélande et de nombreuses îles du Pacifique. Les deux plus grands pays piègent souvent les joueurs : la capitale de l'Australie est Canberra (et non Sydney ou Melbourne) et celle de la Nouvelle-Zélande est Wellington (et non Auckland). Beaucoup d'États insulaires sont minuscules, mais leur capitale est facile à retenir quand on les associe à leur archipel.</p>
+    <table><thead><tr><th>Pays</th><th>Capitale</th></tr></thead><tbody>
+      <tr><td>Australie</td><td>Canberra</td></tr>
+      <tr><td>Fidji</td><td>Suva</td></tr>
+      <tr><td>Îles Marshall</td><td>Majuro</td></tr>
+      <tr><td>Îles Salomon</td><td>Honiara</td></tr>
+      <tr><td>Kiribati</td><td>Tarawa-Sud</td></tr>
+      <tr><td>Micronésie</td><td>Palikir</td></tr>
+      <tr><td>Nauru</td><td>Yaren</td></tr>
+      <tr><td>Nouvelle-Zélande</td><td>Wellington</td></tr>
+      <tr><td>Palaos</td><td>Ngerulmud</td></tr>
+      <tr><td>Papouasie-Nouvelle-Guinée</td><td>Port Moresby</td></tr>
+      <tr><td>Samoa</td><td>Apia</td></tr>
+      <tr><td>Tonga</td><td>Nukualofa</td></tr>
+      <tr><td>Tuvalu</td><td>Funafuti</td></tr>
+      <tr><td>Vanuatu</td><td>Port-Vila</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h2>Passe à la pratique</h2>
+    <p>Lire ne suffit pas : c'est en se testant que l'on retient. Atlas de Poche propose un mode révision par continent, un quiz à choix multiples, un mode clavier où tu écris la réponse, des défis chronométrés et des parties multijoueur.</p>
+    <a class="cta" href="/quiz.html">🗺️ Jouer au quiz des capitales</a>
+  </div>
+  <div class="card"><h2>À lire aussi</h2><p><a href="/guide-drapeaux.html">🚩 Les drapeaux du monde</a> · <a href="/guide-departements.html">🇫🇷 Les départements de France</a> · <a href="/guide-mers-oceans.html">🌊 Les mers et les océans</a> · <a href="/guide-monuments.html">🏛️ Les monuments du monde</a> · <a href="/guides.html">📚 Tous les guides</a></p></div>
+</div>
+
+<script>
+  (function(){
+    var menu=document.getElementById('menu'),btn=document.getElementById('menuBtn');
+    btn.addEventListener('click',function(e){e.stopPropagation();var o=menu.classList.toggle('open');btn.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('click',function(e){if(!menu.contains(e.target)){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');}});
+  })();
+  const soundToggle = document.getElementById('soundToggle');
+  let soundOn = true; try { soundOn = localStorage.getItem('soundOn') !== '0'; } catch(e) {}
+  function applySound(){ soundToggle.textContent = soundOn ? '🔊' : '🔇'; }
+  applySound();
+  soundToggle.onclick = () => { soundOn = !soundOn; try { localStorage.setItem('soundOn', soundOn?'1':'0'); } catch(e) {} applySound(); };
+  const darkToggle = document.getElementById('darkToggle');
+  let darkOn = false; try { darkOn = localStorage.getItem('darkMode') === '1'; } catch(e) {}
+  function applyDark(){ document.documentElement.classList.toggle('dark', darkOn); darkToggle.textContent = darkOn ? '☀️' : '🌙'; }
+  applyDark();
+  darkToggle.onclick = () => { darkOn = !darkOn; try { localStorage.setItem('darkMode', darkOn?'1':'0'); } catch(e) {} applyDark(); };
+</script>
+<script src="/account.js?v=11"></script>
+</body>
+</html>

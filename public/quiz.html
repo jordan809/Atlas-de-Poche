@@ -1859,7 +1859,16 @@ function launchTimed(){
   nextQuestion();
 }
 
+// ---------- Mode actif gardé dans l'adresse : un rechargement reste dans le même mode ----------
+function rememberMode(m){
+  try{ history.replaceState(null, '', location.pathname + location.search + (m === 'study' ? '' : '#mode=' + m)); }catch(e){}
+}
+function savedMode(valid){
+  const m = /[#&]mode=(\w+)/.exec(location.hash);
+  return (m && valid.indexOf(m[1]) >= 0) ? m[1] : null;
+}
 function enterMode(mode){
+  rememberMode(mode);
   activeMode=mode;
   stopTimer();
   // Réinitialiser le filtre continent sur "Tous" à chaque changement de mode
@@ -3696,6 +3705,12 @@ document.getElementById('pvpModalCancel').onclick = () => document.getElementByI
 document.getElementById('pvpReplayModal').addEventListener('click', e => { if(e.target.id === 'pvpReplayModal') e.currentTarget.classList.add('hidden'); });
 document.getElementById('pvpModalCustom').addEventListener('keydown', e=>{ if(e.key === 'Enter') pvpReplayModalOk(); });
 document.getElementById('pvpModalCustom').addEventListener('input', e=>e.target.classList.remove('err'));
+
+// Rechargement : on retrouve le mode où on était (Quiz, Clavier, Défi, Multijoueur…)
+{
+  const sm = savedMode([...document.querySelectorAll(".mode-btn")].map(b => b.dataset.mode));
+  if(sm && sm !== "study") enterMode(sm);
+}
 
 // ---------- PWA : enregistrement du service worker ----------
 if ("serviceWorker" in navigator) {

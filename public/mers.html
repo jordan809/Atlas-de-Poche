@@ -870,8 +870,17 @@ darkToggle.onclick=()=>{darkOn=!darkOn;localStorage.setItem("darkMode",darkOn?"1
 // ════════════════════════════════════════
 // ONGLETS
 // ════════════════════════════════════════
-function switchTab(tab){
-  modeBarHold();
+// ---------- Mode actif gardé dans l'adresse : un rechargement reste dans le même mode ----------
+function rememberMode(m){
+  try{ history.replaceState(null, '', location.pathname + location.search + (m === 'rev' ? '' : '#mode=' + m)); }catch(e){}
+}
+function savedMode(valid){
+  const m = /[#&]mode=(\w+)/.exec(location.hash);
+  return (m && valid.indexOf(m[1]) >= 0) ? m[1] : null;
+}
+function switchTab(tab, silent){
+  if(!silent) modeBarHold();
+  rememberMode(tab);
   activeTab=tab;
   document.getElementById("tabRev").classList.toggle("active",tab==="rev");
   document.getElementById("tabGame").classList.toggle("active",tab==="game");
@@ -897,7 +906,7 @@ function switchTab(tab){
     document.getElementById("gameSubFilterBar").classList.remove("visible");
     startGame();
   }
-  scrollToModeBar(document.querySelector(".tabs"));
+  if(!silent) scrollToModeBar(document.querySelector(".tabs"));   // (au rechargement : pas de défilement automatique)
 }
 // ---------- Barre de modes : défilement automatique (même réglage sur toutes les pages) ----------
 // Après un clic sur un bouton de la barre, la page défile pour que la barre soit tout en haut de l'écran.
@@ -1390,6 +1399,11 @@ applySound();
 soundToggle.onclick = () => { soundOn = !soundOn; localStorage.setItem('soundOn', soundOn?'1':'0'); applySound(); };
 // Contenu
 renderRevision();
+// Rechargement : on retrouve l'onglet où on était (Jeu, Vocabulaire)
+{
+  const sm = savedMode(["game", "vocab"]);
+  if(sm) switchTab(sm, true);
+}
 renderVocab();
 </script>
 <script src="/progress.js?v=2"></script>

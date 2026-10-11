@@ -1117,7 +1117,16 @@ function launchTimed(){
   nextQuestion();
 }
 
+// ---------- Mode actif gardé dans l'adresse : un rechargement reste dans le même mode ----------
+function rememberMode(m){
+  try{ history.replaceState(null, '', location.pathname + location.search + (m === 'study' ? '' : '#mode=' + m)); }catch(e){}
+}
+function savedMode(valid){
+  const m = /[#&]mode=(\w+)/.exec(location.hash);
+  return (m && valid.indexOf(m[1]) >= 0) ? m[1] : null;
+}
 function enterMode(mode){
+  rememberMode(mode);
   activeMode=mode;
   stopTimer();
   activeFilter = "Tous";
@@ -1753,7 +1762,11 @@ darkToggle.onclick = () => {
 
 // ---------- Démarrage ----------
 renderStudy();
-if(location.hash === "#map") enterMode("map");
+// Rechargement : on retrouve le mode où on était (« #map » reste accepté pour ouvrir la carte directement)
+{
+  const sm = location.hash === "#map" ? "map" : savedMode(["quiz", "type", "timed", "map"]);
+  if(sm && sm !== "study") enterMode(sm);
+}
 </script>
 <script src="/progress.js?v=2"></script>
 <script src="/account.js?v=6"></script>

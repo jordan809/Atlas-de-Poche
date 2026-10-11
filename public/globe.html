@@ -956,6 +956,12 @@
   }
   function nextOrEnd(){ if(gameEndPending) showGameEnd(); else startRound(); }
 
+  // ---------- Mode actif gardé dans l'adresse : un rechargement reste dans le même mode ----------
+  function rememberGlobeMode(){
+    const v = mode === 'discover' ? (massifsOn ? 'massifs' : '') : mode;
+    try{ history.replaceState(null, '', location.pathname + location.search + (v ? '#mode=' + v : '')); }catch(e){}
+  }
+
   // ---------- Bascule de mode ----------
   function setMode(m){
     // le jeu des pays est un jeu à part : le mode Massifs est désactivé
@@ -998,6 +1004,7 @@
       scheduleLabels();
       startRound(); // lance directement une manche
     }
+    rememberGlobeMode();
   }
 
   $('btnDiscover').onclick = ()=> setMode('discover');
@@ -1016,6 +1023,7 @@
     if(!on && mode === 'mgame') setMode('discover');   // massifs masqués : on quitte aussi leur jeu
     if(on && !massifsData){ await loadMassifs(); drawMassifs(); }
     scheduleLabels();
+    rememberGlobeMode();
   };
   $('btnMassifGame').onclick = () => {
     if(!massifsData) return;                      // massifs pas encore chargés
@@ -1076,6 +1084,18 @@
   darkBtnGlobe.onclick = () => { darkOnGlobe = !darkOnGlobe; localStorage.setItem('darkMode', darkOnGlobe?'1':'0'); applyDarkGlobe(); };
 
   $('loading').style.display='none';
+
+  // Rechargement : on retrouve le mode où on était (jeu des pays, massifs, jeu des massifs)
+  (async function(){
+    const m = /[#&]mode=(\w+)/.exec(location.hash), saved = m && m[1];
+    try{
+      if(saved === 'game') setMode('game');
+      else if(saved === 'massifs' || saved === 'mgame'){
+        await $('btnMassifs').onclick();                 // affiche les massifs (charge leurs données)
+        if(saved === 'mgame') $('btnMassifGame').onclick();
+      }
+    }catch(e){}
+  })();
 
   // Hooks de test
   window.__gameItems = gameItems.length;

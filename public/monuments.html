@@ -788,7 +788,16 @@ function scrollToEl(el, offset){
   window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
 }
 
+// ---------- Mode actif gardé dans l'adresse : un rechargement reste dans le même mode ----------
+function rememberMode(m){
+  try{ history.replaceState(null, '', location.pathname + location.search + (m === 'revision' ? '' : '#mode=' + m)); }catch(e){}
+}
+function savedMode(valid){
+  const m = /[#&]mode=(\w+)/.exec(location.hash);
+  return (m && valid.indexOf(m[1]) >= 0) ? m[1] : null;
+}
 function enterMode(mode){
+  rememberMode(mode);
   activeMode=mode;
   document.getElementById("modeReviseBtn").classList.toggle("active",mode==="revision");
   document.getElementById("modeQuizBtn").classList.toggle("active",mode==="quiz");
@@ -1101,6 +1110,8 @@ fetchPhotos().then(()=>{
 });
 refillBag();
 nextQuestion();
+// Au chargement : le mode retrouvé après un rechargement, sinon la Révision (comme le bouton « Révision » mis en avant)
+enterMode(savedMode(["revision", "quiz", "type", "clavier"]) || "revision");
 // (Aucun défilement automatique à l'arrivée sur la page)
 </script>
 <script src="/progress.js?v=2"></script>

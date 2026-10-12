@@ -5,6 +5,13 @@
         ".read":  "auth !== null && auth.uid === $uid",
         ".write": "auth !== null && auth.uid === $uid"
       }
+    },
+    "rooms": {
+      "$code": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.val() == null || newData.hasChildren()"
+      }
     }
   }
 }

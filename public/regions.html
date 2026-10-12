@@ -1141,12 +1141,6 @@ function enterMode(mode){
   const aat = document.getElementById("autoAdvanceToggle");
   if(aat){ aat.classList.add("active"); aat.classList.toggle("hidden", mode!=="quiz"); }
   filtersEl.classList.remove('locked');
-  // Réinitialiser direction et boutons de direction
-  direction = dirState; // revenir à cap ou country selon l'état du dirToggle
-  const nt = document.getElementById("numToggle");
-  if(nt) nt.classList.remove("active");
-  const dt = document.getElementById("dirToggle");
-  if(dt) dt.textContent = direction === "cap" ? "🏛️ Deviner la préfecture" : "📍 Deviner le département";
   // Réinitialiser mode tableau
   typeTableMode = false;
   const tt = document.getElementById("tableToggle");

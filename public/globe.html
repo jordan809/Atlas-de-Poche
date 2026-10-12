@@ -61,8 +61,8 @@
   body.massifs-on #hint{ display:none; }
   /* Légende : les 7 grands massifs (un par continent), remplace l'aide du bas */
   #massifLegend{ display:none; position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:5; max-width:min(94vw,640px);
-    background:var(--hint-bg); color:var(--hint-text); border-radius:18px; padding:10px 14px; backdrop-filter:blur(4px);
-    font-size:.82rem; font-weight:700; text-align:center; line-height:1.5; pointer-events:none; }
+    background:var(--hint-bg); color:var(--hint-text); border-radius:18px; padding:10px 32px 10px 14px; backdrop-filter:blur(4px);
+    font-size:.82rem; font-weight:700; text-align:center; line-height:1.5; }
   body.massifs-on.map-discover #massifLegend{ display:block; }
   #massifLegend .ml-title{ display:block; margin-bottom:5px; }
   #massifLegend .ml-item{ display:inline-flex; align-items:center; gap:5px; margin:2px 8px; white-space:nowrap; }
@@ -110,6 +110,13 @@
     color:var(--hint-text); font-weight:700; font-size:.9rem; text-shadow:0 2px 8px rgba(0,0,0,.25);
     background:var(--hint-bg); padding:9px 18px; border-radius:30px; backdrop-filter:blur(4px); text-align:center; max-width:88vw; }
   .hint.hide{ display:none; }
+  .hint-x{ background:none; border:none; color:inherit; font-size:1.1rem; line-height:1; cursor:pointer; margin-left:8px; opacity:0.6; padding:0 3px; vertical-align:middle; }
+  .hint-x:hover{ opacity:1; }
+  .hint-reopen-btn{ position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:5;
+    background:var(--hint-bg); color:var(--hint-text); border:none; border-radius:50%; width:36px; height:36px;
+    font-size:1rem; cursor:pointer; backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.3); }
+  .hint-reopen-btn.show{ display:flex; }
 
   /* ---- Carte info (mode Découverte) ---- */
   #info{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(150%);
@@ -184,6 +191,7 @@
   </svg>
   <div id="mapTip"></div>
   <div id="massifLegend">
+    <button class="hint-x" id="massifLegendX" title="Fermer" style="position:absolute;top:8px;right:10px">×</button>
     <span class="ml-title">⛰️ Survole un massif pour voir son nom — les 7 grands massifs (un par continent) :</span>
     <span class="ml-item"><i class="ml-dot" style="background:#6a5cff"></i>Alpes</span>
     <span class="ml-item"><i class="ml-dot" style="background:#e63946"></i>Himalaya</span>
@@ -193,6 +201,7 @@
     <span class="ml-item"><i class="ml-dot" style="background:#c026d3"></i>Cordillère australienne</span>
     <span class="ml-item"><i class="ml-dot" style="background:#0ea5e9"></i>Transantarctique</span>
   </div>
+  <button class="hint-reopen-btn" id="massifLegendReopenBtn" title="Afficher l'aide">ℹ️</button>
 
   <div class="menu" id="menu">
     <button class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Menu</button>
@@ -233,7 +242,8 @@
     <button class="pill hidden" id="btnMassifGame" title="Deviner le nom des massifs">🎮 Jeu des massifs</button>
   </div>
 
-  <div class="hint hide" id="hint"></div>
+  <div class="hint" id="hint">Clique sur un pays pour le découvrir 🗺️ — glisse pour te déplacer, molette pour zoomer<button class="hint-x" id="hintX" title="Fermer">×</button></div>
+  <button class="hint-reopen-btn" id="hintReopenBtn" title="Afficher l'aide">ℹ️</button>
 
 <div id="info">
     <span class="flag" id="iFlag"></span>
@@ -999,7 +1009,7 @@
     tipEl.style.display='none';
     if(m==='discover'){
       panel.classList.remove('show');
-      hintEl.classList.remove('hide');
+      if(!hintManuallyClosed){ hintEl.classList.remove('hide'); $('hintReopenBtn').classList.remove('show'); }
       scheduleLabels();
       resetView();
     } else {
@@ -1014,6 +1024,14 @@
     rememberGlobeMode();
   }
 
+  let hintManuallyClosed = false;
+  $('hintX').onclick = () => { hintManuallyClosed = true; hintEl.classList.add('hide'); $('hintReopenBtn').classList.add('show'); };
+  $('hintReopenBtn').onclick = () => { hintManuallyClosed = false; hintEl.classList.remove('hide'); $('hintReopenBtn').classList.remove('show'); };
+
+  let massifLegendManuallyClosed = false;
+  $('massifLegendX').onclick = () => { massifLegendManuallyClosed = true; $('massifLegend').style.display = 'none'; $('massifLegendReopenBtn').classList.add('show'); };
+  $('massifLegendReopenBtn').onclick = () => { massifLegendManuallyClosed = false; $('massifLegend').style.display = ''; $('massifLegendReopenBtn').classList.remove('show'); };
+
   $('btnDiscover').onclick = ()=> setMode('discover');
   $('btnGame').onclick = ()=> setMode('game');
   // Affichage du mode Massifs (le bouton « Jeu des massifs » n'existe que dans ce mode)
@@ -1022,7 +1040,12 @@
     $('btnMassifs').classList.toggle('active', on);
     $('btnMassifGame').classList.toggle('hidden', !on);
     document.body.classList.toggle('massifs-on', on);
-    if(on){ infoEl.classList.remove('show'); tipEl.style.display = 'none'; }
+    if(on){
+      infoEl.classList.remove('show'); tipEl.style.display = 'none';
+      massifLegendManuallyClosed = false; $('massifLegend').style.display = ''; $('massifLegendReopenBtn').classList.remove('show');
+    } else {
+      $('massifLegendReopenBtn').classList.remove('show');
+    }
   }
   $('btnMassifs').onclick = async () => {
     const on = !massifsOn;

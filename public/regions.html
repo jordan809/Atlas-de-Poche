@@ -449,7 +449,7 @@
     <button class="flags-check-btn hidden" id="typeTableCheckBtn">Vérifier mes réponses ✅</button>
   </section>
 
-  <footer>Atlas de poche — apprends la France en t'amusant 🐓</footer>
+  <footer>{nombre} départements · Apprends la France en t'amusant 🐓</footer>
 </div>
 
 <div id="mapMode" class="hidden">
@@ -1768,5 +1768,6 @@ renderStudy();
 </script>
 <script src="/progress.js?v=2"></script>
 <script src="/account.js?v=11"></script>
+<script>document.querySelector('footer').innerHTML = document.querySelector('footer').innerHTML.replace('{nombre}', DATA.length);</script>
 </body>
 </html>

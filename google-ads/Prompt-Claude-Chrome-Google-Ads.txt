@@ -1,0 +1,311 @@
+PROMPT À DONNER À CLAUDE DANS CHROME — CRÉER LA CAMPAGNE GOOGLE ADS « ATLAS DE POCHE »
+======================================================================================
+
+Tu es dans Chrome, sur mon compte Google Ads (ads.google.com, interface en français). Ta mission : préparer une campagne
+Google Ads (Réseau de Recherche) pour mon site « Atlas de Poche » en remplissant les champs avec les informations ci-dessous.
+
+RÈGLES IMPORTANTES
+ - Tu ne saisis JAMAIS de moyen de paiement, de mot de passe, de code de validation ni de données bancaires : si Google Ads les demande, arrête-toi et dis-le-moi.
+ - Tu ne cliques sur « Publier la campagne » qu'après m'avoir présenté le récapitulatif complet et obtenu mon accord écrit dans ce chat.
+ - Si un champ de l'interface ne correspond pas exactement à ce document (Google change souvent ses écrans), choisis l'option la plus proche et dis-moi ce que tu as fait.
+ - Respecte les limites de caractères (déjà vérifiées) : titre ≤ 30, description ≤ 90, lien annexe ≤ 25 (lignes ≤ 35), accroche ≤ 25.
+ - Reste sur ads.google.com. N'accepte aucune offre promotionnelle, n'active aucune option « recommandée » par Google qui change le budget ou le ciblage.
+ - Si Google propose le mode « Expert » / « Campagne sans objectif », utilise-le ; sinon choisis l'objectif « Trafic vers le site Web ».
+
+PRÉSENTATION DU SITE
+Atlas de Poche est un atlas interactif et gratuit pour apprendre la géographie en s'amusant : les 196 pays du monde avec leurs capitales et drapeaux, les 101 départements et 18 régions de France, plus de 140 mers et océans, 100 monuments célèbres et un globe interactif. Chaque thème propose un mode Révision, un Quiz, un mode Clavier, des Défis chronométrés et, pour les capitales et drapeaux, des parties Multijoueur en ligne. On peut jouer tout de suite, sans inscription et sans téléchargement, sur ordinateur, tablette ou mobile ; un compte gratuit facultatif sauvegarde la progression et les badges.
+
+FICHE D'IDENTITÉ
+ - Nom : Atlas de Poche
+ - Site : https://atlasdepoche.com/
+ - Type : Site web éducatif / jeu de géographie (application web installable sur mobile)
+ - Prix : Gratuit (aucun achat, aucun abonnement)
+ - Inscription : Non obligatoire (compte gratuit facultatif)
+ - Langue du site : Français (la page des capitales est aussi disponible en anglais et en espagnol)
+ - Public : Élèves (primaire, collège, lycée), étudiants, parents, enseignants, curieux de géographie, amateurs de quiz
+ - Appareils : Ordinateur, tablette, mobile (mode nuit, sons)
+ - Points forts : Gratuit et sans inscription · 5 univers de géographie · Révision, quiz, clavier, défis chrono · Multijoueur en ligne (jusqu'à 12 joueurs) · 36 badges et statistiques · Progression synchronisée avec un compte
+ - Contact : https://atlasdepoche.com/contact.html (formulaire)
+ - Logo (carré) : https://atlasdepoche.com/icon-512.png
+ - Couleurs : Violet #6a5cff · Rose #ff5d8f · Orange #ffb84d
+
+PAGES DU SITE
+ - Accueil — https://atlasdepoche.com/
+     Page d'entrée : présentation du site et accès aux 5 univers (capitales et drapeaux, départements, mers et océans, monuments, globe interactif).
+     Utile pour : Annonces générales (quiz de géographie, atlas interactif)
+ - Drapeaux & Capitales — https://atlasdepoche.com/quiz.html
+     196 pays du monde avec drapeau et capitale. Modes : Révision (fiches par continent), Quiz (choix multiples), Clavier (tableau à compléter), Défi chronométré (60 s), Multijoueur en ligne (jusqu'à 12 joueurs, code de salle, classement et podium). Disponible en français, anglais et espagnol.
+     Utile pour : Capitales du monde, drapeaux du monde
+ - Régions & Départements — https://atlasdepoche.com/regions.html
+     101 départements français et 18 régions (outre-mer inclus) : préfectures, numéros de département. Modes : Révision, Quiz, Clavier, Défi chronométré et carte de France interactive.
+     Utile pour : Départements, préfectures, régions de France
+ - Mers & Océans — https://atlasdepoche.com/mers.html
+     Plus de 140 mers, océans, golfes et détroits, classés par océan, avec description et faits marquants. Onglets : Révision, Jeu (quiz à choix multiples), Vocabulaire géographique.
+     Utile pour : Mers et océans du monde
+ - Monuments du Monde — https://atlasdepoche.com/monuments.html
+     100 monuments célèbres sur les 6 continents, avec photos. Modes : Révision par continent, Quiz, Clavier (tableau).
+     Utile pour : Monuments célèbres du monde
+ - Globe interactif — https://atlasdepoche.com/globe.html
+     Carte du monde interactive : découvrir les pays (capitale, drapeau), jeu « devine le pays » par continent, 128 massifs montagneux avec leurs noms et un jeu des massifs.
+     Utile pour : Carte du monde interactive, jeu de géographie
+ - Mes badges — https://atlasdepoche.com/badges.html
+     36 badges à débloquer et statistiques de progression (pays, départements, mers, monuments). Réservé à la progression de chaque joueur.
+     Utile pour : Pas de campagne (page d'engagement)
+ - Mon compte — https://atlasdepoche.com/compte.html
+     Création de compte gratuite (e-mail + mot de passe) pour sauvegarder sa progression sur tous ses appareils. Facultatif : on peut jouer sans compte.
+     Utile pour : Pas de campagne
+ - Contact — https://atlasdepoche.com/contact.html
+     Formulaire de contact (prénom, e-mail, message).
+     Utile pour : Pas de campagne
+
+PARAMÈTRES DE LA CAMPAGNE
+ - Nom de la campagne : Atlas de Poche — Recherche — France
+ - Objectif : Trafic vers le site Web (« Visites sur le site Web »)
+ - Type de campagne : Réseau de Recherche (Search)
+ - Réseaux : Réseau de Recherche Google uniquement : décocher « Inclure le Réseau Display Google » (et les partenaires de recherche si l'option est proposée)
+ - Zones géographiques : France (option : Belgique, Suisse, Luxembourg). Cibler « Présence : personnes se trouvant dans les zones ciblées »
+ - Langue : Français
+ - Budget : 5 € par jour pour démarrer (à ajuster par le propriétaire du compte)
+ - Enchères : « Maximiser les clics » avec un CPC maximum de 0,30 € (aucune conversion n'est encore mesurée)
+ - Calendrier : Tous les jours, toute la journée (pic attendu : septembre à juin, soirs et mercredis)
+ - Appareils : Tous (ordinateur, mobile, tablette)
+ - Audiences (observation uniquement) : Parents, étudiants, enseignants ; centres d'intérêt : éducation, jeux de quiz — en « Observation », sans restreindre la diffusion
+ - Nom de l'entreprise : Atlas de Poche
+ - URL finale (par groupe) : Voir la liste des groupes d'annonces ; ajouter le suffixe de suivi : ?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=<groupe>
+ - Mots clés : Correspondance exacte [ ] et expression « » (pas de requête large)
+ - Mots clés à exclure : pdf, imprimer, imprimable, vierge, fond de carte, télécharger, livre, amazon, emploi, travail, formation, cours particuliers, hôtel, vol, billet, météo, itinéraire, google maps, wikipedia, population, président, histoire
+
+GROUPES D'ANNONCES (créer 7 groupes d'annonces dans la même campagne)
+
+[1] Groupe : « Capitales du monde »
+   URL finale : https://atlasdepoche.com/quiz.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=capitales
+   Chemin d'affichage : capitales / quiz   (apparaît après le domaine : atlasdepoche.com/capitales/quiz)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [quiz capitales]
+      [capitales du monde]
+      "quiz capitales du monde"
+      "apprendre les capitales"
+      "jeu des capitales"
+      "réviser les capitales"
+      "capitales des pays"
+      "quiz capitales gratuit"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Quiz des capitales du monde  (27)
+    2. Apprends les capitales  (22)
+    3. 196 pays et leurs capitales  (27)
+    4. Révise, joue, progresse  (23)
+    5. Quiz et défis chronométrés  (26)
+    6. 100 % gratuit  (13)
+    7. Atlas de Poche  (14)
+    8. Mode révision et clavier  (24)
+    9. Teste-toi en quelques minutes  (29)
+   10. Multijoueur en ligne  (20)
+   Descriptions (4, ≤ 90 car.) :
+    1. Apprends les capitales des 196 pays : révision, quiz, mode clavier et défis chronométrés.  (89)
+    2. Joue gratuitement sur ordinateur ou mobile. Gagne des badges et suis ta progression.  (84)
+    3. Défie tes amis en ligne dans une partie multijoueur et grimpe au classement.  (76)
+    4. Sans inscription pour jouer. Un compte gratuit sauvegarde ta progression partout.  (81)
+
+[2] Groupe : « Drapeaux du monde »
+   URL finale : https://atlasdepoche.com/quiz.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=drapeaux
+   Chemin d'affichage : drapeaux / quiz   (apparaît après le domaine : atlasdepoche.com/drapeaux/quiz)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [quiz drapeaux]
+      [drapeaux du monde]
+      "quiz drapeaux du monde"
+      "apprendre les drapeaux"
+      "jeu des drapeaux"
+      "reconnaître les drapeaux"
+      "quiz drapeaux gratuit"
+      "drapeaux des pays"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Quiz des drapeaux du monde  (26)
+    2. Apprends tous les drapeaux  (26)
+    3. Reconnais chaque drapeau  (24)
+    4. Devine le drapeau  (17)
+    5. Drapeaux et capitales  (21)
+    6. Quiz gratuit en ligne  (21)
+    7. Atlas de Poche  (14)
+    8. Révision et quiz chrono  (23)
+    9. 196 drapeaux à découvrir  (24)
+   10. Joue seul ou à plusieurs  (24)
+   Descriptions (4, ≤ 90 car.) :
+    1. Apprends les drapeaux du monde en t'amusant : révision, quiz, clavier et défis chrono.  (86)
+    2. Devine le drapeau ou la capitale, gagne des badges et progresse à ton rythme.  (77)
+    3. Gratuit, sans inscription et sans téléchargement. Joue depuis ton navigateur.  (77)
+    4. Une partie multijoueur avec tes amis en ligne : qui connaît le plus de drapeaux ?  (81)
+
+[3] Groupe : « Départements et régions de France »
+   URL finale : https://atlasdepoche.com/regions.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=departements
+   Chemin d'affichage : departements / quiz   (apparaît après le domaine : atlasdepoche.com/departements/quiz)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [quiz départements]
+      [départements français]
+      "apprendre les départements"
+      "numéros des départements"
+      "préfectures de france"
+      "quiz régions de france"
+      "carte des départements"
+      "101 départements"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Quiz des départements  (21)
+    2. Apprends les 101 départements  (29)
+    3. Préfectures et numéros  (22)
+    4. Régions de France en quiz  (25)
+    5. Révise la carte de France  (25)
+    6. Quiz géographie France  (22)
+    7. Atlas de Poche  (14)
+    8. 100 % gratuit  (13)
+    9. Défis chronométrés  (18)
+   10. Mode révision et clavier  (24)
+   Descriptions (4, ≤ 90 car.) :
+    1. Apprends les 101 départements, leurs préfectures et leurs numéros avec un quiz gratuit.  (87)
+    2. Révision, quiz, mode clavier, défis chrono et carte de France interactive.  (74)
+    3. Régions, outre-mer et préfectures : teste tes connaissances en t'amusant.  (73)
+    4. Gratuit et sans inscription. Idéal pour réviser ou apprendre en s'amusant.  (74)
+
+[4] Groupe : « Mers et océans »
+   URL finale : https://atlasdepoche.com/mers.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=mers
+   Chemin d'affichage : mers / oceans   (apparaît après le domaine : atlasdepoche.com/mers/oceans)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [mers et océans du monde]
+      [quiz mers et océans]
+      "océans du monde"
+      "liste des mers"
+      "apprendre les mers et océans"
+      "carte des mers du monde"
+      "quiz océans"
+      "mers du monde"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Mers et océans du monde  (23)
+    2. Quiz mers et océans  (19)
+    3. Plus de 140 mers à découvrir  (28)
+    4. Golfes, détroits et océans  (26)
+    5. Révise et teste-toi  (19)
+    6. Jeu de géographie gratuit  (25)
+    7. Atlas de Poche  (14)
+    8. 100 % gratuit  (13)
+    9. Vocabulaire géographique  (24)
+   10. Apprends en jouant  (18)
+   Descriptions (4, ≤ 90 car.) :
+    1. Découvre plus de 140 mers, océans, golfes et détroits : révision, jeu et vocabulaire.  (85)
+    2. Un quiz gratuit pour apprendre la géographie des mers sur les cinq continents.  (78)
+    3. Chaque mer expliquée : situation, particularités et faits surprenants.  (70)
+    4. Sans inscription, depuis ton ordinateur ou ton mobile. Teste-toi dès maintenant.  (80)
+
+[5] Groupe : « Monuments du monde »
+   URL finale : https://atlasdepoche.com/monuments.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=monuments
+   Chemin d'affichage : monuments / quiz   (apparaît après le domaine : atlasdepoche.com/monuments/quiz)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [monuments du monde]
+      [quiz monuments]
+      "quiz monuments du monde"
+      "monuments célèbres du monde"
+      "jeu monuments du monde"
+      "les monuments du monde"
+      "apprendre les monuments"
+      "monuments célèbres"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Monuments du monde en quiz  (26)
+    2. 100 monuments célèbres  (22)
+    3. Devine le monument  (18)
+    4. Photos et quiz gratuits  (23)
+    5. Révision et mode clavier  (24)
+    6. Visite le monde en jouant  (25)
+    7. Atlas de Poche  (14)
+    8. 100 % gratuit  (13)
+    9. Sans inscription  (16)
+   10. Teste ta culture générale  (25)
+   Descriptions (4, ≤ 90 car.) :
+    1. Reconnais 100 monuments célèbres du monde avec photos, révision, quiz et mode clavier.  (86)
+    2. De la tour Eiffel à la Grande Muraille : apprends où se trouve chaque monument.  (79)
+    3. Joue gratuitement et sans inscription, sur ordinateur, tablette ou mobile.  (74)
+    4. Classe-les par continent, révise puis teste tes connaissances en quiz.  (70)
+
+[6] Groupe : « Globe et carte interactive »
+   URL finale : https://atlasdepoche.com/globe.html?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=globe
+   Chemin d'affichage : globe / carte   (apparaît après le domaine : atlasdepoche.com/globe/carte)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [carte du monde interactive]
+      [globe interactif]
+      "carte interactive des pays"
+      "jeu de géographie en ligne"
+      "carte des pays du monde"
+      "globe terrestre interactif"
+      "carte du monde jeu"
+      "explorer la carte du monde"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Globe interactif gratuit  (24)
+    2. Carte du monde interactive  (26)
+    3. Explore les pays du monde  (25)
+    4. Devine les pays sur la carte  (28)
+    5. Capitales et continents  (23)
+    6. 128 massifs montagneux  (22)
+    7. Atlas de Poche  (14)
+    8. 100 % gratuit  (13)
+    9. Zoome sur chaque pays  (21)
+   10. Jeu de géographie en ligne  (26)
+   Descriptions (4, ≤ 90 car.) :
+    1. Explore la carte du monde, clique sur un pays pour découvrir sa capitale et son drapeau.  (88)
+    2. Joue : devine les pays et leurs capitales, par continent, directement sur le globe.  (83)
+    3. Découvre les massifs montagneux du monde et teste-toi avec le jeu des massifs.  (78)
+    4. Gratuit, sans inscription. Fonctionne sur ordinateur, tablette et mobile.  (73)
+
+[7] Groupe : « Quiz de géographie (général) »
+   URL finale : https://atlasdepoche.com/?utm_source=google&utm_medium=cpc&utm_campaign=atlas-recherche-fr&utm_content=general
+   Chemin d'affichage : geographie / quiz   (apparaît après le domaine : atlasdepoche.com/geographie/quiz)
+   Mots clés (un par ligne ; [ ] = exacte, « » = expression) :
+      [quiz géographie]
+      [jeu de géographie]
+      "jeu de géographie gratuit"
+      "apprendre la géographie"
+      "quiz de géographie en ligne"
+      "atlas interactif"
+      "quiz géographie gratuit"
+      "jeux géographie en ligne"
+   Annonce responsive de recherche — Titres (10, ≤ 30 car.) :
+    1. Quiz de géographie gratuit  (26)
+    2. Apprends la géographie  (22)
+    3. Pays, capitales, drapeaux  (25)
+    4. Le monde en quiz  (16)
+    5. Départements, mers, monuments  (29)
+    6. Jeu éducatif gratuit  (20)
+    7. Atlas de Poche  (14)
+    8. Défie tes amis en ligne  (23)
+    9. Sans inscription  (16)
+   10. Révise en t'amusant  (19)
+   Descriptions (4, ≤ 90 car.) :
+    1. Pays, capitales, drapeaux, départements, mers et monuments : un atlas interactif gratuit.  (89)
+    2. Révision, quiz, mode clavier, défis chrono et parties multijoueur avec tes amis.  (80)
+    3. Gagne des badges, suis ta progression et retrouve-la sur tous tes appareils.  (76)
+    4. Pour les élèves, les parents et les curieux. Joue dès maintenant, sans inscription.  (83)
+
+ASSETS COMMUNS (à ajouter au niveau de la campagne)
+ Liens annexes (6) — titre ≤ 25 / ligne 1 ≤ 35 / ligne 2 ≤ 35 / URL :
+   1. Capitales du monde | 196 pays, quiz et défis chrono | Révision, clavier, multijoueur | https://atlasdepoche.com/quiz.html
+   2. Départements de France | 101 départements et préfectures | Quiz, clavier et carte | https://atlasdepoche.com/regions.html
+   3. Mers et océans | Plus de 140 mers et océans | Révision, jeu et vocabulaire | https://atlasdepoche.com/mers.html
+   4. Monuments du monde | 100 monuments célèbres | Photos, quiz et mode clavier | https://atlasdepoche.com/monuments.html
+   5. Globe interactif | Explore la carte du monde | Devine les pays sur le globe | https://atlasdepoche.com/globe.html
+   6. Jouer à plusieurs | Multijoueur en ligne gratuit | Défie tes amis en direct | https://atlasdepoche.com/quiz.html#mode=pvp
+ Accroches (callouts) : 100 % gratuit · Sans inscription · Quiz et défis chrono · Multijoueur en ligne · Pour tous les âges · Sur ordinateur et mobile · Badges à débloquer · Mode révision inclus
+ Extraits de site structurés : en-tête « Types » — valeurs : Capitales, Drapeaux, Départements, Mers et océans, Monuments
+ Image / logo : https://atlasdepoche.com/icon-512.png (logo carré 512 × 512). Nom de l'entreprise : Atlas de Poche.
+
+MOTS CLÉS À EXCLURE (au niveau de la campagne, expression) : pdf, imprimer, imprimable, vierge, fond de carte, télécharger, livre, amazon, emploi, travail, formation, cours particuliers, hôtel, vol, billet, météo, itinéraire, google maps, wikipedia, population, président, histoire
+
+DÉROULEMENT ATTENDU
+ 1. Ouvre « Campagnes » → « + Nouvelle campagne » → objectif « Trafic vers le site Web » → type « Recherche ».
+ 2. Saisis le site https://atlasdepoche.com/ et coche « Visites sur le site Web ».
+ 3. Réseaux, zones, langue, budget, enchères et calendrier selon « PARAMÈTRES DE LA CAMPAGNE ».
+ 4. Crée le 1er groupe d'annonces avec ses mots clés puis son annonce responsive ; répète pour les groupes suivants.
+ 5. Ajoute les liens annexes, accroches, extraits structurés, nom de l'entreprise, logo et mots clés à exclure.
+ 6. Vérifie l'écran récapitulatif (aucune erreur, aucune alerte de désapprobation), puis présente-moi un résumé :
+    nombre de groupes, mots clés, titres, budget, enchères, zones. ATTENDS MON ACCORD avant de publier.
+ 7. Si Google demande une facturation ou une vérification d'identité, ne la remplis pas : dis-moi simplement à quelle étape tu t'es arrêté.
+
+POINTS D'ATTENTION (pour moi)
+ - Confidentialité : le site n'a pas encore de page « Politique de confidentialité » ni de bandeau de consentement aux cookies. Il est recommandé d'en ajouter avant d'activer le suivi des conversions, le remarketing ou des audiences personnalisées (règles RGPD / Google).
+ - Suivi des conversions : aucune balise Google n'est installée sur le site. Sans conversions, les enchères automatiques « conversions » ne sont pas disponibles : démarrer avec « Maximiser les clics ».
+ - Plan du site : seuls l'accueil et le contact figurent dans sitemap.xml. Ajouter les autres pages améliore le référencement naturel (indépendant des annonces).
+ - Les pages d'atterrissage n'ont pas besoin d'identifiant : le globe accepte les liens d'annonces (paramètre utm_) et s'ouvre directement.

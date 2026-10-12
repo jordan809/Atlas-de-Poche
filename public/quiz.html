@@ -225,7 +225,7 @@
     padding: 15px 12px; border: 2.5px solid #ece9ff; background: #f7f6ff;
     color: var(--ink); cursor: pointer; border-radius: 14px; transition: all 0.15s ease; outline: none; -webkit-tap-highlight-color: transparent;
   }
-  .opt:hover:not(:disabled) { border-color: var(--bg1); transform: translateY(-2px); box-shadow: 0 6px 14px rgba(106,92,255,0.25); }
+  @media (hover: hover) { .opt:hover:not(:disabled) { border-color: var(--bg1); transform: translateY(-2px); box-shadow: 0 6px 14px rgba(106,92,255,0.25); } }
   .opt:disabled { cursor: default; }
   .opt.correct { background: var(--good); border-color: var(--good); color: #fff; transform: scale(1.03); }
   .opt.wrong { background: var(--bad); border-color: var(--bad); color: #fff; }

@@ -144,7 +144,8 @@
   .g-hint{font-size:0.83rem;color:var(--ink-soft);margin-bottom:20px;font-style:italic;}
   html.dark .g-hint{color:#a89fd8;}
   .opts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
-  .opt{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;padding:13px 8px;border:2.5px solid #ece9ff;border-radius:13px;background:#f7f6ff;color:var(--ink);cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s;}
+  .opt{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.9rem;padding:13px 8px;border:2.5px solid #ece9ff;border-radius:13px;background:#f7f6ff;color:var(--ink);cursor:pointer;transition:background 0.15s,border-color 0.15s,transform 0.1s;outline:none;-webkit-tap-highlight-color:transparent;}
+  .opt:focus{outline:none;}
   .opt:hover:not(:disabled){background:#ede8ff;border-color:var(--bg1);transform:scale(1.02);}
   .opt.correct{background:#e7faf0;border-color:var(--good);color:var(--good);}
   .opt.wrong{background:#fdeaee;border-color:var(--bad);color:var(--bad);}

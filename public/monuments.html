@@ -118,7 +118,8 @@ html.dark .hint-text{color:#a89fd8;}
 html.dark .feedback.bad{color:#ff6b85;}
 
 .options{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:6px;}
-.opt{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;padding:14px 10px;border:2.5px solid #ece9ff;background:#f7f6ff;color:var(--ink);cursor:pointer;border-radius:14px;transition:all 0.15s ease;line-height:1.25;}
+.opt{font-family:'Nunito',sans-serif;font-weight:700;font-size:0.95rem;padding:14px 10px;border:2.5px solid #ece9ff;background:#f7f6ff;color:var(--ink);cursor:pointer;border-radius:14px;transition:all 0.15s ease;line-height:1.25;outline:none;-webkit-tap-highlight-color:transparent;}
+.opt:focus{outline:none;}
 .opt:hover:not(:disabled){border-color:var(--bg1);transform:translateY(-2px);box-shadow:0 6px 14px rgba(106,92,255,0.25);}
 .opt:disabled{cursor:default;}
 .opt.correct{background:var(--good);border-color:var(--good);color:#fff;transform:scale(1.03);}

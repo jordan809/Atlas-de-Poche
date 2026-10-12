@@ -1896,6 +1896,8 @@ function enterMode(mode){
   document.getElementById("optionsBar").classList.toggle("hidden", isStudy || isFlags || isPvp);
   document.getElementById("submodesBar").classList.toggle("hidden", !isFlags);
   document.querySelector("footer").classList.toggle("hidden", !isStudy);
+  // pied de page masqué : on garde le même écart (110 px) avant les liens légaux que dans les autres modes
+  document.querySelector(".wrap").style.paddingBottom = isStudy ? "" : "68px";
   document.getElementById("dirToggle").classList.toggle("hidden", isFlags || isPvp);
   document.getElementById("tableToggle").classList.toggle("hidden", !isType);
   document.getElementById("typeFlagToggle").classList.toggle("hidden", isStudy || isPvp || isFlags || showTypeTable);

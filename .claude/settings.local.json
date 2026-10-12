@@ -30,7 +30,9 @@
       "Skill(update-config:*)",
       "Bash(git fetch *)",
       "Bash(git remote *)",
-      "Bash(grep -n \"footer\\\\|</div>\\\\s*$\\\\|</body>\" \"C:\\\\Users\\\\amole\\\\Desktop\\\\Atlas-de-Poche\\\\public\\\\mers.html\")"
+      "Bash(grep -n \"footer\\\\|</div>\\\\s*$\\\\|</body>\" \"C:\\\\Users\\\\amole\\\\Desktop\\\\Atlas-de-Poche\\\\public\\\\mers.html\")",
+      "Bash(Select-String -Pattern \"confidential|mention|legal|about|robots|sitemap|cookie|consent\")",
+      "Bash(Select-Object Name)"
     ]
   },
   "hooks": {

@@ -658,7 +658,11 @@
         tipEl.textContent = labelText(d.properties.n);
         tipEl.style.left = ev.clientX + 'px'; tipEl.style.top = ev.clientY + 'px'; tipEl.style.display = 'block';
       })
-      .on('mouseleave', () => { tipEl.style.display = 'none'; });
+      .on('mouseleave', () => { tipEl.style.display = 'none'; })
+      .on('click', (ev, d) => {
+        if(!massifsOn || mode === 'mgame') return;
+        zoomToFeature(d, 2.2, massifZoomOpts(d));
+      });
     massifG.selectAll('path.big').raise();           // les 7 grands massifs restent bien visibles au-dessus des autres
     measureCtx.font = "italic 800 12px Nunito, system-ui, sans-serif";
     const items = [];

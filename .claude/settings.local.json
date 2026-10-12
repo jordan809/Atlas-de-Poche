@@ -36,7 +36,8 @@
       "Bash(grep -v \"function\\\\|btnDiscover\\\\|btnGame\\\\|btnMassif\\\\|startRound\\\\|mgame\\\\|//\\\\|classList\")",
       "mcp__claude-in-chrome__navigate",
       "mcp__claude-in-chrome__computer",
-      "mcp__claude-in-chrome__find"
+      "mcp__claude-in-chrome__find",
+      "mcp__claude-in-chrome__browser_batch"
     ]
   },
   "hooks": {

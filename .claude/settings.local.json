@@ -33,7 +33,10 @@
       "Bash(grep -n \"footer\\\\|</div>\\\\s*$\\\\|</body>\" \"C:\\\\Users\\\\amole\\\\Desktop\\\\Atlas-de-Poche\\\\public\\\\mers.html\")",
       "Bash(Select-String -Pattern \"confidential|mention|legal|about|robots|sitemap|cookie|consent\")",
       "Bash(Select-Object Name)",
-      "Bash(grep -v \"function\\\\|btnDiscover\\\\|btnGame\\\\|btnMassif\\\\|startRound\\\\|mgame\\\\|//\\\\|classList\")"
+      "Bash(grep -v \"function\\\\|btnDiscover\\\\|btnGame\\\\|btnMassif\\\\|startRound\\\\|mgame\\\\|//\\\\|classList\")",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__computer",
+      "mcp__claude-in-chrome__find"
     ]
   },
   "hooks": {

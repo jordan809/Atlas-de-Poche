@@ -823,9 +823,6 @@ function enterMode(mode){
   clearTimeout(autoAdvTimer);
   autoAdvanceOn=true;
   document.getElementById("autoAdvanceBtn").classList.add("active");
-  // Réinitialiser filtre continent
-  selectedContinent="";
-  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.toggle("active",b.dataset.cont===""));
   // Réinitialiser aides clavier
   gHints[0]=gHints[1]=gHints[2]=false;
   if(mode==="revision") renderRevision();

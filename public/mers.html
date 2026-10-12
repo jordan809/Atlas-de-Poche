@@ -306,7 +306,7 @@
     <div id="vocabContent"></div>
   </section>
 
-  <footer>Atlas de poche — explore les eaux du monde</footer>
+  <footer>{nombre} mers &amp; océans · Bonne exploration 🌊</footer>
 </div>
 
 <script>
@@ -1412,6 +1412,7 @@ renderRevision();
   if(sm) switchTab(sm, true);
 }
 renderVocab();
+document.querySelector("footer").innerHTML = document.querySelector("footer").innerHTML.replace("{nombre}", SEAS.length);
 </script>
 <script src="/progress.js?v=2"></script>
 <script src="/account.js?v=11"></script>
